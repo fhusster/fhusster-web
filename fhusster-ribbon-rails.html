@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fhusster — Waving Ribbon + Side Rails</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   FHUSSTER — WAVING RIBBON + SIDE RAILS
+   Two additions to the ornament kit.
+
+   Everything between the PASTE markers below goes into assets/css/style.css.
+   The <script> at the bottom goes into assets/js/ornaments.js.
+   Both are additive — nothing in the existing kit changes.
+   ============================================================================ */
+
+:root{
+  --navy:#082B5C;
+  --magenta:#FF2B73;
+  --olive:#6E7450;
+  --tan:#B99C7A;
+  --black:#121212;
+  --bone:#F2EFE8;
+  --bone-dim:rgba(242,239,232,.55);
+  --line:rgba(242,239,232,.16);
+}
+
+/* demo chrome only — not part of the kit */
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--bone);font:400 15px/1.6 "Inter",sans-serif;padding:56px 24px 120px}
+.page{max-width:860px;margin:0 auto;position:relative;z-index:1}
+h1{font-family:"Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:26px;margin-bottom:6px}
+h2{font-family:"Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.14em;font-size:13px;color:var(--magenta);margin-bottom:18px}
+.sub{color:var(--bone-dim);max-width:620px;margin-bottom:44px}
+.block{border:2px solid var(--line);border-radius:6px;background:rgba(8,43,92,.18);padding:34px 28px;margin-bottom:24px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:30px 40px;padding:10px 0}
+.note{color:var(--bone-dim);font-size:13px;margin-top:22px;max-width:600px}
+.tuner{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 26px;margin-top:8px}
+.tuner label{display:block;font:600 11px "Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.14em;color:var(--bone-dim);margin-bottom:8px}
+.tuner input[type=range]{width:100%;accent-color:var(--magenta)}
+.tuner input[type=text]{width:100%;background:var(--black);border:2px solid var(--line);border-radius:4px;color:var(--bone);
+  font:600 13px "Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.1em;padding:9px 12px}
+.tuner input[type=text]:focus{outline:none;border-color:var(--magenta)}
+.val{color:var(--magenta)}
+
+/* ==== PASTE START ======================================================== */
+
+/* ============================================================
+   12 · RIBBON BANNER, WAVING
+   Championship banner that ripples like a 16-bit title screen.
+   The body is rebuilt as fixed-width vertical columns; each
+   column steps up and down one phase behind the last, so the
+   wave travels across the banner in whole pixels — no easing,
+   no sub-pixel softness. Tails ride the phase of the column
+   they touch, so they stay attached.
+   Width comes from the text, so any word fits. No JS = flat
+   ribbon, identical to the static version. Same for reduced
+   motion.
+   ============================================================ */
+.ribbon{
+  --rib-body:var(--navy);
+  --rib-tail:var(--magenta);
+  --rib-fold:#8F1740;
+  --rib-edge:rgba(242,239,232,.22);
+  --rib-pad-y:12px;
+  --rib-pad-x:34px;
+  --rib-size:14px;
+  --rib-drop:8px;            /* how far the tails sit below the body   */
+  --rib-tail-w:44px;
+  --rib-tail-out:32px;       /* how far the tails reach past the body  */
+  --rib-slice:8px;           /* column width — the pixel grain         */
+  --rib-amp:3px;             /* wave height, peak                      */
+  --rib-amp-mid:2px;         /* wave height, the two mid steps         */
+  --rib-period:1.5s;         /* one full ripple                        */
+  --rib-lag:.055s;           /* phase offset per column                */
+  position:relative;
+  display:inline-block;
+  vertical-align:middle;
+}
+.ribbon-body{
+  position:relative;
+  display:inline-flex;align-items:center;justify-content:center;
+  white-space:nowrap;
+  background:var(--rib-body);
+  color:var(--bone);
+  border-top:2px solid var(--rib-edge);
+  border-bottom:2px solid var(--rib-edge);
+  padding:var(--rib-pad-y) var(--rib-pad-x);
+  font:700 var(--rib-size)/1 "Chakra Petch",sans-serif;
+  text-transform:uppercase;letter-spacing:.14em;
+}
+/* the tails */
+.ribbon-tail{
+  position:absolute;top:var(--rib-drop);height:100%;width:var(--rib-tail-w);
+  background:var(--rib-tail);
+  --i:0;
+}
+.ribbon-tail--l{left:calc(var(--rib-tail-out) * -1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,14px 50%)}
+.ribbon-tail--r{right:calc(var(--rib-tail-out) * -1);clip-path:polygon(0 0,100% 0,calc(100% - 14px) 50%,100% 100%,0 100%)}
+/* the fold — the darker wedge where the tail tucks behind the body */
+.ribbon-tail::after{
+  content:"";position:absolute;bottom:0;width:11px;height:var(--rib-drop);
+  background:var(--rib-fold);
+}
+.ribbon-tail--l::after{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.ribbon-tail--r::after{left:0;clip-path:polygon(0 0,0 100%,100% 100%)}
+
+/* one column of the banner's SURFACE — background and edges only, no text.
+   The cloth ripples; the lettering is printed flat on top and never moves. */
+.ribbon-slice{
+  position:absolute;top:-2px;bottom:-2px;left:0;right:0;
+  background:var(--rib-body);
+  border-top:2px solid var(--rib-edge);
+  border-bottom:2px solid var(--rib-edge);
+}
+/* while waving, the body hands its surface over to the columns but keeps
+   the text — same position, same colour, perfectly still */
+.ribbon.is-waving > .ribbon-body{background:transparent;border-color:transparent}
+.ribbon-label{position:relative;z-index:2}
+
+.ribbon.is-waving .ribbon-slice,
+.ribbon.is-waving .ribbon-tail{
+  animation:ribbon-wave var(--rib-period) steps(1,end) infinite;
+  animation-delay:calc(var(--i) * var(--rib-lag) * -1);
+}
+/* eight held positions per cycle — the step function is what makes it read
+   as sprite animation rather than CSS easing */
+@keyframes ribbon-wave{
+  0%    {transform:translateY(calc(var(--rib-amp) * -1))}
+  12.5% {transform:translateY(calc(var(--rib-amp-mid) * -1))}
+  25%   {transform:translateY(0)}
+  37.5% {transform:translateY(var(--rib-amp-mid))}
+  50%   {transform:translateY(var(--rib-amp))}
+  62.5% {transform:translateY(var(--rib-amp-mid))}
+  75%   {transform:translateY(0)}
+  87.5% {transform:translateY(calc(var(--rib-amp-mid) * -1))}
+  100%  {transform:translateY(calc(var(--rib-amp) * -1))}
+}
+/* small variant */
+.ribbon--sm{--rib-size:11px;--rib-pad-y:8px;--rib-pad-x:24px;--rib-tail-w:34px;--rib-tail-out:24px;--rib-drop:6px;--rib-amp:2px;--rib-amp-mid:1px}
+/* Heavy Bag variant — olive body, tan tails */
+.ribbon--hb{--rib-body:var(--olive);--rib-tail:var(--tan);--rib-fold:#7A6249}
+
+@media (prefers-reduced-motion:reduce){
+  .ribbon.is-waving > .ribbon-body{background:var(--rib-body);border-color:var(--rib-edge)}
+  .ribbon .ribbon-slice{display:none}
+  .ribbon.is-waving .ribbon-tail{animation:none}
+}
+
+/* ============================================================
+   13 · SIDE RAILS
+   Two hairline rails pinned to the viewport edges: magenta and
+   blue, mirrored left to right. Every few seconds a hard-edged
+   light runs the length of one — down the left, up the right,
+   alternating. Ambient, not a loading bar: the gap between
+   passes is longer than the pass.
+   Hidden below 900px, where the margins don't exist.
+   ============================================================ */
+.rails{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.rail{
+  --rail-a:var(--magenta);
+  --rail-b:#2C5EA8;          /* navy lifted enough to read on black    */
+  --rail-cycle:8s;           /* pass + rest                            */
+  --rail-len:130px;          /* length of the running light            */
+  --rail-glow:.30;
+  position:absolute;top:0;bottom:0;width:6px;
+  opacity:.5;
+  background:linear-gradient(90deg,var(--rail-a) 0 2px,transparent 2px 4px,var(--rail-b) 4px 6px);
+}
+.rail--l{left:20px}
+.rail--r{right:20px;--rail-a:#2C5EA8;--rail-b:var(--magenta)}   /* mirrored */
+
+.rail-light{
+  position:absolute;left:0;right:0;height:var(--rail-len);
+  background:linear-gradient(90deg,var(--rail-a) 0 2px,transparent 2px 4px,var(--rail-b) 4px 6px);
+  filter:brightness(2.1);
+  opacity:0;
+}
+/* four hard bands, brightest at the leading edge — a comet with no blur */
+.rail--l .rail-light{
+  -webkit-mask-image:linear-gradient(180deg,transparent 0 6%,rgba(0,0,0,.22) 6% 34%,rgba(0,0,0,.5) 34% 64%,rgba(0,0,0,.78) 64% 88%,#000 88% 100%);
+          mask-image:linear-gradient(180deg,transparent 0 6%,rgba(0,0,0,.22) 6% 34%,rgba(0,0,0,.5) 34% 64%,rgba(0,0,0,.78) 64% 88%,#000 88% 100%);
+  animation:rail-down var(--rail-cycle) linear infinite;
+}
+.rail--r .rail-light{
+  -webkit-mask-image:linear-gradient(0deg,transparent 0 6%,rgba(0,0,0,.22) 6% 34%,rgba(0,0,0,.5) 34% 64%,rgba(0,0,0,.78) 64% 88%,#000 88% 100%);
+          mask-image:linear-gradient(0deg,transparent 0 6%,rgba(0,0,0,.22) 6% 34%,rgba(0,0,0,.5) 34% 64%,rgba(0,0,0,.78) 64% 88%,#000 88% 100%);
+  animation:rail-up var(--rail-cycle) linear infinite;
+  animation-delay:calc(var(--rail-cycle) * .5);
+}
+@keyframes rail-down{
+  0%          {transform:translateY(calc(var(--rail-len) * -1));opacity:0}
+  2%          {opacity:var(--rail-glow)}
+  26%         {opacity:var(--rail-glow)}
+  28%,100%    {transform:translateY(100vh);opacity:0}
+}
+@keyframes rail-up{
+  0%          {transform:translateY(100vh);opacity:0}
+  2%          {opacity:var(--rail-glow)}
+  26%         {opacity:var(--rail-glow)}
+  28%,100%    {transform:translateY(calc(var(--rail-len) * -1));opacity:0}
+}
+/* production: raise this to 900px if the rails start crowding content */
+@media (max-width:640px){.rails{display:none}}
+@media (prefers-reduced-motion:reduce){.rail-light{display:none}}
+
+/* the rails sit behind everything; the site wrapper needs a layer */
+.site,.page{position:relative;z-index:1}
+
+/* ==== PASTE END ========================================================== */
+</style>
+</head>
+<body>
+
+<div class="rails" aria-hidden="true">
+  <div class="rail rail--l"><span class="rail-light"></span></div>
+  <div class="rail rail--r"><span class="rail-light"></span></div>
+</div>
+
+<div class="page">
+
+  <h1>Waving ribbon + side rails</h1>
+  <p class="sub">Two additions to the ornament kit. Everything is CSS variables and one small script, so both are tunable from the panel at the bottom without touching the source.</p>
+
+  <div class="block">
+    <h2>Ribbon · any length</h2>
+    <div class="row">
+      <span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">News</span></span>
+      <span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Our Games</span></span>
+    </div>
+    <div class="row">
+      <span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Support the Studio</span></span>
+    </div>
+    <div class="row">
+      <span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Independent Game Studio</span></span>
+    </div>
+    <p class="note">Width is the text's own width, so nothing needs measuring by hand. The columns are rebuilt on resize and after the webfont loads.</p>
+  </div>
+
+  <div class="block">
+    <h2>Ribbon · variants</h2>
+    <div class="row">
+      <span class="ribbon ribbon--sm"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Now in Beta</span></span>
+      <span class="ribbon ribbon--sm ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Heavy Bag</span></span>
+    </div>
+    <p class="note">Small variant for badges, and an olive/tan variant reserved for Heavy Bag, matching the chip rule in the kit.</p>
+  </div>
+
+  <div class="block">
+    <h2>Side rails</h2>
+    <p class="note" style="margin-top:0">They're already running — pinned to the left and right edges of this window, 20px in. Each rail is a 2px line, a 2px gap, and a second 2px line: magenta outward on the left, blue outward on the right. Every 8 seconds a hard-edged light runs down the left one, then up the right one, four flat brightness bands with no blur. Watch the edges for a few seconds.</p>
+    <p class="note">Markup, once, just inside <code>&lt;body&gt;</code>:</p>
+    <pre style="margin-top:14px;overflow-x:auto;font:400 12px/1.7 ui-monospace,monospace;color:var(--bone-dim)">&lt;div class="rails" aria-hidden="true"&gt;
+  &lt;div class="rail rail--l"&gt;&lt;span class="rail-light"&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="rail rail--r"&gt;&lt;span class="rail-light"&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;</pre>
+    <p class="note">Your <code>.site</code> wrapper needs <code>position:relative;z-index:1</code> so content stays above them. No script.</p>
+  </div>
+
+  <div class="block">
+    <h2>Tuning</h2>
+    <div class="tuner">
+      <div>
+        <label for="t-text">Ribbon text</label>
+        <input id="t-text" type="text" value="Our Games" autocomplete="off">
+      </div>
+      <div>
+        <label for="t-amp">Wave height · <span class="val" id="v-amp">3px</span></label>
+        <input id="t-amp" type="range" min="1" max="7" step="1" value="3">
+      </div>
+      <div>
+        <label for="t-period">Ripple speed · <span class="val" id="v-period">1.50s</span></label>
+        <input id="t-period" type="range" min="0.6" max="3" step="0.1" value="1.5">
+      </div>
+      <div>
+        <label for="t-slice">Column width · <span class="val" id="v-slice">8px</span></label>
+        <input id="t-slice" type="range" min="4" max="20" step="1" value="8">
+      </div>
+      <div>
+        <label for="t-lag">Travel per column · <span class="val" id="v-lag">55ms</span></label>
+        <input id="t-lag" type="range" min="10" max="140" step="5" value="55">
+      </div>
+      <div>
+        <label for="t-cycle">Rail pass every · <span class="val" id="v-cycle">8s</span></label>
+        <input id="t-cycle" type="range" min="3" max="20" step="1" value="8">
+      </div>
+      <div>
+        <label for="t-rail-op">Rail brightness · <span class="val" id="v-rail-op">50%</span></label>
+        <input id="t-rail-op" type="range" min="15" max="100" step="5" value="50">
+      </div>
+    </div>
+    <p class="note">The tuner writes CSS variables on <code>:root</code>. Whatever you settle on, the final numbers are the four <code>--rib-*</code> and three <code>--rail-*</code> defaults in the stylesheet.</p>
+  </div>
+
+  <div class="block">
+    <h2>Markup</h2>
+    <p class="note" style="margin-top:0">One ribbon, copied as-is. The two tail spans have to come before the body so they paint underneath it.</p>
+    <pre style="margin-top:16px;overflow-x:auto;font:400 12px/1.7 ui-monospace,monospace;color:var(--bone-dim)">&lt;span class="ribbon"&gt;
+  &lt;span class="ribbon-tail ribbon-tail--l"&gt;&lt;/span&gt;
+  &lt;span class="ribbon-tail ribbon-tail--r"&gt;&lt;/span&gt;
+  &lt;span class="ribbon-body"&gt;Our Games&lt;/span&gt;
+&lt;/span&gt;</pre>
+  </div>
+
+</div>
+
+<script>
+/* ==== PASTE START — assets/js/ornaments.js ================================
+   Rebuilds every .ribbon-body as vertical columns so the banner can ripple.
+   Runs once on load, again when the webfont lands, and on any width change.
+   Does nothing under prefers-reduced-motion, and the ribbon renders flat and
+   correct if this file never loads at all.
+   ========================================================================= */
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var widths = new WeakMap();
+
+  function slice(ribbon) {
+    var body = ribbon.querySelector(".ribbon-body");
+    if (!body) return;
+
+    // first run: wrap the text so we keep an authoritative copy
+    var label = body.querySelector(".ribbon-label");
+    if (!label) {
+      label = document.createElement("span");
+      label.className = "ribbon-label";
+      label.textContent = body.textContent.trim();
+      body.textContent = "";
+      body.appendChild(label);
+    }
+
+    var old = body.querySelectorAll(".ribbon-slice");
+    for (var j = 0; j < old.length; j++) old[j].remove();
+
+    if (reduce.matches) {
+      ribbon.classList.remove("is-waving");
+      return;
+    }
+
+    var width = Math.round(body.getBoundingClientRect().width);
+    if (!width) return;
+    widths.set(ribbon, width);
+
+    var step = parseInt(getComputedStyle(ribbon).getPropertyValue("--rib-slice"), 10) || 8;
+    var count = Math.ceil(width / step);
+    var frag = document.createDocumentFragment();
+
+    for (var i = 0; i < count; i++) {
+      var left = i * step;
+      var right = Math.max(0, width - (i + 1) * step);
+      var col = document.createElement("span");
+      col.className = "ribbon-slice";
+      col.setAttribute("aria-hidden", "true");
+      col.style.setProperty("--i", i);
+      col.style.clipPath = "inset(0 " + right + "px 0 " + left + "px)";
+      col.style.webkitClipPath = col.style.clipPath;
+      frag.appendChild(col);
+    }
+    body.appendChild(frag);
+
+    var right = ribbon.querySelector(".ribbon-tail--r");
+    if (right) right.style.setProperty("--i", count - 1);
+    ribbon.classList.add("is-waving");
+  }
+
+  function sliceAll() {
+    var all = document.querySelectorAll(".ribbon");
+    for (var i = 0; i < all.length; i++) slice(all[i]);
+  }
+
+  function init() {
+    sliceAll();
+
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(sliceAll);
+
+    // width changes only — the columns are absolute, so they can't feed back
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          var ribbon = entries[i].target;
+          var now = Math.round(entries[i].contentRect.width);
+          if (widths.get(ribbon) !== now) slice(ribbon);
+        }
+      });
+      var all = document.querySelectorAll(".ribbon");
+      for (var i = 0; i < all.length; i++) ro.observe(all[i]);
+    } else {
+      var timer;
+      window.addEventListener("resize", function () {
+        clearTimeout(timer);
+        timer = setTimeout(sliceAll, 150);
+      });
+    }
+
+    reduce.addEventListener("change", sliceAll);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+
+  // call after changing a ribbon's text
+  window.FhussterRibbon = {
+    refresh: sliceAll,
+    setText: function (ribbon, text) {
+      var label = ribbon.querySelector(".ribbon-label") || ribbon.querySelector(".ribbon-body");
+      label.textContent = text;
+      slice(ribbon);
+    }
+  };
+})();
+/* ==== PASTE END ========================================================== */
+
+
+/* demo tuner — not part of the kit */
+(function () {
+  var root = document.documentElement.style;
+  function on(id, fn) { document.getElementById(id).addEventListener("input", fn); }
+
+  on("t-text", function (e) {
+    var text = e.target.value || " ";
+    var ribbons = document.querySelectorAll(".block:first-of-type .ribbon");
+    window.FhussterRibbon.setText(ribbons[1], text);
+  });
+  on("t-amp", function (e) {
+    var v = +e.target.value;
+    root.setProperty("--rib-amp", v + "px");
+    root.setProperty("--rib-amp-mid", Math.max(1, Math.round(v * 0.66)) + "px");
+    document.getElementById("v-amp").textContent = v + "px";
+    // vars live on .ribbon, so push them down
+    document.querySelectorAll(".ribbon").forEach(function (r) {
+      r.style.setProperty("--rib-amp", v + "px");
+      r.style.setProperty("--rib-amp-mid", Math.max(1, Math.round(v * 0.66)) + "px");
+    });
+  });
+  on("t-period", function (e) {
+    var v = (+e.target.value).toFixed(2);
+    document.getElementById("v-period").textContent = v + "s";
+    document.querySelectorAll(".ribbon").forEach(function (r) { r.style.setProperty("--rib-period", v + "s"); });
+  });
+  on("t-slice", function (e) {
+    var v = +e.target.value;
+    document.getElementById("v-slice").textContent = v + "px";
+    document.querySelectorAll(".ribbon").forEach(function (r) { r.style.setProperty("--rib-slice", v + "px"); });
+    window.FhussterRibbon.refresh();
+  });
+  on("t-lag", function (e) {
+    var v = +e.target.value;
+    document.getElementById("v-lag").textContent = v + "ms";
+    document.querySelectorAll(".ribbon").forEach(function (r) { r.style.setProperty("--rib-lag", (v / 1000) + "s"); });
+  });
+  on("t-cycle", function (e) {
+    var v = +e.target.value;
+    document.getElementById("v-cycle").textContent = v + "s";
+    document.querySelectorAll(".rail").forEach(function (r) { r.style.setProperty("--rail-cycle", v + "s"); });
+  });
+  on("t-rail-op", function (e) {
+    var v = +e.target.value;
+    document.getElementById("v-rail-op").textContent = v + "%";
+    document.querySelectorAll(".rail").forEach(function (r) { r.style.opacity = v / 100; });
+  });
+})();
+</script>
+</body>
+</html>

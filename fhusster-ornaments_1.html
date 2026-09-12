@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fhusster — Ornament Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FHUSSTER ORNAMENT KIT
+   Decorative geometric language for fhusster.com
+   Core idea: every shape derives from the DIAMOND — the same
+   8-zone diamond that drives Heavy Bag's control system —
+   plus fighting-game HUD vocabulary (brackets, ticks, hearts).
+   All elements are pure CSS/SVG. No images. Copy freely.
+   ============================================================ */
+
+:root{
+  --navy:#082B5C;
+  --magenta:#FF2B73;
+  --olive:#6E7450;
+  --tan:#B99C7A;
+  --black:#121212;
+  --bone:#F2EFE8;
+  --bone-dim:rgba(242,239,232,.55);
+  --line:rgba(242,239,232,.16);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--black);
+  color:var(--bone);
+  font:400 15px/1.6 "Inter",sans-serif;
+  padding:48px 24px 96px;
+}
+h1,h2,h3,.chakra{font-family:"Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.08em}
+h1{font-size:28px;margin-bottom:4px}
+.sub{color:var(--bone-dim);margin-bottom:48px;max-width:640px}
+
+.kit{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;max-width:1200px;margin:0 auto}
+.spec{
+  border:2px solid var(--line);
+  border-radius:6px;
+  padding:28px 24px 24px;
+  background:rgba(8,43,92,.18);
+  position:relative;
+}
+.spec h3{font-size:13px;color:var(--magenta);margin-bottom:2px}
+.spec .use{font-size:12px;color:var(--bone-dim);margin-bottom:22px}
+.stage{display:flex;align-items:center;justify-content:center;min-height:120px;gap:18px;flex-wrap:wrap}
+
+/* ============================================================
+   01 · THE DIAMOND MARK
+   The core motif. Same silhouette family as the in-game
+   control diamond. Use as bullets, section markers, list
+   markers, active-nav indicators.
+   ============================================================ */
+.dia{width:14px;height:14px;transform:rotate(45deg);border:2px solid var(--magenta);display:inline-block}
+.dia--fill{background:var(--magenta);border-color:var(--magenta)}
+.dia--bone{border-color:var(--bone)}
+.dia--sm{width:8px;height:8px}
+.dia--lg{width:22px;height:22px}
+/* nested "control diamond" — echoes the 8-zone layout */
+.dia--core{position:relative}
+.dia--core::after{
+  content:"";position:absolute;inset:3px;background:var(--magenta);
+}
+
+/* ============================================================
+   02 · SECTION DIVIDER
+   A rule that breathes: line — diamond — line.
+   Replaces every generic <hr>. Encodes "a beat" between
+   sections, like a rest in the rhythm track.
+   ============================================================ */
+.rule-dia{display:flex;align-items:center;gap:14px;width:100%}
+.rule-dia::before,.rule-dia::after{content:"";height:2px;flex:1;background:var(--line)}
+.rule-dia .dia{flex:none}
+
+/* ============================================================
+   03 · HUD CORNER BRACKETS
+   Fighting-game select-screen framing. Put on game cards,
+   screenshots, hero art. Corners only — never a full border —
+   so it reads as "targeted", not "boxed".
+   On hover the corners tighten inward (locking on).
+   ============================================================ */
+.brk{position:relative;padding:18px;display:inline-block}
+.brk::before,.brk::after,
+.brk .b::before,.brk .b::after{
+  content:"";position:absolute;width:18px;height:18px;
+  border:0 solid var(--magenta);
+  transition:inset .15s ease;
+}
+.brk::before{top:0;left:0;border-top-width:2px;border-left-width:2px}
+.brk::after{top:0;right:0;border-top-width:2px;border-right-width:2px}
+.brk .b::before{bottom:0;left:0;border-bottom-width:2px;border-left-width:2px}
+.brk .b::after{bottom:0;right:0;border-bottom-width:2px;border-right-width:2px}
+.brk:hover::before{top:6px;left:6px}
+.brk:hover::after{top:6px;right:6px}
+.brk:hover .b::before{bottom:6px;left:6px}
+.brk:hover .b::after{bottom:6px;right:6px}
+.brk .demo-art{
+  width:180px;height:110px;background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--bone-dim);font-size:12px;border-radius:2px;
+}
+
+/* ============================================================
+   04 · BEAT BAR
+   A row of rhythm ticks with one accented "hit". Use under
+   headings, as a loading motif, or as the News post marker.
+   The accent tick pulses — the site keeps time.
+   ============================================================ */
+.beats{display:flex;gap:6px;align-items:flex-end;height:18px}
+.beats i{width:4px;height:10px;background:var(--line);display:block}
+.beats i:nth-child(4n+1){height:18px}
+.beats .hit{background:var(--magenta);height:18px;animation:beat 1.2s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}}
+@media (prefers-reduced-motion: reduce){.beats .hit{animation:none}}
+
+/* ============================================================
+   05 · PLUS FIELD (ambient background)
+   Sparse "+" registration marks — blueprint / CRT calibration
+   feel. Apply to hero or footer as a background layer.
+   Pure CSS gradient, zero assets, dirt cheap to render.
+   ============================================================ */
+.plusfield{
+  width:100%;min-height:120px;border-radius:2px;
+  background-image:
+    linear-gradient(var(--line) 0 2px, transparent 2px),
+    linear-gradient(90deg, var(--line) 0 2px, transparent 2px);
+  background-size:64px 64px,64px 64px;
+  background-position:31px 24px,24px 31px;
+  -webkit-mask-image:repeating-linear-gradient(0deg,#000 0 16px,transparent 16px 64px),
+                     repeating-linear-gradient(90deg,#000 0 16px,transparent 16px 64px);
+  -webkit-mask-composite:source-in;
+          mask-image:repeating-linear-gradient(0deg,#000 0 16px,transparent 16px 64px),
+                     repeating-linear-gradient(90deg,#000 0 16px,transparent 16px 64px);
+          mask-composite:intersect;
+}
+
+/* ============================================================
+   06 · STATUS CHIP
+   For "IN BETA", "COMING SOON", platform tags. Diamond bullet
+   inside; olive/tan variants are reserved for Heavy Bag.
+   ============================================================ */
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  border:2px solid var(--magenta);border-radius:999px;
+  padding:5px 14px;font:600 11px "Chakra Petch",sans-serif;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--bone);
+}
+.chip .dia{width:7px;height:7px;border-width:0;background:var(--magenta)}
+.chip--olive{border-color:var(--olive)}
+.chip--olive .dia{background:var(--tan)}
+
+/* ============================================================
+   07 · PIXEL HEARTS
+   Straight from Heavy Bag's 5-heart revive system.
+   Use sparingly: footer sign-off, 404 page, easter eggs.
+   Drawn with box-shadow pixels — crunchy edges guaranteed.
+   ============================================================ */
+.heart{
+  width:4px;height:4px;position:relative;display:inline-block;
+  margin:8px 14px 8px 10px;
+  box-shadow:
+    4px 0 var(--magenta), 8px 0 var(--magenta), 16px 0 var(--magenta), 20px 0 var(--magenta),
+    0 4px var(--magenta), 4px 4px var(--magenta), 8px 4px var(--magenta), 12px 4px var(--magenta), 16px 4px var(--magenta), 20px 4px var(--magenta), 24px 4px var(--magenta),
+    0 8px var(--magenta), 4px 8px var(--magenta), 8px 8px var(--magenta), 12px 8px var(--magenta), 16px 8px var(--magenta), 20px 8px var(--magenta), 24px 8px var(--magenta),
+    4px 12px var(--magenta), 8px 12px var(--magenta), 16px 12px var(--magenta), 20px 12px var(--magenta),
+    8px 16px var(--magenta), 12px 16px var(--magenta), 16px 16px var(--magenta),
+    12px 20px var(--magenta);
+}
+.heart--empty{filter:grayscale(1) brightness(.45)}
+
+/* ============================================================
+   08 · SCANLINE PANEL (very subtle)
+   CRT whisper for hero/footer only. Opacity kept low so it
+   reads as texture, not gimmick. Never put text-heavy content
+   on top of a strong scanline.
+   ============================================================ */
+.scan{
+  width:100%;min-height:110px;border-radius:2px;background:var(--navy);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.scan::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 5px);
+}
+.scan span{font-family:"Chakra Petch";letter-spacing:.14em;font-size:13px;text-transform:uppercase}
+
+/* ============================================================
+   09 · BUTTON, BRACKET-HOVER
+   The house button: quiet by default; on hover, HUD corners
+   snap in around it. One accent, no gradients, fast.
+   ============================================================ */
+.btn{
+  position:relative;display:inline-block;
+  font:700 13px "Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--bone);text-decoration:none;background:transparent;
+  border:2px solid var(--bone);border-radius:4px;
+  padding:12px 26px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+.btn:hover,.btn:focus-visible{color:var(--magenta);border-color:var(--magenta);outline:none}
+.btn::before,.btn::after{
+  content:"";position:absolute;width:10px;height:10px;opacity:0;transition:opacity .15s;
+  border:0 solid var(--magenta);
+}
+.btn::before{top:-8px;left:-8px;border-top-width:2px;border-left-width:2px}
+.btn::after{bottom:-8px;right:-8px;border-bottom-width:2px;border-right-width:2px}
+.btn:hover::before,.btn:hover::after,
+.btn:focus-visible::before,.btn:focus-visible::after{opacity:1}
+.btn--solid{background:var(--magenta);border-color:var(--magenta);color:var(--black)}
+.btn--solid:hover{color:var(--black);filter:brightness(1.1)}
+
+/* ============================================================
+   11 · RIBBON BANNER
+   Championship-banner ribbon: navy body, magenta forked tails
+   on both sides, darker fold triangles where they tuck behind.
+   Use for section titles ("Our Games"), the featured-game
+   callout, or a launch announcement. Pure CSS, no images.
+   ============================================================ */
+.ribbon{
+  position:relative;display:inline-block;
+  background:var(--navy);color:var(--bone);
+  font:700 14px "Chakra Petch",sans-serif;text-transform:uppercase;letter-spacing:.14em;
+  padding:12px 34px;border:2px solid rgba(242,239,232,.22);border-left:0;border-right:0;
+  line-height:1;
+}
+.ribbon::before,.ribbon::after{
+  content:"";position:absolute;top:8px;width:44px;height:100%;
+  background:var(--magenta);z-index:-1;
+}
+.ribbon::before{
+  left:-32px;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 100%,14px 50%);
+}
+.ribbon::after{
+  right:-32px;
+  clip-path:polygon(0 0,100% 0,calc(100% - 14px) 50%,100% 100%,0 100%);
+}
+/* fold triangles: where the tail tucks behind the body */
+.ribbon i{position:absolute;top:100%;width:0;height:0;border-style:solid}
+.ribbon i:first-child{left:0;border-width:8px 0 0 10px;border-color:#8f1740 transparent transparent transparent;border-left-color:transparent;border-top-color:#8f1740}
+.ribbon i:first-child{border-width:8px 10px 0 0;border-color:#8f1740 transparent transparent transparent}
+.ribbon i:last-child{right:0;border-width:8px 0 0 10px;border-color:#8f1740 transparent transparent transparent}
+.ribbon--sm{font-size:11px;padding:8px 24px}
+.ribbon--sm::before,.ribbon--sm::after{width:34px;top:6px}
+.ribbon--sm::before{left:-24px}
+.ribbon--sm::after{right:-24px}
+
+/* ============================================================
+   10 · EYEBROW LABEL
+   Small heading kicker: diamond + tracking-wide label.
+   Use above every H2 for consistent section rhythm.
+   ============================================================ */
+.eyebrow{display:inline-flex;align-items:center;gap:10px;
+  font:600 11px "Chakra Petch",sans-serif;text-transform:uppercase;
+  letter-spacing:.22em;color:var(--bone-dim)}
+.eyebrow .dia{width:7px;height:7px;border-width:0;background:var(--magenta)}
+</style>
+</head>
+<body>
+
+<h1>Fhusster — Ornament Kit</h1>
+<p class="sub">Ten decorative components in the house palette. The whole language derives from one shape — the diamond that drives Heavy Bag's controls — plus fighting-game HUD framing. Everything is pure CSS/SVG: no images, trivial to lift into the site stylesheet.</p>
+
+<div class="kit">
+
+  <div class="spec">
+    <h3>01 · Diamond mark</h3>
+    <p class="use">Bullets, active-nav indicator, list markers. The core motif.</p>
+    <div class="stage">
+      <span class="dia dia--sm"></span>
+      <span class="dia"></span>
+      <span class="dia dia--fill"></span>
+      <span class="dia dia--lg dia--core"></span>
+      <span class="dia dia--bone"></span>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>02 · Section divider</h3>
+    <p class="use">Replaces every plain &lt;hr&gt;. A beat between sections.</p>
+    <div class="stage" style="flex-direction:column">
+      <div class="rule-dia"><span class="dia dia--sm dia--fill"></span></div>
+      <div class="rule-dia"><span class="dia"></span></div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>03 · HUD corner brackets</h3>
+    <p class="use">Game cards, screenshots, hero art. Hover: brackets lock on.</p>
+    <div class="stage">
+      <div class="brk"><span class="b"></span><div class="demo-art">key art</div></div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>04 · Beat bar</h3>
+    <p class="use">Under headings, news-post marker, loading motif. The site keeps time.</p>
+    <div class="stage">
+      <div class="beats">
+        <i></i><i></i><i></i><i></i><i class="hit"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>05 · Plus field</h3>
+    <p class="use">Ambient background layer for hero/footer. Registration-mark texture.</p>
+    <div class="stage"><div class="plusfield"></div></div>
+  </div>
+
+  <div class="spec">
+    <h3>06 · Status chips</h3>
+    <p class="use">Badges on game cards. Olive/tan variant reserved for Heavy Bag.</p>
+    <div class="stage">
+      <span class="chip"><span class="dia"></span>In Beta</span>
+      <span class="chip chip--olive"><span class="dia"></span>Heavy Bag</span>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>07 · Pixel hearts</h3>
+    <p class="use">From the in-game revive system. Footer sign-off, 404, easter eggs.</p>
+    <div class="stage">
+      <span class="heart"></span><span class="heart"></span><span class="heart"></span>
+      <span class="heart heart--empty"></span><span class="heart heart--empty"></span>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>08 · Scanline panel</h3>
+    <p class="use">Hero/footer texture only. Kept faint on purpose.</p>
+    <div class="stage"><div class="scan"><span>Precise · Polished · Arcade Rooted</span></div></div>
+  </div>
+
+  <div class="spec">
+    <h3>09 · House buttons</h3>
+    <p class="use">Hover snaps HUD corners in. One accent, no gradients.</p>
+    <div class="stage">
+      <a class="btn" href="#">Our Games</a>
+      <a class="btn btn--solid" href="#">Join the Beta</a>
+    </div>
+  </div>
+
+  <div class="spec" style="overflow:hidden">
+    <h3>11 · Ribbon banner</h3>
+    <p class="use">Section titles, featured-game callout, launch announcements. Navy body, magenta tails both sides.</p>
+    <div class="stage" style="flex-direction:column;gap:26px;padding:10px 0">
+      <span class="ribbon"><i></i>Our Games<i></i></span>
+      <span class="ribbon ribbon--sm"><i></i>Now in Beta<i></i></span>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h3>10 · Eyebrow label</h3>
+    <p class="use">Kicker above every H2 for consistent section rhythm.</p>
+    <div class="stage" style="flex-direction:column;gap:8px">
+      <span class="eyebrow"><span class="dia"></span>About the studio</span>
+      <span class="eyebrow"><span class="dia"></span>Latest news</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
