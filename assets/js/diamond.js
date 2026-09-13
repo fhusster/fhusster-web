@@ -1,6 +1,8 @@
 /* Heavy Bag: the diamond, built and animated the way the in-game Controls
    page does it. Geometry is the game's (diamond.json: S=260, gap 12,
-   triangle height 140, stroke 6 on a 1160x760 canvas centred at 580,380);
+   triangle height 140, stroke 6) on an 1800x760 canvas centred at 900,380 —
+   the game's screen is about 2.2 diamonds wide, and that room is what keeps
+   the callout labels clear of the slider and the Line;
    the choreography follows ControlsPageNode: square grows (475 ms) →
    rotates 45° (375 ms) → fractures into the 8 zones that slide from their
    packed spots to their final ones (400 ms); slider and Line fade in over
@@ -11,7 +13,8 @@
   var host = document.getElementById("hb-diamond");
   if (!host) return;
   var NS = "http://www.w3.org/2000/svg";
-  var CX = 580, CY = 380, S = 260, G = 12, H = 140, STROKE = 6;
+  var W = 1800, OFF = 320;
+  var CX = 580 + OFF, CY = 380, S = 260, G = 12, H = 140, STROKE = 6;
   var hS = S / 2, hG = G / 2;
   var cutX = (hS + G) + H * (1 - G / S);
   var COLORS = { head: "#FF6B6B", body: "#FFD93D", legs: "#4D6BFF" };
@@ -29,19 +32,19 @@
     leftTriLower:  { poly: [[-(hS + G), -hS], [-(hS + G), -hG], [-cutX, -hG]], pack: [G, G / 2] }
   };
   var CALLOUTS = [
-    [[580, 191.33], [580, 74]], [[580, 568.67], [580, 686]],
-    [[766.51, 332.67], [900, 332.67]], [[766.51, 427.33], [900, 427.33]],
-    [[393.49, 332.67], [260, 332.67]], [[393.49, 427.33], [260, 427.33]]
+    [[900, 191.33], [900, 74]], [[900, 568.67], [900, 686]],
+    [[1086.51, 332.67], [1220, 332.67]], [[1086.51, 427.33], [1220, 427.33]],
+    [[713.49, 332.67], [580, 332.67]], [[713.49, 427.33], [580, 427.33]]
   ];
   var LABELS = [
-    ["LEAD UPPERCUT", 580, 26, 1, "middle"], ["Swipe up ANYWHERE", 580, 50, 0, "middle"],
-    ["REAR UPPERCUT", 580, 728, 1, "middle"], ["Swipe down ANYWHERE", 580, 752, 0, "middle"],
-    ["LEAD HOOK", 928, 328, 1, "start"], ["Swipe right ANYWHERE above line", 928, 354, 0, "start"],
-    ["LEAD KICK", 928, 422, 1, "start"], ["Swipe right ANYWHERE below line", 928, 448, 0, "start"],
-    ["REAR HOOK", 232, 328, 1, "end"], ["Swipe left ANYWHERE above line", 232, 354, 0, "end"],
-    ["REAR KICK", 232, 422, 1, "end"], ["Swipe left ANYWHERE below line", 232, 448, 0, "end"],
-    ["JAB", 580, 296, 1, "middle"], ["Tap ANYWHERE", 580, 322, 0, "middle"], ["above line", 580, 346, 0, "middle"],
-    ["CROSS", 580, 432, 1, "middle"], ["Tap ANYWHERE", 580, 458, 0, "middle"], ["below line", 580, 482, 0, "middle"]
+    ["LEAD UPPERCUT", 900, 26, 1, "middle"], ["Swipe up ANYWHERE", 900, 50, 0, "middle"],
+    ["REAR UPPERCUT", 900, 728, 1, "middle"], ["Swipe down ANYWHERE", 900, 752, 0, "middle"],
+    ["LEAD HOOK", 1248, 328, 1, "start"], ["Swipe right ANYWHERE above line", 1248, 354, 0, "start"],
+    ["LEAD KICK", 1248, 422, 1, "start"], ["Swipe right ANYWHERE below line", 1248, 448, 0, "start"],
+    ["REAR HOOK", 552, 328, 1, "end"], ["Swipe left ANYWHERE above line", 552, 354, 0, "end"],
+    ["REAR KICK", 552, 422, 1, "end"], ["Swipe left ANYWHERE below line", 552, 448, 0, "end"],
+    ["JAB", 900, 296, 1, "middle"], ["Tap ANYWHERE", 900, 322, 0, "middle"], ["above line", 900, 346, 0, "middle"],
+    ["CROSS", 900, 432, 1, "middle"], ["Tap ANYWHERE", 900, 458, 0, "middle"], ["below line", 900, 482, 0, "middle"]
   ];
 
   function el(name, attrs, parent) {
@@ -61,24 +64,23 @@
   function build() {
     host.innerHTML = "";
     svg = document.createElementNS(NS, "svg");
-    svg.setAttribute("viewBox", "0 0 1160 760");
+    svg.setAttribute("viewBox", "0 0 " + W + " 760");
     svg.setAttribute("role", "img");
     svg.setAttribute("aria-label", "Heavy Bag's control diamond: eight cue zones, the Head/Body/Legs slider and the Line, each labelled with its gesture");
     host.appendChild(svg);
-    el("rect", { x: 0, y: 0, width: 1160, height: 760, fill: "#000" });
 
     // --- Slider (left) and the Line (right), fading in over the assembly.
     var chrome = el("g", {});
-    var sx = 1160 * 0.07, trackH = 760 * 0.41;
-    el("rect", { x: sx - 1.5, y: CY - trackH / 2, width: 3, height: trackH, fill: "#fff", opacity: 0.38 }, chrome);
+    var sx = W * 0.07, trackH = 760 * 0.41;
+    el("rect", { x: sx - 1.5, y: CY - trackH / 2, width: 3, height: trackH, fill: "#121212", opacity: 0.35 }, chrome);
     [["Head", COLORS.head, CY - trackH / 2], ["Body", COLORS.body, CY], ["Leg", COLORS.legs, CY + trackH / 2]].forEach(function (r) {
-      el("circle", { cx: sx, cy: r[2], r: 10, fill: r[1], stroke: "rgba(0,0,0,.55)", "stroke-width": 2 }, chrome);
-      var t = el("text", { x: sx + 20, y: r[2], fill: "#fff", "font-size": 13, "font-weight": 700,
+      el("circle", { cx: sx, cy: r[2], r: 10, fill: r[1], stroke: "#121212", "stroke-width": 2 }, chrome);
+      var t = el("text", { x: sx + 20, y: r[2], fill: "#121212", "font-size": 16, "font-weight": 700,
         "dominant-baseline": "middle", "font-family": "Helvetica, Arial, sans-serif" }, chrome);
       t.textContent = r[0];
     });
-    el("rect", { x: 1160 - 1160 * 0.09, y: CY - 1.5, width: 1160 * 0.09, height: 3, fill: "#fff", opacity: 0.6 }, chrome);
-    var lineLabel = el("text", { x: 1160 - 8, y: CY - 8, fill: "#fff", "font-size": 12, "font-weight": 700,
+    el("rect", { x: W - W * 0.09, y: CY - 1.5, width: W * 0.09, height: 3, fill: "#121212", opacity: 0.6 }, chrome);
+    var lineLabel = el("text", { x: W - 8, y: CY - 8, fill: "#121212", "font-size": 15, "font-weight": 700,
       "text-anchor": "end", "font-family": "Helvetica, Arial, sans-serif" }, chrome);
     lineLabel.textContent = "The Line";
     fadeIn(chrome, 0, 1600);
@@ -86,7 +88,7 @@
     // --- The intro square: grows, rotates 45°, then hands over to the zones.
     var side = (hS + H) * Math.SQRT2;
     var square = el("rect", { x: CX - side / 2, y: CY - side / 2, width: side, height: side,
-      fill: "none", stroke: "#fff", "stroke-width": STROKE, "stroke-linejoin": "round" });
+      fill: "none", stroke: "#121212", "stroke-width": STROKE, "stroke-linejoin": "round" });
     if (!reduce) {
       square.style.transformOrigin = CX + "px " + CY + "px";
       square.animate([{ transform: "scale(0.001) rotate(0deg)" }, { transform: "scale(1) rotate(0deg)" }],
@@ -102,7 +104,7 @@
     var zones = el("g", {});
     Object.keys(ZONES).forEach(function (key) {
       var z = ZONES[key];
-      var poly = el("polygon", { points: z.poly.map(toSvg).join(" "), fill: "none", stroke: "#fff",
+      var poly = el("polygon", { points: z.poly.map(toSvg).join(" "), fill: "none", stroke: "#121212",
         "stroke-width": STROKE, "stroke-linejoin": "round" }, zones);
       if (reduce) return;
       poly.setAttribute("opacity", "0");
@@ -118,9 +120,9 @@
       var dot = c[0], tip = c[1];
       var dx = tip[0] - dot[0], dy = tip[1] - dot[1], len = Math.hypot(dx, dy);
       var ang = Math.atan2(dy, dx) * 180 / Math.PI;
-      var d = el("circle", { cx: dot[0], cy: dot[1], r: 6, fill: "#fff" });
+      var d = el("circle", { cx: dot[0], cy: dot[1], r: 6, fill: "#121212" });
       fadeIn(d, 1600, 260);
-      var bar = el("rect", { x: 0, y: -1.5, width: len, height: 3, fill: "#fff",
+      var bar = el("rect", { x: 0, y: -1.5, width: len, height: 3, fill: "#121212",
         transform: "translate(" + dot[0] + " " + dot[1] + ") rotate(" + ang + ")" });
       if (!reduce) {
         bar.setAttribute("opacity", "0");
@@ -129,13 +131,13 @@
         bar.animate([{ opacity: 0, transform: "scaleX(0.001)" }, { opacity: 1, transform: "scaleX(0.001)", offset: 0.1 }, { opacity: 1, transform: "scaleX(1)" }],
           { delay: 1600, duration: 500, fill: "forwards", easing: "ease-out" });
       }
-      var head = el("polygon", { points: "0,8 0,-8 16,0", fill: "#fff",
+      var head = el("polygon", { points: "0,8 0,-8 16,0", fill: "#121212",
         transform: "translate(" + tip[0] + " " + tip[1] + ") rotate(" + ang + ")" });
       fadeIn(head, 2110, 260);
     });
     LABELS.forEach(function (l) {
-      var t = el("text", { x: l[1], y: l[2], fill: "#fff", "text-anchor": l[4],
-        "font-size": l[3] ? 24 : 22, "font-weight": l[3] ? 700 : 400,
+      var t = el("text", { x: l[1], y: l[2], fill: "#121212", "text-anchor": l[4],
+        "font-size": l[3] ? 27 : 23, "font-weight": l[3] ? 700 : 400,
         "font-family": "Helvetica, Arial, sans-serif" });
       t.textContent = l[0];
       fadeIn(t, 1980, 580);

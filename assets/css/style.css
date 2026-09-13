@@ -616,10 +616,9 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .logo:focus-visible .hletter{animation:none;opacity:1;transform:none}
 }
 
-/* Heavy Bag: the live control diamond (assets/js/diamond.js) */
-.hb-diamond-panel{margin-top:1.6rem;padding:.9rem;background:var(--olive);border:2px solid var(--tan);border-radius:var(--radius)}
-.hb-diamond-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:calc(var(--radius) - 4px);background:#000}
-.hb-diamond{min-width:720px;aspect-ratio:1160/760}
+/* Heavy Bag: the live control diamond (assets/js/diamond.js). Drawn in
+   ink on the page itself — no panel — small, between the two paragraphs. */
+.hb-diamond-figure{margin:1.6rem auto 0;max-width:960px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hb-diamond{min-width:760px;aspect-ratio:1800/760}
 .hb-diamond svg{display:block;width:100%;height:auto}
-.hb-diamond-actions{margin-top:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
-.hb-diamond-note{color:var(--ink-dim);font-size:.92rem;max-width:36rem}
+.hb-diamond-actions{margin:1rem 0 1.6rem;text-align:center}
