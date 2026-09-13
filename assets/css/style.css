@@ -622,3 +622,5 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .hb-diamond{min-width:760px;aspect-ratio:1800/760}
 .hb-diamond svg{display:block;width:100%;height:auto}
 .hb-diamond-actions{margin:1rem 0 1.6rem;text-align:center}
+/* the section's copy sits in the same centred column The Game uses */
+.hb-copy{margin-left:auto;margin-right:auto}

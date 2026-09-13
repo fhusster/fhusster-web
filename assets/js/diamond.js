@@ -71,7 +71,7 @@
 
     // --- Slider (left) and the Line (right), fading in over the assembly.
     var chrome = el("g", {});
-    var sx = W * 0.07, trackH = 760 * 0.41;
+    var sx = W * 0.05, trackH = 760 * 0.41;
     el("rect", { x: sx - 1.5, y: CY - trackH / 2, width: 3, height: trackH, fill: "#121212", opacity: 0.35 }, chrome);
     [["Head", COLORS.head, CY - trackH / 2], ["Body", COLORS.body, CY], ["Leg", COLORS.legs, CY + trackH / 2]].forEach(function (r) {
       el("circle", { cx: sx, cy: r[2], r: 10, fill: r[1], stroke: "#121212", "stroke-width": 2 }, chrome);
@@ -79,7 +79,7 @@
         "dominant-baseline": "middle", "font-family": "Helvetica, Arial, sans-serif" }, chrome);
       t.textContent = r[0];
     });
-    el("rect", { x: W - W * 0.09, y: CY - 1.5, width: W * 0.09, height: 3, fill: "#121212", opacity: 0.6 }, chrome);
+    el("rect", { x: W - W * 0.07, y: CY - 1.5, width: W * 0.07, height: 3, fill: "#121212", opacity: 0.6 }, chrome);
     var lineLabel = el("text", { x: W - 8, y: CY - 8, fill: "#121212", "font-size": 15, "font-weight": 700,
       "text-anchor": "end", "font-family": "Helvetica, Arial, sans-serif" }, chrome);
     lineLabel.textContent = "The Line";
@@ -122,12 +122,14 @@
       var ang = Math.atan2(dy, dx) * 180 / Math.PI;
       var d = el("circle", { cx: dot[0], cy: dot[1], r: 6, fill: "#121212" });
       fadeIn(d, 1600, 260);
-      var bar = el("rect", { x: 0, y: -1.5, width: len, height: 3, fill: "#121212",
-        transform: "translate(" + dot[0] + " " + dot[1] + ") rotate(" + ang + ")" });
+      // The leader grows out of the dot: the group carries the position and
+      // angle as an SVG attribute, the bar inside is what animates (a CSS
+      // transform on the same element would replace the attribute).
+      var barGroup = el("g", { transform: "translate(" + dot[0] + " " + dot[1] + ") rotate(" + ang + ")" });
+      var bar = el("rect", { x: 0, y: -1.5, width: len, height: 3, fill: "#121212" }, barGroup);
       if (!reduce) {
         bar.setAttribute("opacity", "0");
         bar.style.transformOrigin = "0px 0px";
-        bar.style.transformBox = "fill-box";
         bar.animate([{ opacity: 0, transform: "scaleX(0.001)" }, { opacity: 1, transform: "scaleX(0.001)", offset: 0.1 }, { opacity: 1, transform: "scaleX(1)" }],
           { delay: 1600, duration: 500, fill: "forwards", easing: "ease-out" });
       }
