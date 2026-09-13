@@ -100,8 +100,28 @@
     <section class="section" aria-labelledby="hb-about-heading">
       <div class="wrap prose">
         <h2 id="hb-about-heading"><span class="ribbon ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">The Game</span></span></h2>
-        <p>Cues light up on a diamond; you answer with the right strike at the right moment. The screen is split by a line you can drag: tap above it for a jab, below it for a cross, swipe across for hooks and roundhouses, swipe up or down for uppercuts, and switch between Head, Body and Legs with the toggle under your other thumb, which stays put on whichever target you slide it to. Keep your finger down and change direction to chain a combo without lifting. Twenty-two strikes, and the gesture set is tuned until it feels like second nature.</p>
-        <p>Timing is everything. Perfect, Good, Normal, or a miss that breaks your streak and costs a heart. No stamina bars, no loot, no filler. Just you, the rhythm, and a heavy bag that keeps score.</p>
+        <p>Cues light up on a diamond; you answer with the right strike at the right moment. The screen is split by a line you can drag: tap above it for a jab, below it for a cross, swipe across for hooks and roundhouses, swipe up or down for uppercuts, and switch between Head, Body and Legs with the toggle under your other thumb. A fighter keeps both hands up for the whole fight; here you keep both thumbs on the screen, one striking, one resting on the toggle. Keep your finger down and change direction to chain a combo without lifting. Twenty-two strikes, and the gesture set is tuned until it feels like second nature.</p>
+        <p>Timing is everything. Perfect, Good, Normal, or a miss that breaks your streak and costs a heart. Every clean string pays: tokens, experience, rating, a name on the board. Once the rhythm is yours the bag stops being a target. It becomes the fight.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="hb-diamond-heading">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="hb-diamond-heading"><span class="ribbon ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">The Diamond</span></span></h2>
+        </div>
+        <div class="prose">
+          <p>Every cue in Heavy Bag lands on one diamond. Its eight zones are the eight gestures: the two rectangles in the middle are your taps, the spikes above and below are the uppercuts, and the four side wedges are hooks above the Line and kicks below it. A zone lights up in a colour, red for head, yellow for body, blue for legs, and that colour tells your other thumb where to slide the Head / Body / Legs toggle. Land the matching strike while the shape is lit and it flashes green. Chains light one zone after another; a double lights two at once for a single flowing touch.</p>
+        </div>
+        <div class="hb-diamond-panel">
+          <div class="hb-diamond-scroll">
+            <div id="hb-diamond" class="hb-diamond"></div>
+          </div>
+        </div>
+        <p class="hb-diamond-actions">
+          <button id="hb-diamond-replay" class="btn btn-hb" type="button">Replay the animation</button>
+          <span class="hb-diamond-note">This is the in-game Controls page, drawn live: the diamond assembles exactly as it does when a level starts.</span>
+        </p>
       </div>
     </section>
 
@@ -220,5 +240,6 @@
 
 <script src="../assets/js/site.js" defer></script>
 <script src="../assets/js/ornaments.js" defer></script>
+<script src="../assets/js/diamond.js" defer></script>
 </body>
 </html>
