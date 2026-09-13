@@ -9,8 +9,7 @@
 <meta property="og:site_name" content="Fhusster">
 <meta property="og:title" content="Fhusster | Independent Game Studio">
 <meta property="og:description" content="Precise. Polished. Arcade rooted. An independent game studio in Ottawa, Canada.">
-<!-- TODO: make og:image absolute once the production domain is set -->
-<meta property="og:image" content="/assets/img/emblem.png">
+<meta property="og:image" content="https://fhusster.com/assets/img/emblem.png">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="apple-touch-icon" href="assets/img/emblem.png">
@@ -97,8 +96,10 @@
         <div class="card featured-card game-card--hb">
           <div class="featured-media">
             <div class="brk brk--tan"><span class="b"></span>
-              <!-- TODO: replace placeholder src with real key art, e.g. assets/img/heavy-bag/key-art.png -->
-              <img class="art" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20160%2090'%3E%3Crect%20width='160'%20height='90'%20fill='%236E7450'/%3E%3Ctext%20x='80'%20y='48'%20text-anchor='middle'%20font-family='monospace'%20font-size='8'%20letter-spacing='3'%20fill='%23B99C7A'%3EKEY%20ART%3C/text%3E%3C/svg%3E" alt="Heavy Bag key art, coming soon" width="160" height="90">
+              <picture>
+                <source srcset="assets/img/heavy-bag/key-art.webp" type="image/webp">
+                <img class="art" src="assets/img/heavy-bag/key-art.jpg" alt="Heavy Bag main menu: an arcade cabinet with the game's neon menu on screen" width="1280" height="720" loading="lazy" decoding="async">
+              </picture>
             </div>
           </div>
           <div class="featured-body">

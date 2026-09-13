@@ -314,7 +314,14 @@ a.card-link:hover{text-decoration:none}
 .shots-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
 .shot{padding:.7rem;background:var(--olive);border:2px solid var(--line);border-radius:var(--radius);transition:border-color .15s}
 .shot:hover{border-color:var(--tan)}
-@media (max-width:640px){.shots-row{grid-template-columns:1fr;max-width:320px}}
+@media (max-width:900px){.shots-row{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.shots-row{grid-template-columns:1fr}}
+.hb-video{aspect-ratio:2622/1206;background:#000;object-fit:cover}
+.hb-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.hb-mode{padding:1.4rem 1.5rem}
+.hb-mode h3{color:var(--olive);margin-bottom:.5rem}
+.hb-mode p{color:var(--ink-dim)}
+@media (max-width:640px){.hb-modes{grid-template-columns:1fr}}
 .hb-links{margin-top:.5rem;color:var(--ink-dim)}
 .hb-links a{margin-right:1.2rem}
 

@@ -88,3 +88,28 @@
     }
   });
 })();
+
+
+/* Lazy hero video: the <video> ships with only a poster; the source is
+   attached when it nears the viewport, then it autoplays muted and loops.
+   Under prefers-reduced-motion the poster stays and nothing downloads. */
+(function () {
+  var vids = document.querySelectorAll("video[data-src]");
+  if (!vids.length) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  function arm(v) {
+    if (v.dataset.armed) return;
+    v.dataset.armed = "1";
+    v.src = v.dataset.src;
+    v.load();
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+  if (!("IntersectionObserver" in window)) { vids.forEach(arm); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { arm(e.target); io.unobserve(e.target); }
+    });
+  }, { rootMargin: "200px 0px" });
+  vids.forEach(function (v) { io.observe(v); });
+})();

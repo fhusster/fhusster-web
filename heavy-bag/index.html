@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heavy Bag | Kickboxing / Muay Thai Rhythm Game | Fhusster</title>
-<meta name="description" content="Heavy Bag is a kickboxing / Muay Thai rhythm game for iOS by Fhusster. 16-bit pixel art, gesture-based striking, now in TestFlight beta.">
+<meta name="description" content="Heavy Bag is a kickboxing / Muay Thai rhythm game for iOS by Fhusster. Pixel-art gesture striking with career, Open Mat, and online 1v1. Now in TestFlight beta.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fhusster">
 <meta property="og:title" content="Heavy Bag | Kickboxing / Muay Thai Rhythm Game">
-<meta property="og:description" content="Strike to the beat. 16-bit pixel art, gesture-based striking, iOS. Now in TestFlight beta.">
-<!-- TODO: make og:image absolute once the production domain is set -->
-<meta property="og:image" content="/assets/img/emblem.png">
+<meta property="og:description" content="Strike to the beat. Pixel-art gesture striking for iPhone: career, Open Mat, and online 1v1. Now in TestFlight beta.">
+<meta property="og:image" content="https://fhusster.com/assets/img/heavy-bag/key-art.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 <link rel="apple-touch-icon" href="../assets/img/emblem.png">
@@ -67,7 +68,7 @@
           <div>
             <span class="kicker">Kickboxing / Muay Thai rhythm game</span>
             <h1>Heavy Bag</h1>
-            <p class="lede">Strike to the beat. Heavy Bag turns kickboxing and Muay Thai training into a gesture-driven rhythm game. Punches, elbows, knees, and kicks land with a swipe, all in crunchy 16-bit pixel art. Built for iOS.</p>
+            <p class="lede">Strike to the beat. Heavy Bag turns a kickboxing session into a gesture-driven rhythm game: jabs, crosses, hooks, uppercuts, roundhouses and leg kicks, every one a tap or a swipe, all in crunchy pixel art. Built for iPhone.</p>
             <div class="hb-hero-actions">
               <!-- TODO: add the public TestFlight invite link -->
               <a class="btn btn-hb" href="#">Join the TestFlight Beta</a>
@@ -81,8 +82,14 @@
           </div>
           <div class="hb-hero-media">
             <div class="brk brk--tan"><span class="b"></span>
-              <!-- TODO: replace placeholder src with real hero art, e.g. ../assets/img/heavy-bag/hero.png -->
-              <img class="art" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20160%2090'%3E%3Crect%20width='160'%20height='90'%20fill='%236E7450'/%3E%3Ctext%20x='80'%20y='48'%20text-anchor='middle'%20font-family='monospace'%20font-size='8'%20letter-spacing='3'%20fill='%23B99C7A'%3EHERO%20ART%3C/text%3E%3C/svg%3E" alt="Heavy Bag hero art, coming soon" width="160" height="90">
+              <!-- Montage: muted, looped, lazy-loaded by site.js when it scrolls
+                   into view; the poster shows until then and under
+                   prefers-reduced-motion. -->
+              <video class="art hb-video" muted playsinline loop preload="none"
+                     poster="../assets/img/heavy-bag/montage-poster.jpg"
+                     data-src="../assets/video/heavy-bag-montage.mp4"
+                     width="1280" height="588"
+                     aria-label="Heavy Bag gameplay montage"></video>
             </div>
           </div>
         </div>
@@ -93,8 +100,34 @@
     <section class="section" aria-labelledby="hb-about-heading">
       <div class="wrap prose">
         <h2 id="hb-about-heading"><span class="ribbon ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">The Game</span></span></h2>
-        <p>Every track is a training session. Strikes scroll in on the beat, and your job is to land the right technique at the right moment: jab, cross, elbow, teep, roundhouse. The gesture controls are tuned until they feel like second nature. Miss the timing and the bag lets you know.</p>
-        <p>No stamina meters, no loot, no filler. Just you, the rhythm, and a heavy bag that keeps score.</p>
+        <p>Cues light up on a diamond; you answer with the right strike at the right moment. The screen is split by a line you can drag: tap above it for a jab, below it for a cross, swipe across for hooks and roundhouses, swipe up or down for uppercuts, and flick the Head / Body / Legs toggle to pick your target. Keep your finger down and change direction to chain a combo without lifting. Twenty-two strikes, and the gesture set is tuned until it feels like second nature.</p>
+        <p>Timing is everything. Perfect, Good, Normal, or a miss that breaks your streak and costs a heart. No stamina bars, no loot, no filler. Just you, the rhythm, and a heavy bag that keeps score.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="hb-modes-heading">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="hb-modes-heading"><span class="ribbon ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Ways to Fight</span></span></h2>
+        </div>
+        <ul class="hb-modes" style="list-style:none">
+          <li class="card hb-mode">
+            <h3>Career</h3>
+            <p>Five levels, from Fundamentals to Apex. Each one is a class with your Sensei, a drill to groove it, and a challenge that has to be beaten to open the next. Stars pay out tokens.</p>
+          </li>
+          <li class="card hb-mode">
+            <h3>Open Mat</h3>
+            <p>Two minutes, five hearts, one score. Pick from fifteen gyms around the world and chase your personal best.</p>
+          </li>
+          <li class="card hb-mode">
+            <h3>Compete online</h3>
+            <p>Sparring puts you in a live 1v1 on the same cue stream as your opponent. Fight Night and Undisputed are knockout tournaments. Call Out a friend by name. Wins move your rating and your fight points on the Hall of Fame.</p>
+          </li>
+          <li class="card hb-mode">
+            <h3>Locker Room</h3>
+            <p>Thirty avatars, four skin tones, and glove and shorts colours that retint your fighter live. Earn tokens by playing, or watch a rewarded ad.</p>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -104,10 +137,42 @@
           <h2 id="hb-shots-heading"><span class="ribbon ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Screenshots</span></span></h2>
         </div>
         <div class="shots-row">
-          <!-- TODO: replace placeholder srcs with real screenshots, e.g. ../assets/img/heavy-bag/shot-1.png -->
-          <div class="shot"><div class="brk brk--tan"><span class="b"></span><img class="art" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2090%20160'%3E%3Crect%20width='90'%20height='160'%20fill='%236E7450'/%3E%3Ctext%20x='45'%20y='82'%20text-anchor='middle'%20font-family='monospace'%20font-size='7'%20letter-spacing='2'%20fill='%23B99C7A'%3ESCREENSHOT%3C/text%3E%3C/svg%3E" alt="Heavy Bag screenshot, coming soon" width="90" height="160"></div></div>
-          <div class="shot"><div class="brk brk--tan"><span class="b"></span><img class="art" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2090%20160'%3E%3Crect%20width='90'%20height='160'%20fill='%236E7450'/%3E%3Ctext%20x='45'%20y='82'%20text-anchor='middle'%20font-family='monospace'%20font-size='7'%20letter-spacing='2'%20fill='%23B99C7A'%3ESCREENSHOT%3C/text%3E%3C/svg%3E" alt="Heavy Bag screenshot, coming soon" width="90" height="160"></div></div>
-          <div class="shot"><div class="brk brk--tan"><span class="b"></span><img class="art" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2090%20160'%3E%3Crect%20width='90'%20height='160'%20fill='%236E7450'/%3E%3Ctext%20x='45'%20y='82'%20text-anchor='middle'%20font-family='monospace'%20font-size='7'%20letter-spacing='2'%20fill='%23B99C7A'%3ESCREENSHOT%3C/text%3E%3C/svg%3E" alt="Heavy Bag screenshot, coming soon" width="90" height="160"></div></div>
+          <div class="shot"><div class="brk brk--tan"><span class="b"></span>
+            <picture>
+              <source srcset="../assets/img/heavy-bag/shot-gameplay.webp" type="image/webp">
+              <img class="art" src="../assets/img/heavy-bag/shot-gameplay.jpg" alt="A career level: a PERFECT lands as the fighter hooks the bag, combo and score on the HUD" width="1311" height="603" loading="lazy" decoding="async">
+            </picture>
+          </div></div>
+          <div class="shot"><div class="brk brk--tan"><span class="b"></span>
+            <picture>
+              <source srcset="../assets/img/heavy-bag/shot-career.webp" type="image/webp">
+              <img class="art" src="../assets/img/heavy-bag/shot-career.jpg" alt="The career map: five stone pillars, one per level, with the gold piece on Level 1 Fundamentals" width="1311" height="603" loading="lazy" decoding="async">
+            </picture>
+          </div></div>
+          <div class="shot"><div class="brk brk--tan"><span class="b"></span>
+            <picture>
+              <source srcset="../assets/img/heavy-bag/shot-open-mat.webp" type="image/webp">
+              <img class="art" src="../assets/img/heavy-bag/shot-open-mat.jpg" alt="Open Mat in the Brazil gym: two-minute timer, hearts, and the cue diamond" width="1311" height="603" loading="lazy" decoding="async">
+            </picture>
+          </div></div>
+          <div class="shot"><div class="brk brk--tan"><span class="b"></span>
+            <picture>
+              <source srcset="../assets/img/heavy-bag/shot-hall-of-fame.webp" type="image/webp">
+              <img class="art" src="../assets/img/heavy-bag/shot-hall-of-fame.jpg" alt="The Hall of Fame: the top three champions stand on pillars beside the ranked board" width="1311" height="603" loading="lazy" decoding="async">
+            </picture>
+          </div></div>
+          <div class="shot"><div class="brk brk--tan"><span class="b"></span>
+            <picture>
+              <source srcset="../assets/img/heavy-bag/shot-locker.webp" type="image/webp">
+              <img class="art" src="../assets/img/heavy-bag/shot-locker.jpg" alt="The Locker Room: the fighter on the floor star with avatars, premium avatars, and skin tones" width="1311" height="603" loading="lazy" decoding="async">
+            </picture>
+          </div></div>
+          <div class="shot"><div class="brk brk--tan"><span class="b"></span>
+            <picture>
+              <source srcset="../assets/img/heavy-bag/shot-fight-night.webp" type="image/webp">
+              <img class="art" src="../assets/img/heavy-bag/shot-fight-night.jpg" alt="Fight Night: an eight-fighter online bracket, three wins to take the night" width="1311" height="603" loading="lazy" decoding="async">
+            </picture>
+          </div></div>
         </div>
       </div>
     </section>
@@ -115,7 +180,7 @@
     <section class="section" aria-labelledby="hb-beta-heading">
       <div class="wrap prose">
         <h2 id="hb-beta-heading"><span class="ribbon ribbon--hb"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Play It Early</span></span></h2>
-        <p>Heavy Bag is in closed beta on TestFlight. Testers get every build first and a direct line to the developer.</p>
+        <p>Heavy Bag is in closed beta on TestFlight for iPhone (iOS 17 or later). Testers get every build first and a direct line to the developer.</p>
         <p style="margin-top:1.4rem">
           <!-- TODO: add the public TestFlight invite link -->
           <a class="btn btn-hb" href="#">Join the TestFlight Beta</a>
