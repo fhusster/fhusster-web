@@ -71,7 +71,7 @@
 
     // --- Slider (left) and the Line (right), fading in over the assembly.
     var chrome = el("g", {});
-    var sx = W * 0.05, trackH = 760 * 0.41;
+    var sx = W * 0.035, trackH = 760 * 0.41 * 1.24;
     el("rect", { x: sx - 1.5, y: CY - trackH / 2, width: 3, height: trackH, fill: "#121212", opacity: 0.35 }, chrome);
     [["Head", COLORS.head, CY - trackH / 2], ["Body", COLORS.body, CY], ["Leg", COLORS.legs, CY + trackH / 2]].forEach(function (r) {
       el("circle", { cx: sx, cy: r[2], r: 10, fill: r[1], stroke: "#121212", "stroke-width": 2 }, chrome);
@@ -85,10 +85,14 @@
     lineLabel.textContent = "The Line";
     fadeIn(chrome, 0, 1600);
 
+    // --- Everything diamond-shaped sits in one group scaled about the
+    // centre (16% smaller than the game's proportions on this canvas), which
+    // also opens up the room between the diamond, the slider and the Line.
+    var art = el("g", { transform: "translate(" + CX + " " + CY + ") scale(0.84) translate(" + (-CX) + " " + (-CY) + ")" });
     // --- The intro square: grows, rotates 45°, then hands over to the zones.
     var side = (hS + H) * Math.SQRT2;
     var square = el("rect", { x: CX - side / 2, y: CY - side / 2, width: side, height: side,
-      fill: "none", stroke: "#121212", "stroke-width": STROKE, "stroke-linejoin": "round" });
+      fill: "none", stroke: "#121212", "stroke-width": STROKE, "stroke-linejoin": "round" }, art);
     if (!reduce) {
       square.style.transformOrigin = CX + "px " + CY + "px";
       square.animate([{ transform: "scale(0.001) rotate(0deg)" }, { transform: "scale(1) rotate(0deg)" }],
@@ -101,7 +105,7 @@
     }
 
     // --- The eight zones: packed at 850 ms, separated by 1250 ms.
-    var zones = el("g", {});
+    var zones = el("g", {}, art);
     Object.keys(ZONES).forEach(function (key) {
       var z = ZONES[key];
       var poly = el("polygon", { points: z.poly.map(toSvg).join(" "), fill: "none", stroke: "#121212",
@@ -120,12 +124,12 @@
       var dot = c[0], tip = c[1];
       var dx = tip[0] - dot[0], dy = tip[1] - dot[1], len = Math.hypot(dx, dy);
       var ang = Math.atan2(dy, dx) * 180 / Math.PI;
-      var d = el("circle", { cx: dot[0], cy: dot[1], r: 6, fill: "#121212" });
+      var d = el("circle", { cx: dot[0], cy: dot[1], r: 6, fill: "#121212" }, art);
       fadeIn(d, 1600, 260);
       // The leader grows out of the dot: the group carries the position and
       // angle as an SVG attribute, the bar inside is what animates (a CSS
       // transform on the same element would replace the attribute).
-      var barGroup = el("g", { transform: "translate(" + dot[0] + " " + dot[1] + ") rotate(" + ang + ")" });
+      var barGroup = el("g", { transform: "translate(" + dot[0] + " " + dot[1] + ") rotate(" + ang + ")" }, art);
       var bar = el("rect", { x: 0, y: -1.5, width: len, height: 3, fill: "#121212" }, barGroup);
       if (!reduce) {
         bar.setAttribute("opacity", "0");
@@ -134,13 +138,13 @@
           { delay: 1600, duration: 500, fill: "forwards", easing: "ease-out" });
       }
       var head = el("polygon", { points: "0,8 0,-8 16,0", fill: "#121212",
-        transform: "translate(" + tip[0] + " " + tip[1] + ") rotate(" + ang + ")" });
+        transform: "translate(" + tip[0] + " " + tip[1] + ") rotate(" + ang + ")" }, art);
       fadeIn(head, 2110, 260);
     });
     LABELS.forEach(function (l) {
       var t = el("text", { x: l[1], y: l[2], fill: "#121212", "text-anchor": l[4],
         "font-size": l[3] ? 27 : 23, "font-weight": l[3] ? 700 : 400,
-        "font-family": "Helvetica, Arial, sans-serif" });
+        "font-family": "Helvetica, Arial, sans-serif" }, art);
       t.textContent = l[0];
       fadeIn(t, 1980, 580);
     });
