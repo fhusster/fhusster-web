@@ -37,14 +37,14 @@
     [[713.49, 332.67], [580, 332.67]], [[713.49, 427.33], [580, 427.33]]
   ];
   var LABELS = [
-    ["LEAD UPPERCUT", 900, 26, 1, "middle"], ["Swipe up ANYWHERE", 900, 50, 0, "middle"],
-    ["REAR UPPERCUT", 900, 728, 1, "middle"], ["Swipe down ANYWHERE", 900, 752, 0, "middle"],
-    ["LEAD HOOK", 1248, 328, 1, "start"], ["Swipe right ANYWHERE above line", 1248, 354, 0, "start"],
-    ["LEAD KICK", 1248, 422, 1, "start"], ["Swipe right ANYWHERE below line", 1248, 448, 0, "start"],
-    ["REAR HOOK", 552, 328, 1, "end"], ["Swipe left ANYWHERE above line", 552, 354, 0, "end"],
-    ["REAR KICK", 552, 422, 1, "end"], ["Swipe left ANYWHERE below line", 552, 448, 0, "end"],
-    ["JAB", 900, 296, 1, "middle"], ["Tap ANYWHERE", 900, 322, 0, "middle"], ["above line", 900, 346, 0, "middle"],
-    ["CROSS", 900, 432, 1, "middle"], ["Tap ANYWHERE", 900, 458, 0, "middle"], ["below line", 900, 482, 0, "middle"]
+    ["LEAD UPPERCUT", 900, 26, 1, "middle"], ["Swipe up", 900, 50, 0, "middle"],
+    ["REAR UPPERCUT", 900, 728, 1, "middle"], ["Swipe down", 900, 752, 0, "middle"],
+    ["LEAD HOOK", 1248, 328, 1, "start"], ["Swipe right above line", 1248, 354, 0, "start"],
+    ["LEAD KICK", 1248, 422, 1, "start"], ["Swipe right below line", 1248, 448, 0, "start"],
+    ["REAR HOOK", 552, 328, 1, "end"], ["Swipe left above line", 552, 354, 0, "end"],
+    ["REAR KICK", 552, 422, 1, "end"], ["Swipe left below line", 552, 448, 0, "end"],
+    ["JAB", 900, 296, 1, "middle"], ["Tap", 900, 322, 0, "middle"], ["above line", 900, 346, 0, "middle"],
+    ["CROSS", 900, 432, 1, "middle"], ["Tap", 900, 458, 0, "middle"], ["below line", 900, 482, 0, "middle"]
   ];
 
   function el(name, attrs, parent) {
