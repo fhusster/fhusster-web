@@ -308,11 +308,16 @@ a.card-link:hover{text-decoration:none}
 .hb-hero{padding:3.6rem 0 2.8rem} /* bottom edge is a .rule-dia divider */
 .hb-hero .kicker{color:var(--olive)}
 .hb-hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:center}
-.hb-hero-media{padding:1rem;background:var(--olive);border:2px solid var(--tan);border-radius:var(--radius)}
+/* The art fills the frame: the olive mat is a hairline, not a mount. */
+.hb-hero-media{padding:0;background:var(--olive);border:2px solid var(--tan);border-radius:var(--radius);overflow:hidden}
+.hb-hero-media .brk{padding:0}
+.hb-hero-media .art{border-radius:0;display:block}
 .hb-hero-actions{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
 @media (max-width:820px){.hb-hero-grid{grid-template-columns:1fr}}
 .shots-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
-.shot{padding:.7rem;background:var(--olive);border:2px solid var(--line);border-radius:var(--radius);transition:border-color .15s}
+.shot{padding:0;background:var(--olive);border:2px solid var(--line);border-radius:var(--radius);transition:border-color .15s;overflow:hidden}
+.shot .brk{padding:0}
+.shot .art{border-radius:0;display:block}
 .shot:hover{border-color:var(--tan)}
 @media (max-width:900px){.shots-row{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.shots-row{grid-template-columns:1fr}}
