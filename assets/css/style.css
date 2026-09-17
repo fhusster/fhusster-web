@@ -608,3 +608,76 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .logo:focus .hletter,
   .logo:focus-visible .hletter{animation:none;opacity:1;transform:none}
 }
+
+/* ==========================================================================
+   Dad Reflex game page theming
+   Heavy Bag wears olive/tan; Dad Reflex wears the studio's own navy and
+   magenta. Every rule below is additive — nothing here overrides a
+   Heavy Bag selector.
+   ========================================================================== */
+
+/* Dad Reflex-themed button, game pages/cards only */
+.btn-dr{border-color:var(--navy);color:var(--navy)}
+.btn-dr:hover{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* Shipped. The studio's action colour, so a live game reads as live. */
+.badge-live{color:var(--magenta);border-color:var(--magenta)}
+
+/* Grid card */
+.game-card-media--dr{background:var(--navy)}
+.game-card--dr .game-card-sub{color:var(--navy)}
+
+/* Featured card (Home). The base rules hardcode olive, so these override
+   for the Dad Reflex card only and leave Heavy Bag's untouched. */
+.featured-card--dr .featured-media{background:var(--navy)}
+.featured-card--dr .featured-sub{color:var(--navy)}
+
+/* Detail page hero */
+.dr-hero{padding:3.6rem 0 2.8rem} /* bottom edge is a .rule-dia divider */
+.dr-hero .kicker{color:var(--magenta)}
+.dr-hero .rule-dia{margin-top:1.8rem}
+.dr-hero-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:2.5rem;align-items:center}
+.dr-hero-media{padding:1rem;background:var(--navy);border:2px solid var(--magenta);border-radius:var(--radius)}
+.dr-hero-actions{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+@media (max-width:820px){.dr-hero-grid{grid-template-columns:1fr}}
+.dr-links{margin-top:.5rem;color:var(--ink-dim)}
+.dr-links a{margin-right:1.2rem}
+
+/* ==========================================================================
+   Reels: autoplaying muted gameplay loops
+   The site had no video before this. A reel is framed exactly like the
+   art placeholders — HUD corner brackets over a padded panel — and the
+   intrinsic ratio comes from the width/height attributes, as it does for
+   every .art image.
+   ========================================================================== */
+.reel{
+  display:block;width:100%;height:auto;
+  border-radius:calc(var(--radius) - 4px);
+  background:var(--navy);   /* the poster's own bed, before first frame */
+}
+/* The card reel sits in the same padded slot the key art would. */
+.game-card-media--dr .brk{padding:14px}
+
+/* Dad Reflex screenshots.
+   The game is LANDSCAPE-only (the iOS target declares landscape left and
+   right and nothing else), so the frames are landscape phone-shaped. A
+   portrait frame would be three quarters empty mat. */
+.dr-shots{
+  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(19rem,1fr);
+  gap:1.25rem;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;
+  padding-bottom:.9rem;  /* room for the scrollbar, so it never overlaps a frame */
+}
+.dr-shot{
+  scroll-snap-align:start;
+  padding:.7rem;background:var(--navy);
+  border:2px solid var(--line);border-radius:var(--radius);
+  transition:border-color .15s;
+}
+.dr-shot:hover{border-color:var(--magenta)}
+/* Match the site's own scrollbar restraint: visible, thin, in palette. */
+.dr-shots::-webkit-scrollbar{height:8px}
+.dr-shots::-webkit-scrollbar-track{background:var(--surface);border-radius:4px}
+.dr-shots::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.dr-shots::-webkit-scrollbar-thumb:hover{background:var(--magenta)}
+@media (max-width:640px){.dr-shots{grid-auto-columns:minmax(16rem,1fr)}}
