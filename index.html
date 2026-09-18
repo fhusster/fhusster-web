@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fhusster | Independent Game Studio</title>
-<meta name="description" content="Fhusster is an independent game studio in Ottawa, Canada. Precise. Polished. Arcade rooted.">
+<meta name="description" content="Independent arcade games built around timing, precision, and skill. Made by Fhusster in Ottawa, Canada.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fhusster">
 <meta property="og:title" content="Fhusster | Independent Game Studio">
-<meta property="og:description" content="Precise. Polished. Arcade rooted. An independent game studio in Ottawa, Canada.">
+<meta property="og:description" content="Timing. Precision. Skill. Independent arcade games from Ottawa, Canada.">
 <meta property="og:image" content="https://fhusster.com/assets/img/emblem.png">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
@@ -29,9 +29,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=20260918a">
 </head>
-<body>
+<body class="studio-home">
 
 <div class="rails" aria-hidden="true">
   <div class="rail rail--l"><span class="rail-light"></span></div>
@@ -77,12 +77,33 @@
 
     <section class="hero">
       <div class="wrap">
-        <span class="kicker">Independent game studio</span>
-        <h1>Precise. Polished.<br>Arcade rooted.</h1>
-        <p class="lede">Fhusster builds tight, skill-driven arcade games from Ottawa, Canada. Games with rhythm, skill, and heart.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="games.html">Our Games</a>
-          <a class="btn" href="join.html">Join the Beta</a>
+        <span class="kicker">Independent by design · Ottawa, Canada</span>
+        <div class="studio-hero-grid">
+          <h1 class="studio-headline">
+            <span class="sr-only">Timing. Precision. Skill.</span>
+            <svg viewBox="0 0 650 318" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="headline-outline" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="25%" stop-color="#082B5C"/>
+                  <stop offset="80%" stop-color="#FF2B73"/>
+                </linearGradient>
+              </defs>
+              <g fill="#FFFFFF" stroke="url(#headline-outline)" stroke-width="1.2" stroke-linejoin="round">
+                <text x="2" y="89">Timing.</text>
+                <text x="2" y="197">Precision.</text>
+                <text x="2" y="305">Skill.</text>
+              </g>
+            </svg>
+          </h1>
+          <div class="studio-hero-copy">
+            <span class="studio-index" aria-hidden="true">Made for one more try.</span>
+            <p class="lede">That split second when instinct meets accuracy. That's where our games live.</p>
+            <p>We make arcade games with responsive controls, a clear challenge, and room to get better. Made with care. Mastered through play.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#featured-heading">Explore the Games <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="about.html">Meet the studio <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
         </div>
         <div class="rule-dia" aria-hidden="true"><span class="dia dia--sm dia--fill"></span></div>
       </div>
@@ -96,12 +117,12 @@
         <div class="card featured-card featured-card--dr">
           <div class="featured-media">
             <div class="brk"><span class="b"></span>
-              <video class="reel" autoplay muted loop playsinline preload="metadata"
+              <video class="reel" muted loop playsinline preload="none"
+                     data-src-webm="assets/video/dad-reflex/loop-wide.webm"
+                     data-src-mp4="assets/video/dad-reflex/loop-wide.mp4"
                      poster="assets/img/dad-reflex/loop-wide-poster.jpg"
                      width="1280" height="720"
                      aria-label="Dad Reflex gameplay: a pillow slides across the nursery floor to catch falling babies">
-                <source src="assets/video/dad-reflex/loop-wide.webm" type="video/webm">
-                <source src="assets/video/dad-reflex/loop-wide.mp4" type="video/mp4">
                 <img class="art" src="assets/img/dad-reflex/loop-wide-poster.jpg" alt="Dad Reflex gameplay" width="1280" height="720">
               </video>
             </div>
@@ -130,10 +151,11 @@
         <div class="card featured-card game-card--hb">
           <div class="featured-media">
             <div class="brk brk--tan"><span class="b"></span>
-              <picture>
-                <source srcset="assets/img/heavy-bag/key-art.webp" type="image/webp">
-                <img class="art" src="assets/img/heavy-bag/key-art.jpg" alt="Heavy Bag main menu: an arcade cabinet with the game's neon menu on screen" width="1280" height="720" loading="lazy" decoding="async">
-              </picture>
+              <video class="art hb-video" muted playsinline loop preload="none"
+                     poster="assets/img/heavy-bag/montage-poster.jpg"
+                     data-src="assets/video/heavy-bag-montage.mp4"
+                     width="1280" height="588"
+                     aria-label="Heavy Bag gameplay montage"></video>
             </div>
           </div>
           <div class="featured-body">
@@ -154,8 +176,13 @@
 
     <section class="section" aria-labelledby="about-teaser-heading">
       <div class="wrap">
-        <h2 id="about-teaser-heading"><span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Built the Hard Way</span></span></h2>
-        <p class="lede">Fhusster is self-funded, self-published, and entirely independent. Every design decision is ours, and every one of them serves the game.</p>
+        <h2 id="about-teaser-heading"><span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Every Input Matters</span></span></h2>
+        <p class="lede">One independent studio. A focus on how games feel. From the first attempt to a personal best, every detail should make you want to play again.</p>
+        <div class="studio-principles">
+          <div><span class="studio-index">01 / Timing</span><h3>Find your moment.</h3><p>Read the rhythm. Trust your instincts. Make the next move count.</p></div>
+          <div><span class="studio-index">02 / Precision</span><h3>Feel the difference.</h3><p>Clear feedback and responsive controls put every attempt in your hands.</p></div>
+          <div><span class="studio-index">03 / Skill</span><h3>Earn your best.</h3><p>Learn a little on every run. Come back sharper than you were before.</p></div>
+        </div>
         <p style="margin-top:1.4rem"><a class="btn" href="about.html">About the Studio</a></p>
       </div>
     </section>
@@ -163,10 +190,10 @@
     <section id="donate" class="section" aria-labelledby="donate-heading">
       <div class="wrap">
         <h2 id="donate-heading"><span class="ribbon"><span class="ribbon-tail ribbon-tail--l"></span><span class="ribbon-tail ribbon-tail--r"></span><span class="ribbon-body">Support the Studio</span></span></h2>
-        <p class="lede">Fhusster is fully self-funded. If you like what we're building and want to help it along, every contribution goes straight into development.</p>
+        <p class="lede">Play a game. Test a build. Tell us how it feels. Your feedback helps an independent studio make every release better.</p>
         <p style="margin-top:1.4rem">
-          <!-- TODO: link the payment app here -->
-          <a class="btn btn-primary" href="#">Donate</a>
+          <a class="btn btn-primary" href="join.html">Become a Tester</a>
+          <a class="btn" href="contact.html">Share Feedback</a>
         </p>
       </div>
     </section>
@@ -174,7 +201,7 @@
   </main>
 
   <footer class="site-footer">
-    <div class="scan footer-scan" aria-hidden="true"><span>Precise · Polished · Arcade Rooted</span></div>
+    <div class="scan footer-scan" aria-hidden="true"><span>Timing · Precision · Skill</span></div>
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="index.html" aria-label="Fhusster home"><img class="footer-emblem" src="assets/img/emblem.png" alt="Fhusster emblem"></a>
@@ -189,15 +216,13 @@
           <li><a href="news.html">News</a></li>
           <li><a href="contact.html">Contact</a></li>
           <li><a href="privacy.html">Privacy</a></li>
-          <li><a href="dad-reflex/privacy.html">Dad Reflex Privacy</a></li>
-          <li><a href="dad-reflex/support.html">Dad Reflex Support</a></li>
         </ul>
       </nav>
     </div>
   </footer>
 </div>
 
-<script src="assets/js/site.js" defer></script>
+<script src="assets/js/site.js?v=20260918a" defer></script>
 <script src="assets/js/ornaments.js" defer></script>
 <script src="assets/js/intro.js" defer></script>
 </body>

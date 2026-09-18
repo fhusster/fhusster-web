@@ -1,6 +1,4 @@
-/* Dad Reflex game page.
-   Two jobs: point the store buttons at the listing, and hold the hero reel
-   back until it is actually on screen. */
+/* Dad Reflex store links. Shared video behaviour lives in site.js. */
 (function () {
   "use strict";
 
@@ -27,53 +25,4 @@
     btn.title = "App Store link coming shortly";
   });
 
-  /* ---- the hero reel, loaded on demand -------------------------------- */
-  var reel = document.getElementById("dr-hero-reel");
-  if (!reel) return;
-
-  var reduced = false;
-  try {
-    reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  } catch (e) {}
-
-  /* Reduced motion gets the poster and a play button, never a loop that
-     starts on its own. */
-  if (reduced) {
-    reel.setAttribute("controls", "");
-    reel.removeAttribute("loop");
-  }
-
-  var loaded = false;
-  function load() {
-    if (loaded) return;
-    loaded = true;
-    [["data-src-webm", "video/webm"], ["data-src-mp4", "video/mp4"]].forEach(function (pair) {
-      var src = reel.getAttribute(pair[0]);
-      if (!src) return;
-      var s = document.createElement("source");
-      s.src = src;
-      s.type = pair[1];
-      reel.appendChild(s);
-    });
-    reel.load();
-    if (!reduced) {
-      var p = reel.play();
-      /* Safari rejects the promise if the tab is backgrounded. The poster
-         stays up; nothing to do about it and nothing to log. */
-      if (p && p.catch) p.catch(function () {});
-    }
-  }
-
-  if (!("IntersectionObserver" in window)) {
-    load();
-    return;
-  }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      io.disconnect();
-      load();
-    });
-  }, { rootMargin: "200px" });
-  io.observe(reel);
 })();
