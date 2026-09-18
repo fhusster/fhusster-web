@@ -658,7 +658,12 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .dr-hero .kicker{color:var(--magenta)}
 .dr-hero .rule-dia{margin-top:1.8rem}
 .dr-hero-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:2.5rem;align-items:center}
-.dr-hero-media{padding:1rem;background:var(--navy);border:2px solid var(--magenta);border-radius:var(--radius)}
+/* The art fills the frame, exactly as Heavy Bag's does: the navy mat is a
+   hairline, not a mount. A thick inner border reads as a screenshot of a
+   screenshot. */
+.dr-hero-media{padding:0;background:var(--navy);border:2px solid var(--magenta);border-radius:var(--radius);overflow:hidden}
+.dr-hero-media .brk{padding:0}
+.dr-hero-media .reel,.dr-hero-media .art{border-radius:0;display:block;width:100%;height:auto}
 .dr-hero-actions{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
 @media (max-width:820px){.dr-hero-grid{grid-template-columns:1fr}}
 .dr-links{margin-top:.5rem;color:var(--ink-dim)}
@@ -691,10 +696,12 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 }
 .dr-shot{
   scroll-snap-align:start;
-  padding:.7rem;background:var(--navy);
+  padding:0;background:var(--navy);
   border:2px solid var(--line);border-radius:var(--radius);
-  transition:border-color .15s;
+  transition:border-color .15s;overflow:hidden;
 }
+.dr-shot .brk{padding:0}
+.dr-shot .art{border-radius:0;display:block;width:100%;height:auto}
 .dr-shot:hover{border-color:var(--magenta)}
 /* Match the site's own scrollbar restraint: visible, thin, in palette. */
 .dr-shots::-webkit-scrollbar{height:8px}
