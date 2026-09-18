@@ -59,6 +59,13 @@ h3{font-size:1.1rem}
    in exactly its final position throughout the animation. */
 main{flex:1}
 
+/* The pixel field lives behind the site and cannot intercept any input.
+   Its script leaves padded clear space around all visible content. */
+.pixel-background{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;user-select:none}
+html.intro-pending .pixel-background{visibility:hidden}
+@media print{.pixel-background{display:none}}
+@media (forced-colors:active){.pixel-background{display:none}}
+
 .skip-link{
   position:absolute;left:-9999px;top:0;z-index:400;
   background:var(--magenta);color:#fff;font-family:var(--font-head);
