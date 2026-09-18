@@ -715,17 +715,14 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 [id]{scroll-margin-top:calc(var(--header-h) + 1.5rem)}
 .site-header{border-bottom-width:1px}
 .site-nav a{letter-spacing:.1em}
-.studio-home .hero{padding:4rem 0 1.5rem}
-.studio-hero-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:4rem;align-items:center}
-.studio-headline{margin:0;line-height:1;letter-spacing:.025em}
-.studio-headline svg{display:block;width:100%;height:auto;overflow:visible}
-.studio-headline text{font:600 96px var(--font-head);letter-spacing:.025em;vector-effect:non-scaling-stroke}
+.studio-headline span{
+  background:linear-gradient(to bottom,var(--navy) 25%,var(--magenta) 80%);
+  background-clip:text;-webkit-background-clip:text;
+  -webkit-text-stroke:2px transparent;
+  color:var(--ink);paint-order:stroke fill;
+}
 .studio-index{display:block;color:var(--navy);font:600 .72rem/1.5 var(--font-head);letter-spacing:.16em;text-transform:uppercase}
-.studio-hero-copy .lede{font-size:clamp(1.25rem,1.8vw,1.65rem);line-height:1.5;color:var(--navy);margin:1rem 0}
-.studio-hero-copy>p:not(.lede){color:var(--ink-dim);max-width:34rem}
-.studio-hero-copy .hero-actions{align-items:center;gap:1.25rem}
 .text-link{color:var(--navy);font-size:.85rem;font-weight:600;text-underline-offset:5px}
-.studio-home .hero .rule-dia{margin-top:3.5rem}
 .studio-home .section{padding:3rem 0}
 .studio-home .featured-card{border-width:1px;background:#faf9f6;box-shadow:0 12px 36px rgba(8,43,92,.045)}
 .studio-home .featured-body{align-self:center;padding:2rem 2.25rem}
@@ -749,53 +746,50 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .footer-nav a{letter-spacing:.08em}
 .footer-scan{padding:.8rem 1.25rem}
 
-/* Pause in place; animation-play-state preserves each slice's wave phase. */
+/* Remove the animation on hover: straighten every slice, then restart on leave. */
 .ribbon:hover .ribbon-slice,
 .ribbon:hover .ribbon-tail,
 .ribbon:focus-within .ribbon-slice,
-.ribbon:focus-within .ribbon-tail{animation-play-state:paused}
+.ribbon:focus-within .ribbon-tail{animation:none;transform:none}
 
-/* Clicking the image grows its grid column. Copy gets a compact layout,
-   while the game name, availability, and primary actions stay visible. */
-.featured-card,.hb-hero-grid,.dr-hero-grid{transition:grid-template-columns .38s cubic-bezier(.2,.7,.2,1),gap .38s}
+/* Matching grid track functions at both ends allow continuous interpolation.
+   The video keeps its intrinsic aspect ratio as the text column reflows. */
+.featured-card,.hb-hero-grid,.dr-hero-grid{transition:grid-template-columns .65s cubic-bezier(.22,.68,.2,1),gap .65s}
+.featured-card{grid-template-columns:minmax(0,1fr) minmax(15rem,1fr)}
+.hb-hero-grid{grid-template-columns:minmax(15rem,1.1fr) minmax(0,.9fr)}
+.dr-hero-grid{grid-template-columns:minmax(15rem,.95fr) minmax(0,1.05fr)}
 .featured-card>* ,.hb-hero-grid>* ,.dr-hero-grid>*{min-width:0}
 .featured-card.is-expanded{grid-template-columns:minmax(0,2.6fr) minmax(15rem,1fr)}
+.featured-body{transition:padding .65s}
 .featured-card.is-expanded .featured-body{padding:1.5rem}
-.featured-card.is-expanded .featured-sub,
-.featured-card.is-expanded .featured-body>p{display:none}
-.featured-card.is-expanded .featured-actions{margin-top:1.25rem;flex-direction:column;align-items:flex-start;gap:.7rem}
+.preview-description{display:grid;grid-template-rows:1fr;opacity:1;transition:grid-template-rows .65s cubic-bezier(.22,.68,.2,1),opacity .35s}
+.preview-description>div{min-height:0;overflow:hidden}
+.is-expanded .preview-description{grid-template-rows:0fr;opacity:0}
+.featured-actions{transition:margin .65s,gap .65s}
+.featured-card.is-expanded .featured-actions{margin-top:1.25rem;gap:.7rem}
 .hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded{grid-template-columns:minmax(15rem,.75fr) minmax(0,2.25fr);gap:2rem}
-.hb-hero-grid.is-expanded .lede,.dr-hero-grid.is-expanded .lede{display:none}
+.hb-hero-grid h1,.dr-hero-grid h1{transition:font-size .65s}
 .hb-hero-grid.is-expanded h1,.dr-hero-grid.is-expanded h1{font-size:clamp(2rem,3vw,3rem)}
-.hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions{flex-direction:column;align-items:flex-start;margin-top:1.25rem}
+.hb-hero-actions,.dr-hero-actions{transition:margin .65s}
+.hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions{margin-top:1.25rem}
+.featured-media,.hb-hero-media,.dr-hero-media{transition:margin .65s cubic-bezier(.22,.68,.2,1)}
 .expandable-media{isolation:isolate}
 .expandable-media::before,.expandable-media::after,.expandable-media .b{pointer-events:none}
-.media-expand{position:absolute;inset:0;z-index:1;width:100%;border:0;background:transparent;cursor:zoom-in;border-radius:inherit;color:white}
+.media-expand{position:absolute;inset:0;z-index:1;width:100%;border:0;background:transparent;cursor:zoom-in;border-radius:inherit}
 .media-expand[aria-expanded="true"]{cursor:zoom-out}
-.media-expand-label,.media-play{font:600 .72rem/1.4 var(--font-head);letter-spacing:.06em;color:#fff;background:rgba(8,24,44,.92);border:1px solid rgba(255,255,255,.55);border-radius:4px;padding:.55rem .7rem}
-.media-expand-label{position:absolute;right:.75rem;bottom:.75rem;pointer-events:none}
-.media-play{position:absolute;left:.75rem;bottom:.75rem;z-index:2;cursor:pointer;min-height:36px}
-.media-expand:hover .media-expand-label,.media-play:hover{background:var(--navy);border-color:#fff}
 .media-expand:focus-visible{outline:3px solid var(--magenta);outline-offset:-5px}
-.media-play:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 @media (max-width:1000px){
-  .studio-hero-grid{gap:2rem;grid-template-columns:1.2fr 1fr}
   .studio-home .featured-body{padding:1.5rem}
-  .studio-hero-copy .hero-actions{gap:1rem}
 }
 @media (max-width:820px){
-  .studio-hero-grid{grid-template-columns:1fr;gap:1.5rem}
-  .studio-headline{max-width:36rem}
-  .studio-hero-copy{max-width:38rem}
-  .studio-home .hero{padding-top:2.5rem}
-  .hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded{grid-template-columns:1fr;gap:1.5rem}
+  .hb-hero-grid,.dr-hero-grid,.hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded{grid-template-columns:minmax(0,1fr);gap:1.5rem}
   .hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions{flex-direction:row;align-items:center}
   .hb-hero-grid.is-expanded .hb-hero-media,.dr-hero-grid.is-expanded .dr-hero-media{margin-inline:-5vw}
   .studio-principles{gap:1.4rem}
 }
 @media (max-width:760px){
-  .featured-card.is-expanded{grid-template-columns:1fr;overflow:visible}
+  .featured-card,.featured-card.is-expanded{grid-template-columns:minmax(0,1fr);overflow:visible}
   .featured-card.is-expanded .featured-media{margin-inline:-5vw;border-radius:var(--radius)}
   .featured-card.is-expanded .featured-actions{flex-direction:row;align-items:center}
   .studio-home .featured-body{padding:1.4rem}
@@ -804,11 +798,8 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .studio-page .page-head{padding-top:2.5rem}
 }
 @media (max-width:480px){
-  .studio-headline{width:100%}
   .studio-home .kicker{font-size:.65rem;letter-spacing:.14em}
-  .studio-hero-copy .lede{font-size:1.25rem}
   .studio-page .contact-form{padding:1rem}
-  .media-expand-label,.media-play{font-size:.66rem;padding:.45rem .55rem}
   .footer-scan span{font-size:.68rem}
 }
 @media (max-width:640px){

@@ -101,7 +101,6 @@
     if (!layout || !frame) return;
     var title = layout.querySelector("h1, h3").textContent.trim();
     var visible = false;
-    var userPaused = false;
     var requestedPlay = false;
     var loaded = false;
 
@@ -114,23 +113,32 @@
     expand.type = "button";
     expand.className = "media-expand";
     expand.setAttribute("aria-controls", video.id);
-    expand.innerHTML = '<span class="media-expand-label"></span>';
     frame.appendChild(expand);
 
-    var play = document.createElement("button");
-    play.type = "button";
-    play.className = "media-play";
-    frame.appendChild(play);
+    // A grid wrapper lets the existing description shrink and return smoothly,
+    // instead of disappearing in the first frame of the column transition.
+    var copy = layout.querySelector(".featured-body") || layout.firstElementChild;
+    var description = document.createElement("div");
+    description.className = "preview-description";
+    var inner = document.createElement("div");
+    var details = copy.querySelectorAll(".featured-sub, p");
+    if (details.length) {
+      details[0].before(description);
+      description.appendChild(inner);
+      details.forEach(function (detail) { inner.appendChild(detail); });
+    }
 
     function setExpanded(on) {
       layout.classList.toggle("is-expanded", on);
       expand.setAttribute("aria-expanded", String(on));
       expand.setAttribute("aria-label", (on ? "Collapse " : "Expand ") + title + " video");
-      expand.firstChild.textContent = on ? "↙  Collapse" : "↗  Expand";
+      description.setAttribute("aria-hidden", String(on));
     }
     setExpanded(false);
     expand.addEventListener("click", function () {
       setExpanded(!layout.classList.contains("is-expanded"));
+      requestedPlay = true;
+      start();
     });
     layout.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && layout.classList.contains("is-expanded")) {
@@ -139,10 +147,6 @@
       }
     });
 
-    function syncPlayButton() {
-      play.textContent = video.paused ? "▶  Play" : "Ⅱ  Pause";
-      play.setAttribute("aria-label", (video.paused ? "Play " : "Pause ") + title + " video");
-    }
     function load() {
       if (loaded) return;
       loaded = true;
@@ -159,25 +163,12 @@
     function start() {
       load();
       var promise = video.play();
-      if (promise) promise.catch(syncPlayButton);
+      if (promise) promise.catch(function () {});
     }
     function updatePlayback() {
-      if (visible && !document.hidden && !userPaused && (!reduced.matches || requestedPlay)) start();
+      if (visible && !document.hidden && (!reduced.matches || requestedPlay)) start();
       else video.pause();
     }
-    play.addEventListener("click", function () {
-      if (video.paused) {
-        userPaused = false;
-        requestedPlay = true;
-        start();
-      } else {
-        userPaused = true;
-        video.pause();
-      }
-    });
-    video.addEventListener("play", syncPlayButton);
-    video.addEventListener("pause", syncPlayButton);
-    syncPlayButton();
     reduced.addEventListener("change", function () {
       requestedPlay = false;
       updatePlayback();
