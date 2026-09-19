@@ -59,12 +59,14 @@ h3{font-size:1.1rem}
    in exactly its final position throughout the animation. */
 main{flex:1}
 
-/* A local corner field: its canvas ends at the opening diamond divider. */
-.pixel-section{position:relative;isolation:isolate}
-.pixel-background{position:absolute;top:0;right:0;width:100%;z-index:-1;pointer-events:none;user-select:none}
-html.intro-pending .pixel-background{visibility:hidden}
-@media print{.pixel-background{display:none}}
-@media (forced-colors:active){.pixel-background{display:none}}
+/* The corner swarm (assets/js/pixel-background.js). Its layer sits in <body>
+   just BEFORE .rails at the same z-index, so the two side rails are plain
+   lines laid over the art; .site (z 200) and its text stay above both. The
+   canvas is a low-res buffer scaled up with hard pixels. */
+.pixel-field{position:absolute;left:0;right:0;top:0;z-index:0;overflow:hidden;pointer-events:none;user-select:none}
+.pixel-background{display:block;position:absolute;top:0;right:0;max-width:none;image-rendering:crisp-edges;image-rendering:pixelated}
+@media print{.pixel-field{display:none}}
+@media (forced-colors:active){.pixel-field{display:none}}
 
 .skip-link{
   position:absolute;left:-9999px;top:0;z-index:400;
@@ -348,7 +350,11 @@ a.card-link:hover{text-decoration:none}
 
 /* Each complete cloud rests on the header baseline, beneath the navigation.
    Clip only this decorative layer so the mobile menu can still open below. */
-.header-clouds{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+.header-clouds{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1;
+  /* Hidden until site.js has seen 30 idle minutes; scrolling fades them back
+     into the white header (1.2s, matched by FADE_OUT_MS in site.js). */
+  opacity:0;transition:opacity 1.2s ease-out}
+.header-clouds.is-visible{opacity:1;transition:opacity 4s ease-in}
 .header-cloud{position:absolute;bottom:0;width:clamp(150px,19vw,245px);height:100%}
 .header-cloud:nth-child(1){left:-8%}
 .header-cloud:nth-child(2){left:22%}
@@ -413,12 +419,15 @@ html.intro-pending #intro{
 /* the side rails ride the same slide as the site so they arrive together
    instead of popping in after the overlay is removed */
 html.intro-pending .site,
+html.intro-pending .pixel-field,
 html.intro-pending .rails{transform:translateY(100vh)}
 html.site-enter .site,
+html.site-enter .pixel-field,
 html.site-enter .rails{transform:translateY(0);transition:transform .7s ease-out}
 /* during the slide the intro overlay (z 100) is still up; lift the rails
    above it (but below .site at 200) so they are visible while arriving */
 html.site-enter .rails{z-index:150}
+html.site-enter .pixel-field{z-index:149}
 
 .intro-stage{position:relative;width:var(--sw);height:var(--sh);user-select:none}
 #intro .emblem{

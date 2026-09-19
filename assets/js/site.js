@@ -62,9 +62,12 @@
   });
 })();
 
-/* Keep the four header clouds in one non-overlapping convoy. Every time a
-   cloud loops behind the others it receives a new gap; some gaps are exactly
-   zero so neighbouring cloud edges can meet naturally. */
+/* The header clouds are an IDLE reward: they stay hidden until the page has
+   sat untouched for 30 minutes, then fade in and drift. Any scrolling fades
+   them back out into the white header and the wait starts again.
+   While showing, the four clouds keep one non-overlapping convoy. Every time
+   a cloud loops behind the others it receives a new gap; some gaps are
+   exactly zero so neighbouring cloud edges can meet naturally. */
 (function () {
   var track = document.querySelector(".header-clouds");
   if (!track) return;
@@ -152,8 +155,63 @@
     frame = 0;
     previous = 0;
     accumulator = 0;
-    if (!reduced.matches && !document.hidden) frame = requestAnimationFrame(animate);
+    if (showing && !reduced.matches && !document.hidden) frame = requestAnimationFrame(animate);
   }
+
+  /* ---- idle gate ---- */
+  var IDLE_MS = 30 * 60 * 1000;
+  var FADE_OUT_MS = 1200;      // keep in step with .header-clouds' transition
+  // QA: ?cloudsIdleSec=5 shortens the wait so the fade can be watched.
+  var override = /[?&]cloudsIdleSec=(\d+(?:\.\d+)?)/.exec(window.location.search);
+  if (override) IDLE_MS = parseFloat(override[1]) * 1000;
+  var showing = false;
+  var lastActivity = Date.now();
+  var idleTimer = 0;
+  var restTimer = 0;
+
+  function arm() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(check, Math.max(0, IDLE_MS - (Date.now() - lastActivity)) + 50);
+  }
+  // Timers are throttled in background tabs, so trust the clock, not the tick.
+  function check() {
+    if (showing) return;
+    if (Date.now() - lastActivity >= IDLE_MS) reveal(); else arm();
+  }
+  function reveal() {
+    clearTimeout(restTimer);
+    showing = true;
+    layout();
+    track.classList.add("is-visible");
+    updateMotion();
+  }
+  function conceal() {
+    showing = false;
+    track.classList.remove("is-visible");
+    // Keep drifting through the fade, then stop spending frames on them.
+    clearTimeout(restTimer);
+    restTimer = setTimeout(function () {
+      if (showing) return;
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    }, FADE_OUT_MS + 100);
+  }
+  function activity() {
+    lastActivity = Date.now();
+    if (!showing) arm();
+  }
+  function scrolled() {
+    lastActivity = Date.now();
+    if (showing) conceal();
+    arm();
+  }
+  window.addEventListener("scroll", scrolled, { passive: true });
+  window.addEventListener("wheel", scrolled, { passive: true });
+  window.addEventListener("touchmove", scrolled, { passive: true });
+  ["pointerdown", "pointermove", "keydown", "touchstart"].forEach(function (type) {
+    window.addEventListener(type, activity, { passive: true });
+  });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) check(); });
 
   var resizeTimer = 0;
   window.addEventListener("resize", function () {
@@ -163,7 +221,7 @@
   document.addEventListener("visibilitychange", updateMotion);
   reduced.addEventListener("change", function () { layout(); updateMotion(); });
   layout();
-  updateMotion();
+  arm();
 })();
 
 /* Header and footer menus share the same keyboard and dismissal behaviour. */
