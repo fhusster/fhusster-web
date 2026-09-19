@@ -1,6 +1,9 @@
-/* The corner swarm: a stream of tilted grey blocks that pours out of the top
-   right corner of the opening section, thins as it sweeps down-left, and ends
-   in a fine tail beside the headline. It is rasterised by hand into a
+/* HOME only. The corner swarm: a stream of tilted blocks in the logo's two
+   colours (navy and magenta) that pours out of the top right corner of the
+   hero, thins as it sweeps left over the headline, and ends in a fine pale
+   tail. The deepest shades cluster in the corner; the tints pale toward the
+   tail. A few pale strays have escaped the bunch and float aimlessly in the
+   section below. Everything is rasterised by hand into a
    low-resolution buffer (one art pixel = several CSS pixels, hard edges, no
    antialiasing) so the tilt reads as stair-stepped pixel art.
 
@@ -8,7 +11,7 @@
    rails are simply two lines laid over the art. Nothing is cut out for them. */
 (function () {
   "use strict";
-  var section = document.querySelector("main .hero, main .page-head, main .hb-hero, main .dr-hero");
+  var section = document.querySelector("main .hero");
   var divider = section && section.querySelector(".rule-dia");
   var railsLayer = document.querySelector(".rails");
   if (!divider) return;
@@ -31,16 +34,19 @@
   var ART_PX = 3;            // CSS pixels per art pixel
   var TILT = -0.27;          // base tilt in radians (counter-clockwise, as the reference)
   var TILT_JITTER = 0.2;
-  // Cool greys, darkest first. #A1A4A8 is the old corner grey darkened by 20%.
-  var GREYS = [
-    [161, 164, 168], [176, 179, 184], [191, 194, 199], [201, 205, 210],
-    [212, 215, 219], [222, 225, 229], [231, 233, 236], [239, 240, 243]
-  ];
-  var SIDE_SHADE = 0.8;      // the block's receding face, relative to its front
+  // The logo's two colours. Each block is one hue at one of eight shades:
+  // TINTS[k] is how far that shade is washed toward white (0 = full colour).
+  var HUES = [[8, 43, 92], [255, 43, 115]];   // --navy, --magenta
+  var NAVY_SHARE = .56;
+  var TINTS = [0, .15, .31, .47, .61, .73, .83, .9];
+  var SIDE_STEP = .17;       // the receding face sits this much deeper than the front
+  var FLOATER_COUNT = 11;    // strays in the section below (phones get about half)
 
-  var width = 0, height = 0, cols = 0, rows = 0;
+  var below = section.nextElementSibling;
+  var width = 0, height = 0, fullHeight = 0, cols = 0, rows = 0;
   var image = null, pixels = null;
   var blocks = [];
+  var floaters = [];
   var frame = 0, previous = 0, elapsed = 0, visible = true;
 
   /* Deterministic: the swarm must not reshuffle on every resize. */
@@ -52,15 +58,25 @@
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     };
   }
-  function pack(rgb, shade) {
-    var r = Math.round(rgb[0] * shade), g = Math.round(rgb[1] * shade), b = Math.round(rgb[2] * shade);
-    return (255 << 24 | b << 16 | g << 8 | r) >>> 0; // little-endian RGBA
+  /* A hue washed toward white by `tint`; a negative tint deepens it instead. */
+  function pack(rgb, tint) {
+    var channel = function (value) {
+      return Math.round(tint >= 0 ? value + (255 - value) * tint : value * (1 + tint));
+    };
+    return (255 << 24 | channel(rgb[2]) << 16 | channel(rgb[1]) << 8 | channel(rgb[0])) >>> 0; // little-endian RGBA
   }
 
-  /* Where the tail should die out: just past the right edge of the headline's
-     actual text, level with its lower half. */
-  function tailTarget(sectionRect) {
+  /* Where the tail dies out. Desktop: far to the left (as far as the short
+     "Join Us" headline used to let it run), riding in the clear strip between
+     the header and the kicker so it passes OVER the headline, not through it.
+     Phones: just past the headline's text, as before. */
+  function tailTarget(sectionRect, compact) {
     var heading = section.querySelector("h1");
+    var first = section.querySelector(".kicker") || heading;
+    if (!compact) {
+      var clear = first ? first.getBoundingClientRect().top - sectionRect.top : height * .18;
+      return { x: width * .25, y: Math.max(22, clear * .58) };
+    }
     var x = width * .42, y = height * .48;
     if (heading) {
       var range = document.createRange();
@@ -74,37 +90,76 @@
     return { x: Math.max(width * .2, Math.min(x, width * .66)), y: Math.max(height * .3, Math.min(y, height * .8)) };
   }
 
+  /* Boxes nothing may be drawn behind: every line of hero copy and the
+     buttons, in layer coordinates. The stream is carved around them. */
+  function keepClear(sectionRect) {
+    var boxes = [];
+    var pad = 16;
+    section.querySelectorAll(".kicker, h1, .lede").forEach(function (node) {
+      var range = document.createRange();
+      range.selectNodeContents(node);
+      Array.prototype.forEach.call(range.getClientRects(), function (rect) {
+        boxes.push([rect.left - pad, rect.top - sectionRect.top - pad, rect.right + pad, rect.bottom - sectionRect.top + pad]);
+      });
+    });
+    section.querySelectorAll(".btn").forEach(function (node) {
+      var rect = node.getBoundingClientRect();
+      boxes.push([rect.left - pad, rect.top - sectionRect.top - pad, rect.right + pad, rect.bottom - sectionRect.top + pad]);
+    });
+    return boxes;
+  }
+  function blocked(boxes, x, y, reach) {
+    for (var index = 0; index < boxes.length; index++) {
+      var box = boxes[index];
+      if (x + reach > box[0] && x - reach < box[2] && y + reach > box[1] && y - reach < box[3]) return true;
+    }
+    return false;
+  }
+
   function build() {
     var sectionRect = section.getBoundingClientRect();
-    var tail = tailTarget(sectionRect);
-    // Quadratic path: dives out of the corner, then flattens toward the tail.
-    var p0 = { x: width * 1.01, y: -height * .1 };
-    var p2 = tail;
-    var p1 = { x: p2.x + (p0.x - p2.x) * .46, y: p2.y + height * .1 };
-    var random = generator(20260919);
     // Phones: the headline runs the full width, so the cluster stays small,
     // pale and tucked into the corner instead of sitting behind the type.
     var compact = width < 700;
-    var headSize = compact ? 22 : Math.max(30, Math.min(60, width / 22));
+    var tail = tailTarget(sectionRect, compact);
+    var boxes = keepClear(sectionRect);
+    // Cubic path: dives out of the corner, bellies down in the open space to
+    // the right of the copy, then levels out INTO the clear strip above the
+    // copy before it reaches the text, and runs flat along it to the tail.
+    var copyRight = boxes.reduce(function (edge, box) { return Math.max(edge, box[2]); }, 0);
+    var p0 = { x: width * 1.01, y: -height * .08 };
+    var p3 = tail;
+    var p1, p2;
+    if (compact) {
+      p1 = { x: p3.x + (p0.x - p3.x) * .6, y: p3.y + height * .07 };
+      p2 = { x: p3.x + (p0.x - p3.x) * .3, y: p3.y + height * .07 };
+    } else {
+      var entry = Math.min(Math.max(copyRight + 50, p3.x + 80), width * .82);
+      p1 = { x: entry + (p0.x - entry) * .55, y: height * .7 };
+      p2 = { x: entry, y: p3.y };
+    }
+    var random = generator(20260919);
+    var headSize = compact ? 22 : Math.max(34, Math.min(74, width / 19));
     var headSpread = compact ? Math.max(60, width * .17)
-      : Math.min(Math.max(150, Math.min(330, width * .23)), height * .85);
-    var count = Math.round(Math.max(320, Math.min(760, width * .5)));
+      : Math.min(Math.max(170, Math.min(400, width * .27)), height * .92);
+    var count = Math.round(Math.max(320, Math.min(1000, width * .66)));
 
     blocks = [];
     for (var index = 0; index < count; index++) {
-      var t = random();
+      var t = Math.pow(random(), .85);   // a few more blocks toward the tail
       var inverse = 1 - t;
-      var x = inverse * inverse * p0.x + 2 * inverse * t * p1.x + t * t * p2.x;
-      var y = inverse * inverse * p0.y + 2 * inverse * t * p1.y + t * t * p2.y;
-      var dx = 2 * inverse * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
-      var dy = 2 * inverse * (p1.y - p0.y) + 2 * t * (p2.y - p1.y);
+      var b0 = inverse * inverse * inverse, b1 = 3 * inverse * inverse * t, b2 = 3 * inverse * t * t, b3 = t * t * t;
+      var x = b0 * p0.x + b1 * p1.x + b2 * p2.x + b3 * p3.x;
+      var y = b0 * p0.y + b1 * p1.y + b2 * p2.y + b3 * p3.y;
+      var dx = 3 * inverse * inverse * (p1.x - p0.x) + 6 * inverse * t * (p2.x - p1.x) + 3 * t * t * (p3.x - p2.x);
+      var dy = 3 * inverse * inverse * (p1.y - p0.y) + 6 * inverse * t * (p2.y - p1.y) + 3 * t * t * (p3.y - p2.y);
       var length = Math.sqrt(dx * dx + dy * dy) || 1;
       dx /= length; dy /= length;
 
       // Bell-shaped scatter across the stream, with a few strays.
       var scatter = (random() + random() + random() - 1.5) / 1.5;
       if (random() < .09) scatter *= 1.9;
-      var spread = 14 + (headSpread - 14) * Math.pow(inverse, 1.15);
+      var spread = 15 + (headSpread - 15) * Math.pow(inverse, compact ? 1.15 : 1.5);
       x += -dy * scatter * spread;
       y += dx * scatter * spread;
 
@@ -113,19 +168,22 @@
       // The layer ends at the divider. Drop whole blocks rather than slicing
       // them on that line, so a short section gets a ragged edge, not a cut.
       if (y + size * .95 + 8 > height) continue;
+      // Copy stays on clean white: nothing is drawn behind a line of text.
+      if (blocked(boxes, x, y, size * .75 + 9)) continue;
       // Tone follows the stream (dark corner → pale tail); the top-right gets
       // an extra pull toward the darkest greys.
       var corner = Math.max(0, 1 - Math.sqrt(Math.pow((width - x) / (width * .34), 2) + Math.pow(y / (height * .62), 2)));
-      var tone = t * 6.4 + (random() - .5) * 4.6 - corner * 2.4 + Math.abs(scatter) * 1.1;
+      var tone = t * 6.6 + (random() - .5) * 3 - corner * 2.4 + Math.abs(scatter) * 1.1;
       if (compact) tone += 2;
-      tone = Math.max(0, Math.min(GREYS.length - 1, Math.round(tone)));
+      tone = Math.max(0, Math.min(TINTS.length - 1, Math.round(tone)));
+      var hue = HUES[random() < NAVY_SHARE ? 0 : 1];
 
       blocks.push({
         t: t, x: x, y: y, dx: dx, dy: dy,
         w: size * aspect, h: size,
         angle: TILT + (random() - .5) * TILT_JITTER * 2,
-        face: pack(GREYS[tone], 1),
-        side: pack(GREYS[tone], SIDE_SHADE),
+        face: pack(hue, TINTS[tone]),
+        side: pack(hue, TINTS[tone] - SIDE_STEP),
         depth: size > 13 ? Math.max(ART_PX, size * .2) : 0,
         phase: random() * Math.PI * 2,
         period: 5200 + random() * 6200,
@@ -135,6 +193,43 @@
     }
     // Far, pale blocks first; the near, dark cluster paints over them.
     blocks.sort(function (a, b) { return b.order - a.order; });
+    buildFloaters(random, compact);
+  }
+
+  /* The escapees: a handful of pale blocks adrift in the section below the
+     hero, mostly under the bunch they fell from. Each wanders on two
+     unrelated slow sines per axis (so the path never visibly repeats) and
+     tumbles as it goes. Homes avoid the section's card, which would hide them. */
+  function buildFloaters(random, compact) {
+    floaters = [];
+    if (fullHeight - height < 80) return;
+    var sectionRect = section.getBoundingClientRect();
+    var covers = [];
+    if (below) below.querySelectorAll(".card, .ribbon").forEach(function (node) {
+      var rect = node.getBoundingClientRect();
+      covers.push([rect.left - 6, rect.top - sectionRect.top - 6, rect.right + 6, rect.bottom - sectionRect.top + 6]);
+    });
+    var wanted = compact ? Math.ceil(FLOATER_COUNT / 2) : FLOATER_COUNT;
+    for (var attempt = 0; attempt < 400 && floaters.length < wanted; attempt++) {
+      var x = width * (.12 + .86 * Math.pow(random(), .62));
+      var y = height + 18 + (fullHeight - height - 40) * Math.pow(random(), 1.5);
+      var size = (compact ? 7 : 9) + random() * (compact ? 9 : 19);
+      var tone = 4 + Math.floor(random() * 3);
+      var hue = HUES[random() < NAVY_SHARE ? 0 : 1];
+      var roam = 26 + random() * 70;
+      var spin = (random() < .5 ? -1 : 1) * (.05 + random() * .12);
+      var values = [random(), random(), random(), random(), random(), random()];
+      if (blocked(covers, x, y, size)) continue;
+      floaters.push({
+        x: x, y: y, w: size * (.85 + random() * .4), h: size,
+        face: pack(hue, TINTS[tone]), side: pack(hue, TINTS[tone] - SIDE_STEP * .6),
+        depth: size > 13 ? Math.max(ART_PX, size * .2) : 0,
+        roam: roam, spin: spin, angle: TILT + (random() - .5),
+        a: 9000 + values[0] * 9000, b: 15000 + values[1] * 14000,
+        c: 11000 + values[2] * 9000, d: 17000 + values[3] * 15000,
+        p: values[4] * Math.PI * 2, q: values[5] * Math.PI * 2
+      });
+    }
   }
 
   /* Hard-edged rotated rectangle, point-sampled at art-pixel centres. */
@@ -171,6 +266,19 @@
       if (block.depth) stamp(x - block.depth * .8, y + block.depth, block.w, block.h, cos, sin, block.side);
       stamp(x, y, block.w, block.h, cos, sin, block.face);
     }
+    var turn = Math.PI * 2;
+    for (var stray = 0; stray < floaters.length; stray++) {
+      var f = floaters[stray];
+      var fx = f.x, fy = f.y, fAngle = f.angle;
+      if (!still) {
+        fx += (Math.sin(elapsed / f.a * turn + f.p) * .62 + Math.sin(elapsed / f.b * turn + f.q) * .38) * f.roam;
+        fy += (Math.cos(elapsed / f.c * turn + f.q) * .62 + Math.sin(elapsed / f.d * turn + f.p) * .38) * f.roam * .7;
+        fAngle += elapsed / 1000 * f.spin;
+      }
+      var fCos = Math.cos(fAngle), fSin = Math.sin(fAngle);
+      if (f.depth) stamp(fx - f.depth * .8, fy + f.depth, f.w, f.h, fCos, fSin, f.side);
+      stamp(fx, fy, f.w, f.h, fCos, fSin, f.face);
+    }
     context.putImageData(image, 0, 0);
   }
 
@@ -183,12 +291,15 @@
     var top = 0;
     for (var node = section; node; node = node.offsetParent) top += node.offsetTop;
     field.style.top = top + "px";
-    field.style.height = nextHeight + "px";
-    if (nextWidth === width && nextHeight === height && pixels) return;
-    width = nextWidth; height = nextHeight;
+    // The layer runs on through the section below, where the strays float.
+    var nextFull = below ? Math.round(below.getBoundingClientRect().bottom - sectionRect.top) : nextHeight;
+    nextFull = Math.max(nextHeight, nextFull);
+    field.style.height = nextFull + "px";
+    if (nextWidth === width && nextHeight === height && nextFull === fullHeight && pixels) return;
+    width = nextWidth; height = nextHeight; fullHeight = nextFull;
     ART_PX = width < 700 ? 2 : 3;
     cols = Math.max(1, Math.ceil(width / ART_PX));
-    rows = Math.max(1, Math.ceil(height / ART_PX));
+    rows = Math.max(1, Math.ceil(fullHeight / ART_PX));
     canvas.width = cols; canvas.height = rows;
     canvas.style.width = cols * ART_PX + "px";
     canvas.style.height = rows * ART_PX + "px";
@@ -215,12 +326,13 @@
   }
 
   new ResizeObserver(resize).observe(section);
+  if (below) new ResizeObserver(resize).observe(below);
   new ResizeObserver(resize).observe(document.body);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { width = 0; resize(); });
   new IntersectionObserver(function (entries) {
     visible = entries[0].isIntersecting;
     updateMotion();
-  }).observe(section);
+  }).observe(field);
   document.addEventListener("visibilitychange", updateMotion);
   reduced.addEventListener("change", updateMotion);
   resize();
