@@ -3,9 +3,9 @@
    hero, thins as it sweeps left over the headline, and ends in a fine pale
    tail. The deepest shades cluster in the corner; the tints pale toward the
    tail. A few pale strays have escaped the bunch and float aimlessly in the
-   section below. Everything is rasterised by hand into a
-   low-resolution buffer (one art pixel = several CSS pixels, hard edges, no
-   antialiasing) so the tilt reads as stair-stepped pixel art.
+   section below. Every block is a little extruded cube drawn as vector
+   geometry at the display's own resolution — true-resolution edges, no
+   pixel grid — so the tilted faces stay clean at any size or zoom.
 
    The layer lives OUTSIDE .site, directly on top of the fixed side rails, so
    the rails run behind the art and show only through its gaps. */
@@ -32,7 +32,8 @@
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   /* ---- look ---- */
-  var ART_PX = 3;            // CSS pixels per art pixel
+  var MIN_SIZE = 3;          // smallest cube in the tail, CSS px
+  var MAX_DPR = 3;           // render up to 3x the CSS grid, so edges stay sharp
   var TILT = -0.27;          // base tilt in radians (counter-clockwise, as the reference)
   var TILT_JITTER = 0.2;
   // The logo's two colours, each as an eight-shade ramp (deepest first).
@@ -51,12 +52,16 @@
   ];
   var SHADES = 20;           // distinct levels per hue (the eight-stop ramps are interpolated)
   var NAVY_SHARE = .56;
-  var SIDE_STEP = 1.15;      // the receding face sits this many shades deeper than the front
+  // The two visible receding faces, in shades deeper than the lit front face:
+  // light comes from the upper right, so the left flank is darker and the
+  // underside darker still. That is what makes each block read as a solid.
+  var SIDE_STEP = 1.15;
+  var UNDER_STEP = 1.9;
   var FLOATER_COUNT = 11;    // strays in the section below (phones get about half)
 
   var below = section.nextElementSibling;
-  var width = 0, height = 0, fullHeight = 0, cols = 0, rows = 0;
-  var image = null, pixels = null;
+  var width = 0, height = 0, fullHeight = 0, ratio = 1;
+  var ready = false;
   var blocks = [];
   var floaters = [];
   var frame = 0, previous = 0, elapsed = 0, visible = true;
@@ -70,9 +75,9 @@
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     };
   }
-  /* A ramp's colour at a fractional shade. Below shade 0 there is nothing
-     deeper on the ramp, so the full colour is darkened instead. */
-  function pack(ramp, shade) {
+  /* A ramp's colour at a fractional shade, as a CSS colour. Below shade 0
+     there is nothing deeper on the ramp, so the full colour is darkened. */
+  function shadeOf(ramp, shade) {
     var low = Math.max(0, Math.min(ramp.length - 1, Math.floor(shade)));
     var high = Math.min(ramp.length - 1, low + 1);
     var mix = Math.max(0, Math.min(1, shade - low));
@@ -80,7 +85,7 @@
     var channel = function (index) {
       return Math.round((ramp[low][index] + (ramp[high][index] - ramp[low][index]) * mix) * dim);
     };
-    return (255 << 24 | channel(2) << 16 | channel(1) << 8 | channel(0)) >>> 0; // little-endian RGBA
+    return "rgb(" + channel(0) + "," + channel(1) + "," + channel(2) + ")";
   }
 
   /* Where the tail dies out. Desktop: far to the left (as far as the short
@@ -180,7 +185,7 @@
       x += -dy * scatter * spread;
       y += dx * scatter * spread;
 
-      var size = ART_PX + (headSize - ART_PX) * Math.pow(inverse, 1.55) * (.45 + random() * .85);
+      var size = MIN_SIZE + (headSize - MIN_SIZE) * Math.pow(inverse, 1.55) * (.45 + random() * .85);
       var aspect = .8 + random() * .55;
       // The layer ends at the divider. Drop whole blocks rather than slicing
       // them on that line, so a short section gets a ragged edge, not a cut.
@@ -202,9 +207,10 @@
         t: t, x: x, y: y, dx: dx, dy: dy,
         w: size * aspect, h: size,
         angle: TILT + (random() - .5) * TILT_JITTER * 2,
-        face: pack(hue, tone),
-        side: pack(hue, tone - SIDE_STEP),
-        depth: size > 13 ? Math.max(ART_PX, size * .2) : 0,
+        face: shadeOf(hue, tone),
+        side: shadeOf(hue, tone - SIDE_STEP),
+        under: shadeOf(hue, tone - UNDER_STEP),
+        depth: size > 11 ? size * .2 : 0,
         phase: random() * Math.PI * 2,
         period: 5200 + random() * 6200,
         sway: (2.5 + size * .16) * (.6 + random() * .8),
@@ -242,8 +248,9 @@
       if (blocked(covers, x, y, size)) continue;
       floaters.push({
         x: x, y: y, w: size * (.85 + random() * .4), h: size,
-        face: pack(hue, tone), side: pack(hue, tone - SIDE_STEP * .6),
-        depth: size > 13 ? Math.max(ART_PX, size * .2) : 0,
+        face: shadeOf(hue, tone), side: shadeOf(hue, tone - SIDE_STEP * .6),
+        under: shadeOf(hue, tone - UNDER_STEP * .6),
+        depth: size > 11 ? size * .2 : 0,
         roam: roam, spin: spin, angle: TILT + (random() - .5),
         a: 9000 + values[0] * 9000, b: 15000 + values[1] * 14000,
         c: 11000 + values[2] * 9000, d: 17000 + values[3] * 15000,
@@ -252,28 +259,45 @@
     }
   }
 
-  /* Hard-edged rotated rectangle, point-sampled at art-pixel centres. */
-  function stamp(cx, cy, w, h, cos, sin, colour) {
-    var halfW = w / 2, halfH = h / 2;
-    var reach = Math.abs(halfW * cos) + Math.abs(halfH * sin);
-    var rise = Math.abs(halfW * sin) + Math.abs(halfH * cos);
-    var x0 = Math.max(0, Math.floor((cx - reach) / ART_PX));
-    var x1 = Math.min(cols - 1, Math.ceil((cx + reach) / ART_PX));
-    var y0 = Math.max(0, Math.floor((cy - rise) / ART_PX));
-    var y1 = Math.min(rows - 1, Math.ceil((cy + rise) / ART_PX));
-    for (var py = y0; py <= y1; py++) {
-      var oy = (py + .5) * ART_PX - cy;
-      var row = py * cols;
-      for (var px = x0; px <= x1; px++) {
-        var ox = (px + .5) * ART_PX - cx;
-        if (Math.abs(ox * cos + oy * sin) <= halfW && Math.abs(oy * cos - ox * sin) <= halfH) pixels[row + px] = colour;
-      }
+  /* One extruded cube: the lit front face plus the two faces that recede
+     from it. Corners are computed in page space and filled as paths, so the
+     renderer resolves every edge at device resolution instead of snapping it
+     to a grid. Each face is also stroked in its own colour, which closes the
+     hairline an antialiased seam leaves between two faces sharing an edge. */
+  function quad(a, b, c, d, colour) {
+    context.beginPath();
+    context.moveTo(a[0], a[1]);
+    context.lineTo(b[0], b[1]);
+    context.lineTo(c[0], c[1]);
+    context.lineTo(d[0], d[1]);
+    context.closePath();
+    context.fillStyle = colour;
+    context.strokeStyle = colour;
+    context.fill();
+    context.stroke();
+  }
+  function cube(x, y, w, h, cos, sin, block) {
+    var hw = w / 2, hh = h / 2;
+    var wc = hw * cos, ws = hw * sin, hc = hh * cos, hs = hh * sin;
+    var tl = [x - wc + hs, y - ws - hc];
+    var tr = [x + wc + hs, y + ws - hc];
+    var br = [x + wc - hs, y + ws + hc];
+    var bl = [x - wc - hs, y - ws + hc];
+    if (block.depth) {
+      // The extrusion runs down and to the left, away from the light.
+      var ex = -block.depth * .8, ey = block.depth;
+      var tle = [tl[0] + ex, tl[1] + ey];
+      var ble = [bl[0] + ex, bl[1] + ey];
+      var bre = [br[0] + ex, br[1] + ey];
+      quad(bl, br, bre, ble, block.under);
+      quad(tl, bl, ble, tle, block.side);
     }
+    quad(tl, tr, br, bl, block.face);
   }
 
   function draw() {
-    if (!pixels) return;
-    pixels.fill(0);
+    if (!ready) return;
+    context.clearRect(0, 0, width, fullHeight);
     var still = reduced.matches;
     for (var index = 0; index < blocks.length; index++) {
       var block = blocks[index];
@@ -282,9 +306,7 @@
       var x = block.x + block.dx * swing * block.sway - block.dy * lift * block.sway * .45;
       var y = block.y + block.dy * swing * block.sway + block.dx * lift * block.sway * .45;
       var angle = block.angle + swing * .045;
-      var cos = Math.cos(angle), sin = Math.sin(angle);
-      if (block.depth) stamp(x - block.depth * .8, y + block.depth, block.w, block.h, cos, sin, block.side);
-      stamp(x, y, block.w, block.h, cos, sin, block.face);
+      cube(x, y, block.w, block.h, Math.cos(angle), Math.sin(angle), block);
     }
     var turn = Math.PI * 2;
     for (var stray = 0; stray < floaters.length; stray++) {
@@ -295,11 +317,8 @@
         fy += (Math.cos(elapsed / f.c * turn + f.q) * .62 + Math.sin(elapsed / f.d * turn + f.p) * .38) * f.roam * .7;
         fAngle += elapsed / 1000 * f.spin;
       }
-      var fCos = Math.cos(fAngle), fSin = Math.sin(fAngle);
-      if (f.depth) stamp(fx - f.depth * .8, fy + f.depth, f.w, f.h, fCos, fSin, f.side);
-      stamp(fx, fy, f.w, f.h, fCos, fSin, f.face);
+      cube(fx, fy, f.w, f.h, Math.cos(fAngle), Math.sin(fAngle), f);
     }
-    context.putImageData(image, 0, 0);
   }
 
   function resize() {
@@ -315,16 +334,19 @@
     var nextFull = below ? Math.round(below.getBoundingClientRect().bottom - sectionRect.top) : nextHeight;
     nextFull = Math.max(nextHeight, nextFull);
     field.style.height = nextFull + "px";
-    if (nextWidth === width && nextHeight === height && nextFull === fullHeight && pixels) return;
-    width = nextWidth; height = nextHeight; fullHeight = nextFull;
-    ART_PX = width < 700 ? 2 : 3;
-    cols = Math.max(1, Math.ceil(width / ART_PX));
-    rows = Math.max(1, Math.ceil(fullHeight / ART_PX));
-    canvas.width = cols; canvas.height = rows;
-    canvas.style.width = cols * ART_PX + "px";
-    canvas.style.height = rows * ART_PX + "px";
-    image = context.createImageData(cols, rows);
-    pixels = new Uint32Array(image.data.buffer);
+    var nextRatio = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    if (nextWidth === width && nextHeight === height && nextFull === fullHeight
+      && nextRatio === ratio && ready) return;
+    width = nextWidth; height = nextHeight; fullHeight = nextFull; ratio = nextRatio;
+    // Backing store at device resolution, laid over the CSS-pixel box.
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(fullHeight * ratio);
+    canvas.style.width = width + "px";
+    canvas.style.height = fullHeight + "px";
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    context.lineJoin = "miter";
+    context.lineWidth = .7;
+    ready = true;
     build();
     draw();
   }

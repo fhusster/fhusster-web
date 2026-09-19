@@ -61,10 +61,10 @@ main{flex:1}
 
 /* The corner swarm (assets/js/pixel-background.js). Its layer sits in <body>
    just AFTER .rails at the same z-index, so the side rails run BEHIND the
-   art; .site (z 200) and its text stay above both. The
-   canvas is a low-res buffer scaled up with hard pixels. */
+   art; .site (z 200) and its text stay above both. The canvas is sized to
+   the device's own pixel grid, so the cubes' edges stay sharp. */
 .pixel-field{position:absolute;left:0;right:0;top:0;z-index:0;overflow:hidden;pointer-events:none;user-select:none}
-.pixel-background{display:block;position:absolute;top:0;right:0;max-width:none;image-rendering:crisp-edges;image-rendering:pixelated}
+.pixel-background{display:block;position:absolute;top:0;right:0;max-width:none}
 @media print{.pixel-field{display:none}}
 @media (forced-colors:active){.pixel-field{display:none}}
 
