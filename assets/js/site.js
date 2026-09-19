@@ -62,33 +62,33 @@
   });
 })();
 
-/* Mobile nav. */
+/* Header and footer menus share the same keyboard and dismissal behaviour. */
 (function () {
-  var toggle = document.querySelector(".nav-toggle");
-  var nav = document.getElementById("site-nav");
-  if (!toggle || !nav) return;
+  document.querySelectorAll(".nav-toggle[aria-controls]").forEach(function (toggle) {
+    var nav = document.getElementById(toggle.getAttribute("aria-controls"));
+    if (!nav) return;
 
-  function setOpen(open) {
-    nav.classList.toggle("open", open);
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-
-  toggle.addEventListener("click", function () {
-    setOpen(!nav.classList.contains("open"));
-  });
-
-  nav.addEventListener("click", function (e) {
-    if (e.target.closest("a")) setOpen(false);
-  });
-
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && nav.classList.contains("open")) {
-      setOpen(false);
-      toggle.focus();
+    function setOpen(open) {
+      nav.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
     }
+
+    toggle.addEventListener("click", function () {
+      setOpen(!nav.classList.contains("open"));
+    });
+
+    nav.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("open")) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
   });
 })();
-
 
 /* Inline gameplay previews. Keep the same video node while the surrounding
    grid expands, so playback does not restart. Native buttons provide touch,

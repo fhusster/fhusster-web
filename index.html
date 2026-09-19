@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20260918d">
+<link rel="stylesheet" href="assets/css/style.css?v=20260918f">
 </head>
 <body class="studio-home">
 
@@ -43,6 +43,12 @@
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
+    <div class="header-clouds" aria-hidden="true">
+      <span class="header-cloud"><img src="assets/img/clouds/cloud-1.png" alt="" decoding="async"></span>
+      <span class="header-cloud"><img src="assets/img/clouds/cloud-2.png" alt="" decoding="async"></span>
+      <span class="header-cloud"><img src="assets/img/clouds/cloud-3.png" alt="" decoding="async"></span>
+      <span class="header-cloud"><img src="assets/img/clouds/cloud-4.png" alt="" decoding="async"></span>
+    </div>
     <div class="header-inner">
       <a class="logo" href="index.html" aria-label="Fhusster home">
         <img class="logo-emblem" src="assets/img/emblem.png" alt="">
@@ -180,13 +186,17 @@
   </main>
 
   <footer class="site-footer">
-    <div class="scan footer-scan" aria-hidden="true"><span>Precise · Polished · Arcade Rooted</span></div>
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="index.html" aria-label="Fhusster home"><img class="footer-emblem" src="assets/img/emblem.png" alt="Fhusster emblem"></a>
-        <p class="footer-copy">© 2026 Fhusster. Independent game studio based in Ottawa, Canada.</p>
+        <p class="footer-copy"><span>© 2026 Fhusster.</span><span>Independent game studio based in Ottawa, Canada.</span></p>
       </div>
-      <nav class="footer-nav" aria-label="Footer">
+      <button class="nav-toggle footer-toggle" aria-expanded="false" aria-controls="footer-nav" aria-label="Footer menu">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+      <nav id="footer-nav" class="footer-nav" aria-label="Footer">
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="join.html">Join Us</a></li>
@@ -201,9 +211,9 @@
   </footer>
 </div>
 
-<script src="assets/js/site.js?v=20260918b" defer></script>
+<script src="assets/js/site.js?v=20260918f" defer></script>
 <script src="assets/js/ornaments.js" defer></script>
 <script src="assets/js/intro.js" defer></script>
-<script src="assets/js/pixel-background.js?v=20260918d" defer></script>
+<script src="assets/js/pixel-background.js?v=20260918f" defer></script>
 </body>
 </html>
