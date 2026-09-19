@@ -60,8 +60,8 @@ h3{font-size:1.1rem}
 main{flex:1}
 
 /* The corner swarm (assets/js/pixel-background.js). Its layer sits in <body>
-   just BEFORE .rails at the same z-index, so the two side rails are plain
-   lines laid over the art; .site (z 200) and its text stay above both. The
+   just AFTER .rails at the same z-index, so the side rails run BEHIND the
+   art; .site (z 200) and its text stay above both. The
    canvas is a low-res buffer scaled up with hard pixels. */
 .pixel-field{position:absolute;left:0;right:0;top:0;z-index:0;overflow:hidden;pointer-events:none;user-select:none}
 .pixel-background{display:block;position:absolute;top:0;right:0;max-width:none;image-rendering:crisp-edges;image-rendering:pixelated}
@@ -427,7 +427,7 @@ html.site-enter .rails{transform:translateY(0);transition:transform .7s ease-out
 /* during the slide the intro overlay (z 100) is still up; lift the rails
    above it (but below .site at 200) so they are visible while arriving */
 html.site-enter .rails{z-index:150}
-html.site-enter .pixel-field{z-index:149}
+html.site-enter .pixel-field{z-index:151}
 
 .intro-stage{position:relative;width:var(--sw);height:var(--sh);user-select:none}
 #intro .emblem{

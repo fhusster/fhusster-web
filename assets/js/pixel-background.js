@@ -7,8 +7,8 @@
    low-resolution buffer (one art pixel = several CSS pixels, hard edges, no
    antialiasing) so the tilt reads as stair-stepped pixel art.
 
-   The layer lives OUTSIDE .site, directly beneath the fixed side rails, so the
-   rails are simply two lines laid over the art. Nothing is cut out for them. */
+   The layer lives OUTSIDE .site, directly on top of the fixed side rails, so
+   the rails run behind the art and show only through its gaps. */
 (function () {
   "use strict";
   var section = document.querySelector("main .hero");
@@ -24,8 +24,9 @@
   field.appendChild(canvas);
   var context = canvas.getContext("2d");
   if (!context) return;
-  // Before the rails in source order: same z-index, so the rails paint on top.
-  if (railsLayer) document.body.insertBefore(field, railsLayer);
+  // AFTER the rails in source order: same z-index, so the art paints over the
+  // rails and they run behind it (.site, z 200, still sits above both).
+  if (railsLayer) document.body.insertBefore(field, railsLayer.nextSibling);
   else document.body.insertBefore(field, document.body.firstChild);
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
