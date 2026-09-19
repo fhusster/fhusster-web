@@ -62,6 +62,110 @@
   });
 })();
 
+/* Keep the four header clouds in one non-overlapping convoy. Every time a
+   cloud loops behind the others it receives a new gap; some gaps are exactly
+   zero so neighbouring cloud edges can meet naturally. */
+(function () {
+  var track = document.querySelector(".header-clouds");
+  if (!track) return;
+  var clouds = Array.prototype.slice.call(track.querySelectorAll(".header-cloud"));
+  if (!clouds.length) return;
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var positions = [];
+  var widths = [];
+  // Transparent padding in the generated PNGs. Scheduling against the visible
+  // bounds lets a zero gap look like a true edge touch without cloud overlap.
+  var edgeInsets = [[.031, .032], [.047, .049], [.026, .027], [.019, .018]];
+  var viewportWidth = 0;
+  var speed = 0;
+  var frame = 0;
+  var previous = 0;
+  var accumulator = 0;
+
+  function randomGap() {
+    if (Math.random() < .24) return 0;
+    return Math.round(10 + Math.random() * Math.min(180, viewportWidth * .18));
+  }
+
+  function paint() {
+    clouds.forEach(function (cloud, index) {
+      cloud.style.transform = "translate3d(" + positions[index].toFixed(2) + "px,0,0)";
+    });
+  }
+
+  function layout() {
+    viewportWidth = track.clientWidth;
+    widths = clouds.map(function (cloud) { return cloud.getBoundingClientRect().width; });
+    // The previous desktop loop crossed the header in about 160 seconds
+    // (120 on small screens). Four times that duration is 75% slower.
+    var duration = viewportWidth <= 600 ? 480 : 640;
+    var averageWidth = widths.reduce(function (sum, width) { return sum + width; }, 0) / widths.length;
+    speed = (viewportWidth + averageWidth) / duration;
+
+    var visibleWidths = widths.map(function (width, index) {
+      return width * (1 - edgeInsets[index][0] - edgeInsets[index][1]);
+    });
+    var totalWidth = visibleWidths.reduce(function (sum, width) { return sum + width; }, 0);
+    var availableGap = Math.max(0, viewportWidth - totalWidth);
+    var visibleX = -Math.min(visibleWidths[0] * .3, 45);
+    var touchingPair = Math.floor(Math.random() * (widths.length - 1));
+    positions = widths.map(function (width, index) {
+      var position = visibleX - width * edgeInsets[index][0];
+      var remaining = widths.length - index - 1;
+      var gap = remaining ? Math.min(index === touchingPair ? 0 : randomGap(), availableGap / remaining) : 0;
+      availableGap -= gap;
+      visibleX += visibleWidths[index] + gap;
+      return position;
+    });
+    track.classList.add("js-clouds");
+    paint();
+  }
+
+  function animate(timestamp) {
+    frame = requestAnimationFrame(animate);
+    if (!previous) previous = timestamp;
+    var delta = Math.min(timestamp - previous, 100);
+    previous = timestamp;
+    accumulator += delta;
+    if (accumulator < 1000 / 30) return;
+
+    var distance = speed * accumulator / 1000;
+    accumulator = 0;
+    for (var index = 0; index < positions.length; index++) positions[index] += distance;
+
+    for (var pass = 0; pass < positions.length; pass++) {
+      var outgoing = positions.findIndex(function (position, index) {
+        return position + widths[index] * edgeInsets[index][0] >= viewportWidth;
+      });
+      if (outgoing === -1) break;
+      var leftmost = Math.min.apply(null, positions.map(function (position, index) {
+        return index === outgoing ? Infinity : position + widths[index] * edgeInsets[index][0];
+      }));
+      positions[outgoing] = leftmost - randomGap() - widths[outgoing] * (1 - edgeInsets[outgoing][1]);
+    }
+    paint();
+  }
+
+  function updateMotion() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    previous = 0;
+    accumulator = 0;
+    if (!reduced.matches && !document.hidden) frame = requestAnimationFrame(animate);
+  }
+
+  var resizeTimer = 0;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { layout(); updateMotion(); }, 120);
+  }, { passive: true });
+  document.addEventListener("visibilitychange", updateMotion);
+  reduced.addEventListener("change", function () { layout(); updateMotion(); });
+  layout();
+  updateMotion();
+})();
+
 /* Header and footer menus share the same keyboard and dismissal behaviour. */
 (function () {
   document.querySelectorAll(".nav-toggle[aria-controls]").forEach(function (toggle) {

@@ -349,20 +349,20 @@ a.card-link:hover{text-decoration:none}
 /* Each complete cloud rests on the header baseline, beneath the navigation.
    Clip only this decorative layer so the mobile menu can still open below. */
 .header-clouds{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
-.header-cloud{position:absolute;left:0;bottom:0;width:clamp(150px,19vw,245px);height:100%;animation:header-cloud-drift 160s linear infinite;will-change:transform}
+.header-cloud{position:absolute;bottom:0;width:clamp(150px,19vw,245px);height:100%}
+.header-cloud:nth-child(1){left:-8%}
+.header-cloud:nth-child(2){left:22%}
+.header-cloud:nth-child(3){left:52%}
+.header-cloud:nth-child(4){left:82%}
+.header-clouds.js-clouds .header-cloud{left:0;will-change:transform}
 .header-cloud img{position:absolute;bottom:0;width:100%;max-width:none;height:auto}
-.header-cloud:nth-child(1){animation-delay:-20s}
-.header-cloud:nth-child(2){animation-delay:-60s}
-.header-cloud:nth-child(3){animation-delay:-100s}
-.header-cloud:nth-child(4){animation-delay:-140s}
 /* Compensate for each original PNG's transparent bottom margin. */
 .header-cloud:nth-child(1) img{transform:translateY(16.85%)}
 .header-cloud:nth-child(2) img{transform:translateY(26.86%)}
 .header-cloud:nth-child(3) img{transform:translateY(19.8%)}
 .header-cloud:nth-child(4) img{transform:translateY(21.82%)}
-@keyframes header-cloud-drift{from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
-@media (max-width:600px){.header-cloud{width:clamp(74px,24vw,130px);animation-duration:120s}.header-cloud:nth-child(1){animation-delay:-15s}.header-cloud:nth-child(2){animation-delay:-45s}.header-cloud:nth-child(3){animation-delay:-75s}.header-cloud:nth-child(4){animation-delay:-105s}}
-@media (prefers-reduced-motion:reduce){.header-cloud{animation:none;will-change:auto}.header-cloud:nth-child(1){left:5%}.header-cloud:nth-child(2){left:30%}.header-cloud:nth-child(3){left:55%}.header-cloud:nth-child(4){left:80%}}
+@media (max-width:600px){.header-cloud{width:clamp(74px,24vw,130px)}}
+@media (prefers-reduced-motion:reduce){.header-clouds.js-clouds .header-cloud{will-change:auto}}
 @media print,(forced-colors:active){.header-clouds{display:none}}
 .footer-inner{
   width:var(--content-w);height:100%;margin:0 auto;
