@@ -1,6 +1,8 @@
 /* Fhusster ornaments: waving-ribbon column slicer, from
    fhusster-ribbon-rails.html. Rebuilds every .ribbon-body as vertical
-   columns so the banner can ripple. Runs once on load, again when the
+   columns so the banner can ripple WHEN HOVERED (the columns sit in
+   register and read as one solid banner the rest of the time; the wave
+   itself is CSS, on .ribbon:hover). Runs once on load, again when the
    webfont lands, and on any width change. Does nothing under
    prefers-reduced-motion, and the ribbon renders flat and correct if this
    file never loads at all. */
@@ -38,9 +40,13 @@
     var count = Math.ceil(width / step);
     var frag = document.createDocumentFragment();
 
+    // Half a pixel of bleed on each side: neighbouring columns overlap, so a
+    // rounding gap between two clip paths can never show as a hairline down
+    // the banner while the ripple has them at different heights.
+    var bleed = .5;
     for (var i = 0; i < count; i++) {
-      var left = i * step;
-      var right = Math.max(0, width - (i + 1) * step);
+      var left = Math.max(0, i * step - bleed);
+      var right = Math.max(0, width - (i + 1) * step - bleed);
       var col = document.createElement("span");
       col.className = "ribbon-slice";
       col.setAttribute("aria-hidden", "true");

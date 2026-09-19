@@ -566,8 +566,10 @@ html.site-enter .pixel-field{z-index:151}
 .footer-scan{display:flex;align-items:center;justify-content:center;padding:1rem 1.25rem;margin-bottom:2rem}
 .footer-scan span{font-family:var(--font-head);text-transform:uppercase;letter-spacing:.14em;font-size:.78rem}
 
-/* 12 · ribbon banner, waving (fhusster-ribbon-rails.html). Flat without JS
-   or under reduced motion; ornaments.js slices the body into columns. */
+/* 12 · ribbon banner (fhusster-ribbon-rails.html). It hangs STILL and only
+   ripples while the pointer is on it. Flat without JS or under reduced
+   motion; ornaments.js slices the body into columns, which sit in register
+   and read as one solid banner until the wave runs. */
 .ribbon{
   --rib-body:var(--navy);
   --rib-tail:var(--magenta);
@@ -618,11 +620,20 @@ html.site-enter .pixel-field{z-index:151}
   background:var(--rib-body);
   border-top:2px solid var(--rib-edge);
   border-bottom:2px solid var(--rib-edge);
+  display:none;              /* only drawn while the ripple runs */
 }
-.ribbon.is-waving > .ribbon-body{background:transparent;border-color:transparent}
 .ribbon-label{position:relative;z-index:2}
-.ribbon.is-waving .ribbon-slice,
-.ribbon.is-waving .ribbon-tail{
+/* Pointer on the banner: hand it over to the columns — the body goes
+   transparent so their moving edges are the banner's edges — and set the
+   ripple travelling along them, one column behind the next. */
+.ribbon.is-waving:hover > .ribbon-body,
+.ribbon.is-waving:focus-within > .ribbon-body{background:transparent;border-color:transparent}
+.ribbon.is-waving:hover .ribbon-slice,
+.ribbon.is-waving:focus-within .ribbon-slice{display:block}
+.ribbon.is-waving:hover .ribbon-slice,
+.ribbon.is-waving:hover .ribbon-tail,
+.ribbon.is-waving:focus-within .ribbon-slice,
+.ribbon.is-waving:focus-within .ribbon-tail{
   animation:ribbon-wave var(--rib-period) steps(1,end) infinite;
   animation-delay:calc(var(--i) * var(--rib-lag) * -1);
 }
@@ -645,9 +656,11 @@ html.site-enter .pixel-field{z-index:151}
 h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1rem}
 
 @media (prefers-reduced-motion:reduce){
-  .ribbon.is-waving > .ribbon-body{background:var(--rib-body);border-color:var(--rib-edge)}
+  .ribbon.is-waving:hover > .ribbon-body,
+  .ribbon.is-waving:focus-within > .ribbon-body{background:var(--rib-body);border-color:var(--rib-edge)}
   .ribbon .ribbon-slice{display:none}
-  .ribbon.is-waving .ribbon-tail{animation:none}
+  .ribbon.is-waving:hover .ribbon-tail,
+  .ribbon.is-waving:focus-within .ribbon-tail{animation:none}
 }
 
 /* 13 · side rails: thick twin rails pinned to the viewport edges. One light
@@ -857,17 +870,6 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .footer-copy{max-width:29rem}
 .footer-nav a{letter-spacing:.08em}
 .footer-scan{padding:.8rem 1.25rem}
-
-/* Remove the animation on hover: straighten every slice, then restart on leave. */
-.ribbon:hover .ribbon-slice,
-.ribbon:hover .ribbon-tail,
-.ribbon:focus-within .ribbon-slice,
-.ribbon:focus-within .ribbon-tail{animation:none;transform:none}
-/* Use the unsliced body while straight, avoiding clip-path seams between columns. */
-.ribbon.is-waving:hover > .ribbon-body,
-.ribbon.is-waving:focus-within > .ribbon-body{background:var(--rib-body);border-color:var(--rib-edge)}
-.ribbon:hover .ribbon-slice,
-.ribbon:focus-within .ribbon-slice{display:none}
 
 /* Matching grid track functions at both ends allow continuous interpolation.
    The video keeps its intrinsic aspect ratio as the text column reflows. */
