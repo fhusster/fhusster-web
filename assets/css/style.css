@@ -165,21 +165,74 @@ main{flex:1}
 /* ==========================================================================
    Buttons, badges, cards
    ========================================================================== */
+/* Buttons are the corner swarm's blocks, squared off: a flat colour face
+   with the same two receding faces the cubes have — a left flank and an
+   underside, one and two shades deeper, lit from the upper right. Hovering
+   presses the face down into its own extrusion while a sheen crosses it from
+   the light's side. Every pair on the site is one magenta and one navy. */
+/* Registered so the depth can be transitioned; inherited so the two face
+   pseudo-elements, which are drawn from it, actually see it. */
+@property --btn-dx{syntax:"<length>";inherits:true;initial-value:0px}
+@property --btn-dy{syntax:"<length>";inherits:true;initial-value:0px}
+@property --btn-sheen{syntax:"<color>";inherits:true;initial-value:transparent}
 .btn{
+  --face:var(--navy);
+  --flank:#062045;            /* face x .75, as the cubes' side face */
+  --under:#051935;            /* face x .58, as the cubes' underside */
+  --btn-dx:5px;
+  --btn-dy:6px;
+  position:relative;
+  /* Its own stacking context: without one, the faces (negative z-index) would
+     paint under the background of any card the button sits on. */
+  isolation:isolate;
   display:inline-block;
   font-family:var(--font-head);text-transform:uppercase;letter-spacing:.12em;
   font-weight:600;font-size:.85rem;
-  padding:.75rem 1.5rem;
-  border:2px solid var(--line);border-radius:var(--radius);
-  color:var(--ink);background:transparent;cursor:pointer;
-  transition:color .15s,background-color .15s,border-color .15s;
+  /* +2px each side stands in for the 2px border these used to carry */
+  padding:calc(.75rem + 2px) calc(1.5rem + 2px);
+  border:0;border-radius:0;   /* sharp, like every block in the art */
+  color:#fff;text-decoration:none;
+  background-color:var(--face);
+  /* the light catching the face, from the same corner it does in the art */
+  --btn-sheen:transparent;
+  background-image:radial-gradient(125% 150% at 100% 0,var(--btn-sheen),transparent 62%);
+  cursor:pointer;
+  transition:--btn-dx .14s ease-out,--btn-dy .14s ease-out,transform .14s ease-out,
+             --btn-sheen .22s ease-out,text-shadow .18s;
 }
-.btn:hover{border-color:var(--magenta);color:var(--magenta);text-decoration:none}
-.btn-primary{border-color:var(--magenta);color:var(--magenta)}
-.btn-primary:hover{background:var(--magenta);color:#fff}
-/* Heavy Bag-themed button, game pages/cards only */
-.btn-hb{border-color:var(--olive);color:var(--olive)}
-.btn-hb:hover{background:var(--olive);border-color:var(--olive);color:#fff}
+/* The two receding faces, drawn outside the box as the cubes draw them.
+   Negative z-index keeps them behind the face but above the page. */
+.btn::before,.btn::after{content:"";position:absolute;z-index:-1;pointer-events:none}
+.btn::before{                 /* left flank */
+  left:calc(var(--btn-dx) * -1);top:0;
+  width:var(--btn-dx);height:calc(100% + var(--btn-dy));
+  background:var(--flank);
+  clip-path:polygon(100% 0,100% calc(100% - var(--btn-dy)),0 100%,0 var(--btn-dy));
+}
+.btn::after{                  /* underside */
+  left:calc(var(--btn-dx) * -1);top:100%;
+  width:calc(100% + var(--btn-dx));height:var(--btn-dy);
+  background:var(--under);
+  clip-path:polygon(var(--btn-dx) 0,100% 0,calc(100% - var(--btn-dx)) 100%,0 100%);
+}
+/* Pressed: the face travels down the extrusion it was standing on, so the
+   block's outer corner stays put and only the depth closes up. */
+.btn:hover,.btn:focus-visible{
+  color:#fff;text-decoration:none;
+  --btn-dx:1.5px;--btn-dy:2px;
+  transform:translate(-3.5px,4px);
+  --btn-sheen:rgba(255,255,255,.4);
+  text-shadow:0 0 14px rgba(255,255,255,.6),0 1px 0 rgba(0,0,0,.2);
+}
+.btn:active{--btn-dx:0px;--btn-dy:0px;transform:translate(-5px,6px);transition-duration:.06s}
+/* A button on a dark surface keeps its face readable against it. */
+.scan .btn,.card--navy .btn{--btn-sheen:rgba(255,255,255,.06)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:5px}
+.btn-primary{--face:var(--magenta);--flank:#BF2056;--under:#941943}
+@media (prefers-reduced-motion:reduce){
+  .btn{transition:--btn-sheen .22s ease-out,text-shadow .18s}
+  .btn:hover,.btn:focus-visible,.btn:active{transform:none}
+}
 
 .badge{
   display:inline-block;
@@ -697,8 +750,8 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    ========================================================================== */
 
 /* Dad Reflex-themed button, game pages/cards only */
-.btn-dr{border-color:var(--navy);color:var(--navy)}
-.btn-dr:hover{background:var(--navy);border-color:var(--navy);color:#fff}
+/* Dad Reflex's own button is the navy of the pair, spelled out for the page. */
+.btn-dr{--face:var(--navy);--flank:#062045;--under:#051935}
 
 /* Shipped. The studio's action colour, so a live game reads as live. */
 .badge-live{color:var(--magenta);border-color:var(--magenta)}
