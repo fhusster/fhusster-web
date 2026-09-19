@@ -1,7 +1,7 @@
 /* HOME only. The corner swarm: a stream of tilted blocks in the logo's two
    colours (navy and magenta) that pours out of the top right corner of the
    hero, thins as it sweeps left over the headline, and ends in a fine pale
-   tail. The deepest shades cluster in the corner; the tints pale toward the
+   tail. Shade steps down in equal vertical bands from the right edge; the tints pale toward the
    tail. A few pale strays have escaped the bunch and float aimlessly in the
    section below. Everything is rasterised by hand into a
    low-resolution buffer (one art pixel = several CSS pixels, hard edges, no
@@ -49,6 +49,7 @@
       return MAGENTA.map(function (value) { return Math.round(value + (255 - value) * tint); });
     })
   ];
+  var ZONES = 20;            // vertical shade bands across the cluster (ramps are interpolated)
   var NAVY_SHARE = .56;
   var SIDE_STEP = 1.15;      // the receding face sits this many shades deeper than the front
   var FLOATER_COUNT = 11;    // strays in the section below (phones get about half)
@@ -154,6 +155,7 @@
       p1 = { x: entry + (p0.x - entry) * .55, y: height * .7 };
       p2 = { x: entry, y: p3.y };
     }
+    var zoneWidth = Math.max(1, (width - tail.x) / ZONES);
     var random = generator(20260919);
     var headSize = compact ? 22 : Math.max(34, Math.min(74, width / 19));
     var headSpread = compact ? Math.max(60, width * .17)
@@ -186,12 +188,14 @@
       if (y + size * .95 + 8 > height) continue;
       // Copy stays on clean white: nothing is drawn behind a line of text.
       if (blocked(boxes, x, y, size * .75 + 9)) continue;
-      // Tone follows the stream (dark corner → pale tail); the top-right gets
-      // an extra pull toward the darkest greys.
-      var corner = Math.max(0, 1 - Math.sqrt(Math.pow((width - x) / (width * .34), 2) + Math.pow(y / (height * .62), 2)));
-      var tone = t * 6.6 + (random() - .5) * 3 - corner * 2.4 + Math.abs(scatter) * 1.1;
-      if (compact) tone += 2;
-      tone = Math.max(0, Math.min(TINTS.length - 1, Math.round(tone)));
+      // Shade comes from WHERE the block sits, nothing else: the cluster is
+      // cut into ZONES vertical bands of equal width, deepest at the right
+      // edge and palest at the tail, and a block takes the shade of the band
+      // its centre (so the bulk of it) falls in. Both hues share the level, so
+      // each band is one matched navy/magenta pair. No random jitter.
+      var zone = Math.max(0, Math.min(ZONES - 1, Math.floor((width - x) / zoneWidth)));
+      var tone = zone / (ZONES - 1) * (TINTS.length - 1);
+      if (compact) tone = Math.min(TINTS.length - 1, tone + 2);
       var hue = RAMPS[random() < NAVY_SHARE ? 0 : 1];
 
       blocks.push({
