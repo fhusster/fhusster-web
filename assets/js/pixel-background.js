@@ -16,6 +16,7 @@
   var frame = 0, previous = 0, elapsed = 0, visible = true;
   var rows = [12, 12, 11, 10, 8, 7, 5, 3, 1];
   var extentX = 0, extentY = 0;
+  var rails = Array.prototype.slice.call(document.querySelectorAll(".rail"));
 
   function resize() {
     width = section.clientWidth;
@@ -57,6 +58,16 @@
         context.fillRect(Math.round(width - (x + 1) * cell - drift), Math.round(y * cell + drift * .4), size, size);
       }
     }
+    // The fixed navy/magenta side rails live behind the page. Cut their exact
+    // channels through the pixel canvas so the squares visibly pass beneath
+    // both rails without moving the rails above the footer or page content.
+    var canvasRect = canvas.getBoundingClientRect();
+    rails.forEach(function (rail) {
+      var railRect = rail.getBoundingClientRect();
+      if (!railRect.width) return;
+      context.clearRect(Math.floor(railRect.left - canvasRect.left), 0,
+        Math.ceil(railRect.width), height);
+    });
   }
   function animate(timestamp) {
     frame = 0;
