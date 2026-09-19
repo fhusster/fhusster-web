@@ -34,12 +34,22 @@
   var ART_PX = 3;            // CSS pixels per art pixel
   var TILT = -0.27;          // base tilt in radians (counter-clockwise, as the reference)
   var TILT_JITTER = 0.2;
-  // The logo's two colours. Each block is one hue at one of eight shades:
-  // TINTS[k] is how far that shade is washed toward white (0 = full colour).
-  var HUES = [[8, 43, 92], [255, 43, 115]];   // --navy, --magenta
-  var NAVY_SHARE = .56;
+  // The logo's two colours, each as an eight-shade ramp (deepest first).
+  // Magenta is a bright colour, so washing it toward white stays pink all the
+  // way. Navy is a DARK colour: washed toward white it turns slate grey, so
+  // its ramp is drawn by hand through saturated blue instead
+  // (navy → blue → light blue → palest blue), lightening in step with the pinks.
+  var MAGENTA = [255, 43, 115];               // --magenta
   var TINTS = [0, .15, .31, .47, .61, .73, .83, .9];
-  var SIDE_STEP = .17;       // the receding face sits this much deeper than the front
+  var RAMPS = [
+    [[8, 43, 92], [12, 60, 130], [18, 82, 176], [36, 110, 216],   // --navy first
+      [86, 148, 234], [138, 183, 243], [184, 212, 249], [217, 232, 253]],
+    TINTS.map(function (tint) {
+      return MAGENTA.map(function (value) { return Math.round(value + (255 - value) * tint); });
+    })
+  ];
+  var NAVY_SHARE = .56;
+  var SIDE_STEP = 1.15;      // the receding face sits this many shades deeper than the front
   var FLOATER_COUNT = 11;    // strays in the section below (phones get about half)
 
   var below = section.nextElementSibling;
@@ -58,12 +68,17 @@
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     };
   }
-  /* A hue washed toward white by `tint`; a negative tint deepens it instead. */
-  function pack(rgb, tint) {
-    var channel = function (value) {
-      return Math.round(tint >= 0 ? value + (255 - value) * tint : value * (1 + tint));
+  /* A ramp's colour at a fractional shade. Below shade 0 there is nothing
+     deeper on the ramp, so the full colour is darkened instead. */
+  function pack(ramp, shade) {
+    var low = Math.max(0, Math.min(ramp.length - 1, Math.floor(shade)));
+    var high = Math.min(ramp.length - 1, low + 1);
+    var mix = Math.max(0, Math.min(1, shade - low));
+    var dim = shade < 0 ? Math.max(.55, 1 + shade * .22) : 1;
+    var channel = function (index) {
+      return Math.round((ramp[low][index] + (ramp[high][index] - ramp[low][index]) * mix) * dim);
     };
-    return (255 << 24 | channel(rgb[2]) << 16 | channel(rgb[1]) << 8 | channel(rgb[0])) >>> 0; // little-endian RGBA
+    return (255 << 24 | channel(2) << 16 | channel(1) << 8 | channel(0)) >>> 0; // little-endian RGBA
   }
 
   /* Where the tail dies out. Desktop: far to the left (as far as the short
@@ -176,14 +191,14 @@
       var tone = t * 6.6 + (random() - .5) * 3 - corner * 2.4 + Math.abs(scatter) * 1.1;
       if (compact) tone += 2;
       tone = Math.max(0, Math.min(TINTS.length - 1, Math.round(tone)));
-      var hue = HUES[random() < NAVY_SHARE ? 0 : 1];
+      var hue = RAMPS[random() < NAVY_SHARE ? 0 : 1];
 
       blocks.push({
         t: t, x: x, y: y, dx: dx, dy: dy,
         w: size * aspect, h: size,
         angle: TILT + (random() - .5) * TILT_JITTER * 2,
-        face: pack(hue, TINTS[tone]),
-        side: pack(hue, TINTS[tone] - SIDE_STEP),
+        face: pack(hue, tone),
+        side: pack(hue, tone - SIDE_STEP),
         depth: size > 13 ? Math.max(ART_PX, size * .2) : 0,
         phase: random() * Math.PI * 2,
         period: 5200 + random() * 6200,
@@ -215,14 +230,14 @@
       var y = height + 18 + (fullHeight - height - 40) * Math.pow(random(), 1.5);
       var size = (compact ? 7 : 9) + random() * (compact ? 9 : 19);
       var tone = 4 + Math.floor(random() * 3);
-      var hue = HUES[random() < NAVY_SHARE ? 0 : 1];
+      var hue = RAMPS[random() < NAVY_SHARE ? 0 : 1];
       var roam = 26 + random() * 70;
       var spin = (random() < .5 ? -1 : 1) * (.05 + random() * .12);
       var values = [random(), random(), random(), random(), random(), random()];
       if (blocked(covers, x, y, size)) continue;
       floaters.push({
         x: x, y: y, w: size * (.85 + random() * .4), h: size,
-        face: pack(hue, TINTS[tone]), side: pack(hue, TINTS[tone] - SIDE_STEP * .6),
+        face: pack(hue, tone), side: pack(hue, tone - SIDE_STEP * .6),
         depth: size > 13 ? Math.max(ART_PX, size * .2) : 0,
         roam: roam, spin: spin, angle: TILT + (random() - .5),
         a: 9000 + values[0] * 9000, b: 15000 + values[1] * 14000,
