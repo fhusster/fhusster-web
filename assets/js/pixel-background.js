@@ -130,10 +130,11 @@
     });
     return boxes;
   }
-  function blocked(boxes, x, y, reach) {
+  function blocked(boxes, x, y, reachX, reachY) {
+    if (reachY === undefined) reachY = reachX;
     for (var index = 0; index < boxes.length; index++) {
       var box = boxes[index];
-      if (x + reach > box[0] && x - reach < box[2] && y + reach > box[1] && y - reach < box[3]) return true;
+      if (x + reachX > box[0] && x - reachX < box[2] && y + reachY > box[1] && y - reachY < box[3]) return true;
     }
     return false;
   }
@@ -225,7 +226,14 @@
   /* The escapees: a handful of pale blocks adrift in the section below the
      hero, mostly under the bunch they fell from. Each wanders on two
      unrelated slow sines per axis (so the path never visibly repeats) and
-     tumbles as it goes. Homes avoid the section's card, which would hide them. */
+     tumbles as it goes.
+
+     The WHOLE wander, not just the home position, is kept clear of the page's
+     opaque blocks (the card, the ribbon) and inside the layer: the card sits
+     above this layer, so a stray that drifted onto it came out sliced in half
+     against the card's edge, and one that drifted past the layer's bottom was
+     cut by its overflow. A stray with no room to roam that far roams less
+     instead of being dropped. */
   function buildFloaters(random, compact) {
     floaters = [];
     if (fullHeight - height < 80) return;
@@ -245,7 +253,12 @@
       var roam = 26 + random() * 70;
       var spin = (random() < .5 ? -1 : 1) * (.05 + random() * .12);
       var values = [random(), random(), random(), random(), random(), random()];
-      if (blocked(covers, x, y, size)) continue;
+      // Half the tumbling cube's own footprint: the diagonal (it spins, so
+      // any corner can lead) plus the extrusion that trails down-left.
+      var reach = size * .78 + (size > 11 ? size * .2 : 0) + 2;
+      // The sines sum to at most 1 of the amplitude on each axis; y uses .7.
+      while (roam > 8 && !roomFor(covers, x, y, reach, roam)) roam -= 8;
+      if (!roomFor(covers, x, y, reach, roam)) continue;
       floaters.push({
         x: x, y: y, w: size * (.85 + random() * .4), h: size,
         face: shadeOf(hue, tone), side: shadeOf(hue, tone - SIDE_STEP * .6),
@@ -257,6 +270,15 @@
         p: values[4] * Math.PI * 2, q: values[5] * Math.PI * 2
       });
     }
+  }
+
+  /* Is there room for a stray whose home is (x, y) to wander `roam` in every
+     direction without touching an opaque block or leaving the layer? */
+  function roomFor(covers, x, y, reach, roam) {
+    var reachX = reach + roam, reachY = reach + roam * .7;
+    if (x - reachX < 2 || x + reachX > width - 2) return false;
+    if (y - reachY < height + 4 || y + reachY > fullHeight - 4) return false;
+    return !blocked(covers, x, y, reachX, reachY);
   }
 
   /* One extruded cube: the lit front face plus the two faces that recede
