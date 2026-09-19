@@ -265,6 +265,8 @@
     var visible = false;
     var requestedPlay = false;
     var loaded = false;
+    var rewind = false;
+    var restartsOffscreen = !!video.closest(".featured-card");   // home page cards
 
     video.removeAttribute("autoplay");
     video.controls = false;
@@ -324,6 +326,12 @@
     }
     function start() {
       load();
+      // Home page: a reel that was scrolled COMPLETELY out of view starts
+      // over when it comes back. Any sliver still showing keeps its place.
+      if (rewind) {
+        rewind = false;
+        try { video.currentTime = 0; } catch (e) {}
+      }
       var promise = video.play();
       if (promise) promise.catch(function () {});
     }
@@ -342,9 +350,94 @@
         updatePlayback();
       }, { threshold: 0.1 });
       observer.observe(video);
+      if (restartsOffscreen) {
+        // threshold 0: not intersecting means not one pixel is on screen.
+        new IntersectionObserver(function (entries) {
+          if (!entries[0].isIntersecting && loaded) rewind = true;
+        }, { threshold: 0 }).observe(video);
+      }
     } else {
       visible = true;
       updatePlayback();
     }
   });
+})();
+
+/* Screenshot lightbox. The thumbnail's own image is copied into a fixed
+   layer and flown, by transform alone, from where it sits to its natural
+   size in the middle of the viewport; the shade behind fades in on the same
+   beat. Closing measures the thumbnail AGAIN — the page may have scrolled —
+   and flies back to wherever it is now. */
+(function () {
+  var shots = document.querySelectorAll(".shot img.art, .dr-shot img.art");
+  if (!shots.length) return;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var open = null;   // { source, img, shade }
+
+  function targetRect(source) {
+    var nw = source.naturalWidth || source.width, nh = source.naturalHeight || source.height;
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    var scale = Math.min(1, (vw * 0.94) / nw, (vh * 0.9) / nh);
+    var w = nw * scale, h = nh * scale;
+    return { x: (vw - w) / 2, y: (vh - h) / 2, w: w, h: h };
+  }
+  function place(img, from, to) {
+    // `to` is the box the copy is laid out in; `from` is where it appears to be.
+    img.style.transform = "translate(" + (from.left - to.x) + "px," + (from.top - to.y) + "px) scale(" +
+      (from.width / to.w) + "," + (from.height / to.h) + ")";
+  }
+  function show(source) {
+    if (open) return;
+    var to = targetRect(source);
+    var shade = document.createElement("div");
+    shade.className = "lightbox-shade";
+    var img = document.createElement("img");
+    img.className = "lightbox-img";
+    img.src = source.currentSrc || source.src;
+    img.alt = source.alt;
+    img.style.width = to.w + "px";
+    img.style.height = to.h + "px";
+    img.style.left = to.x + "px";
+    img.style.top = to.y + "px";
+    place(img, source.getBoundingClientRect(), to);
+    document.body.appendChild(shade);
+    document.body.appendChild(img);
+    source.classList.add("is-lightbox-source");
+    open = { source: source, img: img, shade: shade, to: to };
+    img.getBoundingClientRect();            // commit the start pose
+    shade.classList.add("is-on");
+    img.style.transform = "none";
+    shade.addEventListener("click", hide);
+    img.addEventListener("click", hide);
+  }
+  function hide() {
+    if (!open || open.closing) return;
+    var o = open;
+    o.closing = true;
+    function done() {
+      if (!o.img.parentNode) return;
+      o.source.classList.remove("is-lightbox-source");
+      o.img.remove();
+      o.shade.remove();
+      open = null;
+      o.source.focus({ preventScroll: true });
+    }
+    o.shade.classList.remove("is-on");
+    place(o.img, o.source.getBoundingClientRect(), o.to);
+    if (reduced.matches) { done(); return; }
+    o.img.addEventListener("transitionend", done, { once: true });
+    setTimeout(done, 400);                  // a transition that never fires must not strand it
+  }
+
+  Array.prototype.forEach.call(shots, function (source) {
+    source.tabIndex = 0;
+    source.setAttribute("role", "button");
+    source.setAttribute("aria-label", "Enlarge screenshot: " + source.alt);
+    source.addEventListener("click", function () { show(source); });
+    source.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(source); }
+    });
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") hide(); });
+  window.addEventListener("resize", hide);
 })();

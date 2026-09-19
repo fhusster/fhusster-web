@@ -869,3 +869,30 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 @media (max-width:640px){
   h2 .ribbon{--rib-pad-x:1.3rem;--rib-tail-w:26px;--rib-tail-out:18px}
 }
+
+/* ==========================================================================
+   Screenshot lightbox (site.js)
+   A click lifts the screenshot out of its frame and grows it to its real
+   size in the middle of the screen while everything behind greys out; a
+   click away or Esc plays the same move backwards. The flying image is a
+   fixed-position copy moved with a transform only, so the page never
+   reflows under it. The grey rides the same clock as the growth, quick
+   enough to read as a fade.
+   ========================================================================== */
+.shot img.art,.dr-shot img.art{cursor:zoom-in}
+.shot img.art:focus-visible,.dr-shot img.art:focus-visible{outline:3px solid var(--magenta);outline-offset:-3px}
+.lightbox-shade{
+  position:fixed;inset:0;z-index:1000;background:rgba(18,20,28,.8);
+  opacity:0;transition:opacity .2s ease-out;cursor:zoom-out;
+}
+.lightbox-shade.is-on{opacity:1}
+.lightbox-img{
+  position:fixed;left:0;top:0;z-index:1001;margin:0;max-width:none;
+  transform-origin:0 0;transition:transform .24s cubic-bezier(.2,.75,.25,1);
+  will-change:transform;cursor:zoom-out;border-radius:8px;
+  box-shadow:0 24px 70px rgba(0,0,0,.55);
+}
+.is-lightbox-source{visibility:hidden}
+@media (prefers-reduced-motion:reduce){
+  .lightbox-shade,.lightbox-img{transition:none}
+}
