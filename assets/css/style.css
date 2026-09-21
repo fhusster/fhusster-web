@@ -581,10 +581,11 @@ html.site-enter .pixel-field{z-index:151}
   --rib-drop:8px;            /* how far the tails sit below the body   */
   --rib-tail-w:44px;
   --rib-tail-out:32px;       /* how far the tails reach past the body  */
-  --rib-slice:8px;           /* column width                           */
+  --rib-slice:3px;           /* column width: the finer the grain, the  */
+                             /* narrower any step the compositor leaves */
   --rib-amp:2px;             /* wave height, peak                      */
   --rib-period:1.2s;         /* one full ripple                        */
-  --rib-lag:.03s;            /* phase offset per column: period / lag  */
+  --rib-lag:.0113s;          /* phase offset per column: period / lag  */
                              /* columns is the wavelength, here 320px  */
   position:relative;
   display:inline-block;
@@ -620,42 +621,51 @@ html.site-enter .pixel-field{z-index:151}
   background:var(--rib-body);
   border-top:2px solid var(--rib-edge);
   border-bottom:2px solid var(--rib-edge);
-  display:none;              /* only drawn while the ripple runs */
+  /* Always drawn, sitting exactly on the solid body beneath them, so the
+     ripple can start and finish as movement alone — nothing appears, and
+     nothing changes size, when the pointer arrives. */
 }
+.ribbon-slice,.ribbon-tail{transition:transform .38s cubic-bezier(.22,.68,.2,1)}
 .ribbon-label{position:relative;z-index:2}
-/* Pointer on the banner: hand it over to the columns — the body goes
-   transparent so their moving edges are the banner's edges — and set the
-   ripple travelling along them, one column behind the next. */
+/* Once the columns exist THEY draw the banner's edges — the body drops its
+   own, which would otherwise double up with theirs and make the edge change
+   brightness the moment the ripple starts. The body keeps its fill, so no
+   seam between columns can ever show through. */
+.ribbon.is-waving > .ribbon-body{border-color:transparent}
+/* Pointer on the banner: the fill goes too, so the columns' moving edges are
+   the banner's edges, and the ripple sets off along them. */
 .ribbon.is-waving:hover > .ribbon-body,
-.ribbon.is-waving:focus-within > .ribbon-body{background:transparent;border-color:transparent}
-.ribbon.is-waving:hover .ribbon-slice,
-.ribbon.is-waving:focus-within .ribbon-slice{display:block}
+.ribbon.is-waving:focus-within > .ribbon-body{background:transparent}
 .ribbon.is-waving:hover .ribbon-slice,
 .ribbon.is-waving:hover .ribbon-tail,
 .ribbon.is-waving:focus-within .ribbon-slice,
 .ribbon.is-waving:focus-within .ribbon-tail{
   animation:ribbon-wave var(--rib-period) linear infinite;
-  animation-delay:calc(var(--i) * var(--rib-lag) * -1);
+  /* POSITIVE delay: every column is at rest when the pointer arrives and
+     starts from there, so the ripple sweeps in from the left instead of the
+     whole banner jumping to mid-wave. Steady state is the same travelling
+     wave either way. */
+  animation-delay:calc(var(--i) * var(--rib-lag));
   will-change:transform;     /* keeps the sub-pixel offsets off the pixel grid */
 }
 @keyframes ribbon-wave{
-  0%     {transform:translateY(calc(var(--rib-amp) * -1))}
-  6.25%  {transform:translateY(calc(var(--rib-amp) * -.924))}
-  12.5%  {transform:translateY(calc(var(--rib-amp) * -.707))}
-  18.75% {transform:translateY(calc(var(--rib-amp) * -.383))}
-  25%    {transform:translateY(0)}
-  31.25% {transform:translateY(calc(var(--rib-amp) * .383))}
-  37.5%  {transform:translateY(calc(var(--rib-amp) * .707))}
-  43.75% {transform:translateY(calc(var(--rib-amp) * .924))}
-  50%    {transform:translateY(calc(var(--rib-amp) * 1))}
-  56.25% {transform:translateY(calc(var(--rib-amp) * .924))}
-  62.5%  {transform:translateY(calc(var(--rib-amp) * .707))}
-  68.75% {transform:translateY(calc(var(--rib-amp) * .383))}
-  75%    {transform:translateY(0)}
-  81.25% {transform:translateY(calc(var(--rib-amp) * -.383))}
-  87.5%  {transform:translateY(calc(var(--rib-amp) * -.707))}
-  93.75% {transform:translateY(calc(var(--rib-amp) * -.924))}
-  100%   {transform:translateY(calc(var(--rib-amp) * -1))}
+  0%     {transform:translate3d(0,0,0)}
+  6.25%  {transform:translate3d(0,calc(var(--rib-amp) * .383),0)}
+  12.5%  {transform:translate3d(0,calc(var(--rib-amp) * .707),0)}
+  18.75% {transform:translate3d(0,calc(var(--rib-amp) * .924),0)}
+  25%    {transform:translate3d(0,calc(var(--rib-amp) * 1),0)}
+  31.25% {transform:translate3d(0,calc(var(--rib-amp) * .924),0)}
+  37.5%  {transform:translate3d(0,calc(var(--rib-amp) * .707),0)}
+  43.75% {transform:translate3d(0,calc(var(--rib-amp) * .383),0)}
+  50%    {transform:translate3d(0,0,0)}
+  56.25% {transform:translate3d(0,calc(var(--rib-amp) * -.383),0)}
+  62.5%  {transform:translate3d(0,calc(var(--rib-amp) * -.707),0)}
+  68.75% {transform:translate3d(0,calc(var(--rib-amp) * -.924),0)}
+  75%    {transform:translate3d(0,calc(var(--rib-amp) * -1),0)}
+  81.25% {transform:translate3d(0,calc(var(--rib-amp) * -.924),0)}
+  87.5%  {transform:translate3d(0,calc(var(--rib-amp) * -.707),0)}
+  93.75% {transform:translate3d(0,calc(var(--rib-amp) * -.383),0)}
+  100%   {transform:translate3d(0,0,0)}
 }
 .ribbon--sm{--rib-size:11px;--rib-pad-y:8px;--rib-pad-x:24px;--rib-tail-w:34px;--rib-tail-out:24px;--rib-drop:6px}
 /* Heavy Bag variant: olive body, tan tails */
@@ -665,9 +675,9 @@ html.site-enter .pixel-field{z-index:151}
 h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1rem}
 
 @media (prefers-reduced-motion:reduce){
-  .ribbon.is-waving:hover > .ribbon-body,
-  .ribbon.is-waving:focus-within > .ribbon-body{background:var(--rib-body);border-color:var(--rib-edge)}
+  .ribbon.is-waving > .ribbon-body{background:var(--rib-body);border-color:var(--rib-edge)}
   .ribbon .ribbon-slice{display:none}
+  .ribbon-slice,.ribbon-tail{transition:none}
   .ribbon.is-waving:hover .ribbon-tail,
   .ribbon.is-waving:focus-within .ribbon-tail{animation:none}
 }
