@@ -956,6 +956,10 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   width:0;height:0;margin-left:5px;
   border-left:20px solid var(--magenta);
   border-top:13px solid transparent;border-bottom:13px solid transparent;
+  /* Traces whatever the icon's alpha is — the triangle here, the two bars
+     when playing — so one rule outlines both shapes. */
+  filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff)
+         drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff);
 }
 .media-play:hover,.media-play:focus-visible{--btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px)}
 .media-play:active{--btn-dx:0px;--btn-dy:0px;transform:translate(-5px,6px);transition-duration:.06s}
