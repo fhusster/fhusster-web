@@ -581,11 +581,11 @@ html.site-enter .pixel-field{z-index:151}
   --rib-drop:8px;            /* how far the tails sit below the body   */
   --rib-tail-w:44px;
   --rib-tail-out:32px;       /* how far the tails reach past the body  */
-  --rib-slice:8px;           /* column width, the pixel grain          */
-  --rib-amp:1px;             /* wave height, peak                      */
-  --rib-amp-mid:1px;         /* wave height, the two mid steps         */
-  --rib-period:.8s;          /* one full ripple                        */
-  --rib-lag:.02s;            /* phase offset per column (travel speed) */
+  --rib-slice:8px;           /* column width                           */
+  --rib-amp:2px;             /* wave height, peak                      */
+  --rib-period:1.2s;         /* one full ripple                        */
+  --rib-lag:.03s;            /* phase offset per column: period / lag  */
+                             /* columns is the wavelength, here 320px  */
   position:relative;
   display:inline-block;
   vertical-align:middle;
@@ -634,19 +634,28 @@ html.site-enter .pixel-field{z-index:151}
 .ribbon.is-waving:hover .ribbon-tail,
 .ribbon.is-waving:focus-within .ribbon-slice,
 .ribbon.is-waving:focus-within .ribbon-tail{
-  animation:ribbon-wave var(--rib-period) steps(1,end) infinite;
+  animation:ribbon-wave var(--rib-period) linear infinite;
   animation-delay:calc(var(--i) * var(--rib-lag) * -1);
+  will-change:transform;     /* keeps the sub-pixel offsets off the pixel grid */
 }
 @keyframes ribbon-wave{
-  0%    {transform:translateY(calc(var(--rib-amp) * -1))}
-  12.5% {transform:translateY(calc(var(--rib-amp-mid) * -1))}
-  25%   {transform:translateY(0)}
-  37.5% {transform:translateY(var(--rib-amp-mid))}
-  50%   {transform:translateY(var(--rib-amp))}
-  62.5% {transform:translateY(var(--rib-amp-mid))}
-  75%   {transform:translateY(0)}
-  87.5% {transform:translateY(calc(var(--rib-amp-mid) * -1))}
-  100%  {transform:translateY(calc(var(--rib-amp) * -1))}
+  0%     {transform:translateY(calc(var(--rib-amp) * -1))}
+  6.25%  {transform:translateY(calc(var(--rib-amp) * -.924))}
+  12.5%  {transform:translateY(calc(var(--rib-amp) * -.707))}
+  18.75% {transform:translateY(calc(var(--rib-amp) * -.383))}
+  25%    {transform:translateY(0)}
+  31.25% {transform:translateY(calc(var(--rib-amp) * .383))}
+  37.5%  {transform:translateY(calc(var(--rib-amp) * .707))}
+  43.75% {transform:translateY(calc(var(--rib-amp) * .924))}
+  50%    {transform:translateY(calc(var(--rib-amp) * 1))}
+  56.25% {transform:translateY(calc(var(--rib-amp) * .924))}
+  62.5%  {transform:translateY(calc(var(--rib-amp) * .707))}
+  68.75% {transform:translateY(calc(var(--rib-amp) * .383))}
+  75%    {transform:translateY(0)}
+  81.25% {transform:translateY(calc(var(--rib-amp) * -.383))}
+  87.5%  {transform:translateY(calc(var(--rib-amp) * -.707))}
+  93.75% {transform:translateY(calc(var(--rib-amp) * -.924))}
+  100%   {transform:translateY(calc(var(--rib-amp) * -1))}
 }
 .ribbon--sm{--rib-size:11px;--rib-pad-y:8px;--rib-pad-x:24px;--rib-tail-w:34px;--rib-tail-out:24px;--rib-drop:6px}
 /* Heavy Bag variant: olive body, tan tails */
