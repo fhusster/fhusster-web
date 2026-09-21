@@ -921,7 +921,8 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .media-play{
   position:absolute;left:50%;top:50%;z-index:2;
   width:66px;height:66px;margin:-33px 0 0 -33px;
-  border:0;border-radius:0;padding:0;cursor:pointer;
+  /* border-box, so the outline is cut into the 66px face, not added to it */
+  border:2px solid var(--magenta);border-radius:0;padding:0;cursor:pointer;
   background:var(--navy);
   box-shadow:-5px 6px 0 #051935;
   display:flex;align-items:center;justify-content:center;
