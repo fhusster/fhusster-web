@@ -265,7 +265,6 @@
     var visible = false;
     var requestedPlay = false;
     var loaded = false;
-    var rewind = false;
     var restartsOffscreen = !!video.closest(".featured-card");   // home page cards
     // Home page only: two looping reels decoding at once is most of what
     // makes that page work harder than the rest, so they wait to be asked.
@@ -360,14 +359,19 @@
     }
     function start() {
       load();
-      // Home page: a reel that was scrolled COMPLETELY out of view starts
-      // over when it comes back. Any sliver still showing keeps its place.
-      if (rewind) {
-        rewind = false;
-        try { video.currentTime = 0; } catch (e) {}
-      }
       var promise = video.play();
       if (promise) promise.catch(function () {});
+    }
+    /* Home page: a reel scrolled COMPLETELY out of view goes back to the
+       state the card shipped in — poster showing, badge on it, nothing
+       buffered — so returning to it is an invitation, not a resumption.
+       Any sliver still on screen keeps its place. */
+    function reset() {
+      requestedPlay = false;
+      video.pause();
+      try { video.currentTime = 0; } catch (e) {}
+      video.load();          // restores the poster and drops the buffer
+      setPlaying(false);
     }
     function updatePlayback() {
       // On demand, scrolling never starts a reel — it only pauses one that is
@@ -390,7 +394,7 @@
       if (restartsOffscreen) {
         // threshold 0: not intersecting means not one pixel is on screen.
         new IntersectionObserver(function (entries) {
-          if (!entries[0].isIntersecting && loaded) rewind = true;
+          if (!entries[0].isIntersecting && loaded) reset();
         }, { threshold: 0 }).observe(video);
       }
     } else {
