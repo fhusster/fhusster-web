@@ -44,7 +44,8 @@
   var MIN_SIZE = 3;          // smallest cube in the tail, CSS px
   var MAX_DPR = 2;           // 3x tripled the fill cost for no visible gain
   var DRIFT_SHARE = .3;      // the nearest third drifts; the rest is painted once
-  var FPS = 12;              // the drift is slow enough that 12 reads as smooth
+  var FPS = 10;              // the drift is slow enough that 10 reads as smooth
+  var DRIFT_SLOW = 1.15;     // every period stretched 15%, every spin 15% slower
   var TILT = -0.27;          // base tilt in radians (counter-clockwise, as the reference)
   var TILT_JITTER = 0.2;
   // The logo's two colours, each as an eight-shade ramp (deepest first).
@@ -225,7 +226,7 @@
         under: shadeOf(hue, tone - UNDER_STEP),
         depth: size > 11 ? size * .2 : 0,
         phase: random() * Math.PI * 2,
-        period: 5200 + random() * 6200,
+        period: (5200 + random() * 6200) * DRIFT_SLOW,
         sway: (2.5 + size * .16) * (.6 + random() * .8),
         order: t + (random() - .5) * .3
       });
@@ -278,7 +279,7 @@
       var tone = 4 + Math.floor(random() * 3);
       var hue = RAMPS[random() < NAVY_SHARE ? 0 : 1];
       var roam = 26 + random() * 70;
-      var spin = (random() < .5 ? -1 : 1) * (.05 + random() * .12);
+      var spin = (random() < .5 ? -1 : 1) * (.05 + random() * .12) / DRIFT_SLOW;
       var values = [random(), random(), random(), random(), random(), random()];
       // Half the tumbling cube's own footprint: the diagonal (it spins, so
       // any corner can lead) plus the extrusion that trails down-left.
@@ -292,8 +293,8 @@
         under: shadeOf(hue, tone - UNDER_STEP * .6),
         depth: size > 11 ? size * .2 : 0,
         roam: roam, spin: spin, angle: TILT + (random() - .5),
-        a: 9000 + values[0] * 9000, b: 15000 + values[1] * 14000,
-        c: 11000 + values[2] * 9000, d: 17000 + values[3] * 15000,
+        a: (9000 + values[0] * 9000) * DRIFT_SLOW, b: (15000 + values[1] * 14000) * DRIFT_SLOW,
+        c: (11000 + values[2] * 9000) * DRIFT_SLOW, d: (17000 + values[3] * 15000) * DRIFT_SLOW,
         p: values[4] * Math.PI * 2, q: values[5] * Math.PI * 2
       });
     }
