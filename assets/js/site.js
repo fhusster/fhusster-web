@@ -290,6 +290,10 @@
         event.stopPropagation();
         if (playing) { requestedPlay = false; video.pause(); }
         else { requestedPlay = true; start(); }
+        // A click leaves focus on the badge, which would hold it on screen
+        // until something else was clicked. Keyboard activation (detail 0)
+        // keeps its focus; a pointer hands it back.
+        if (event.detail > 0) play.blur();
       });
       video.addEventListener("play", function () { setPlaying(true); });
       video.addEventListener("pause", function () { setPlaying(false); });

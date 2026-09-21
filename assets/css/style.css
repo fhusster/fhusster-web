@@ -935,10 +935,13 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .media-play:hover,.media-play:focus-visible{transform:translate(-3.5px,4px);box-shadow:-1.5px 2px 0 #051935}
 .media-play:active{transform:translate(-5px,6px);box-shadow:none}
 .media-play:focus-visible{outline:3px solid var(--magenta);outline-offset:5px}
-/* Playing: the badge fades back and becomes two bars, on hand but out of the way. */
-.expandable-media.is-playing .media-play{opacity:0;pointer-events:none}
+/* Playing: the badge fades back and becomes two bars, on hand but out of the
+   way. It follows the POINTER — leaving the frame takes it with you — and
+   :focus-visible rather than :focus-within means a click does not pin it
+   there until you click somewhere else. */
+.expandable-media.is-playing .media-play{opacity:0;pointer-events:none;transition-duration:.14s,.14s,.5s}
 .expandable-media.is-playing:hover .media-play,
-.expandable-media.is-playing:focus-within .media-play{opacity:.9;pointer-events:auto}
+.expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.9;pointer-events:auto;transition-duration:.14s,.14s,.18s}
 .expandable-media.is-playing .media-play-icon{
   width:20px;height:24px;margin-left:0;border:0;
   background:linear-gradient(90deg,#fff 0 7px,transparent 7px 13px,#fff 13px 20px);
