@@ -919,40 +919,65 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    hover. It steps aside once the reel is running, and comes back on hover
    (or focus) as the pause control. */
 .media-play{
+  --face:var(--navy);
+  --flank:#062045;
+  --under:#051935;
+  --btn-dx:5px;
+  --btn-dy:6px;
+  --badge-fade:.22s;
   position:absolute;left:50%;top:50%;z-index:2;
+  isolation:isolate;            /* faces stay above the artwork, under the face */
   width:66px;height:66px;margin:-33px 0 0 -33px;
   /* border-box, so the outline is cut into the 66px face, not added to it */
   border:2px solid var(--magenta);border-radius:0;padding:0;cursor:pointer;
-  background:var(--navy);
-  box-shadow:-5px 6px 0 #051935;
+  background:var(--face);
   display:flex;align-items:center;justify-content:center;
-  transition:transform .14s ease-out,box-shadow .14s ease-out,opacity .22s ease-out;
+  transition:transform .14s ease-out,--btn-dx .14s ease-out,--btn-dy .14s ease-out,
+             opacity var(--badge-fade) ease-out;
+}
+/* The same two receding faces every other button has, joined corner to
+   corner with the face instead of the offset copy a box-shadow gives. */
+.media-play::before,.media-play::after{content:"";position:absolute;z-index:-1;pointer-events:none}
+.media-play::before{              /* left flank */
+  left:calc(var(--btn-dx) * -1);top:0;
+  width:var(--btn-dx);height:calc(100% + var(--btn-dy));
+  background:var(--flank);
+  clip-path:polygon(100% 0,100% calc(100% - var(--btn-dy)),0 100%,0 var(--btn-dy));
+}
+.media-play::after{               /* underside */
+  left:calc(var(--btn-dx) * -1);top:100%;
+  width:calc(100% + var(--btn-dx));height:var(--btn-dy);
+  background:var(--under);
+  clip-path:polygon(var(--btn-dx) 0,100% 0,calc(100% - var(--btn-dx)) 100%,0 100%);
 }
 .media-play-icon{
   width:0;height:0;margin-left:5px;
   border-left:20px solid #fff;
   border-top:13px solid transparent;border-bottom:13px solid transparent;
 }
-.media-play:hover,.media-play:focus-visible{transform:translate(-3.5px,4px);box-shadow:-1.5px 2px 0 #051935}
-.media-play:active{transform:translate(-5px,6px);box-shadow:none}
+.media-play:hover,.media-play:focus-visible{--btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px)}
+.media-play:active{--btn-dx:0px;--btn-dy:0px;transform:translate(-5px,6px);transition-duration:.06s}
 .media-play:focus-visible{outline:3px solid var(--magenta);outline-offset:5px}
 /* Playing: the badge fades back and becomes two bars, on hand but out of the
    way. It follows the POINTER — leaving the frame takes it with you — and
    :focus-visible rather than :focus-within means a click does not pin it
    there until you click somewhere else. */
-.expandable-media.is-playing .media-play{opacity:0;pointer-events:none;transition-duration:.14s,.14s,.5s}
+.expandable-media.is-playing .media-play{opacity:0;pointer-events:none;--badge-fade:.5s}
 .expandable-media.is-playing:hover .media-play,
-.expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.9;pointer-events:auto;transition-duration:.14s,.14s,.18s}
+.expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.9;pointer-events:auto;--badge-fade:.18s}
 .expandable-media.is-playing .media-play-icon{
   width:20px;height:24px;margin-left:0;border:0;
   background:linear-gradient(90deg,#fff 0 7px,transparent 7px 13px,#fff 13px 20px);
 }
 @media (max-width:600px){
-  .media-play{width:54px;height:54px;margin:-27px 0 0 -27px}
+  .media-play{width:54px;height:54px;margin:-27px 0 0 -27px;--btn-dx:4px;--btn-dy:5px}
   .media-play-icon{border-left-width:16px;border-top-width:10px;border-bottom-width:10px}
   .expandable-media.is-playing .media-play{opacity:.55;pointer-events:auto}
 }
-@media (prefers-reduced-motion:reduce){.media-play{transition:opacity .22s ease-out}}
+@media (prefers-reduced-motion:reduce){
+  .media-play{transition:opacity var(--badge-fade) ease-out}
+  .media-play:hover,.media-play:focus-visible,.media-play:active{transform:none}
+}
 .media-expand[aria-expanded="true"]{cursor:zoom-out}
 .media-expand:focus-visible{outline:3px solid var(--magenta);outline-offset:-5px}
 
