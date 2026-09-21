@@ -283,7 +283,13 @@
       play.type = "button";
       play.className = "media-play";
       play.setAttribute("aria-controls", video.id);
-      play.innerHTML = '<span class="media-play-icon" aria-hidden="true"></span>';
+      // Real geometry, not CSS border tricks: the outline is a stroke on the
+      // shape itself, so it keeps one width the whole way round, diagonals
+      // included, and closes at the corners.
+      play.innerHTML = '<svg class="media-play-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+        + '<path class="icon-play" d="M8.4 4.4 20 12 8.4 19.6 Z"/>'
+        + '<g class="icon-pause"><rect x="7" y="4.8" width="3.6" height="14.4"/>'
+        + '<rect x="13.4" y="4.8" width="3.6" height="14.4"/></g></svg>';
       frame.appendChild(play);
       play.addEventListener("click", function (event) {
         event.stopPropagation();

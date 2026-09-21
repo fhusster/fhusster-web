@@ -953,14 +953,18 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   clip-path:polygon(var(--btn-dx) 0,100% 0,calc(100% - var(--btn-dx)) 100%,0 100%);
 }
 .media-play-icon{
-  width:0;height:0;margin-left:5px;
-  border-left:20px solid var(--magenta);
-  border-top:13px solid transparent;border-bottom:13px solid transparent;
-  /* Traces whatever the icon's alpha is — the triangle here, the two bars
-     when playing — so one rule outlines both shapes. */
-  filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff)
-         drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff);
+  width:30px;height:30px;display:block;overflow:visible;
 }
+/* paint-order draws the stroke first and the fill over it, so the visible
+   outline is the stroke's outer half — an even 1px, kept at 1px on any size
+   by non-scaling-stroke. */
+.media-play-icon path,.media-play-icon rect{
+  fill:var(--magenta);stroke:#fff;stroke-width:2;
+  stroke-linejoin:miter;stroke-miterlimit:8;
+  paint-order:stroke fill;
+  vector-effect:non-scaling-stroke;
+}
+.media-play-icon .icon-pause{display:none}
 .media-play:hover,.media-play:focus-visible{--btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px)}
 .media-play:active{--btn-dx:0px;--btn-dy:0px;transform:translate(-5px,6px);transition-duration:.06s}
 /* White ring: the badge sits on artwork, and magenta would now land on the
@@ -973,13 +977,11 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .expandable-media.is-playing .media-play{opacity:0;pointer-events:none;--badge-fade:.5s}
 .expandable-media.is-playing:hover .media-play,
 .expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.8;pointer-events:auto;--badge-fade:.18s}
-.expandable-media.is-playing .media-play-icon{
-  width:20px;height:24px;margin-left:0;border:0;
-  background:linear-gradient(90deg,var(--magenta) 0 7px,transparent 7px 13px,var(--magenta) 13px 20px);
-}
+.expandable-media.is-playing .media-play-icon .icon-play{display:none}
+.expandable-media.is-playing .media-play-icon .icon-pause{display:block}
 @media (max-width:600px){
   .media-play{width:54px;height:54px;margin:-27px 0 0 -27px;--btn-dx:4px;--btn-dy:5px}
-  .media-play-icon{border-left-width:16px;border-top-width:10px;border-bottom-width:10px}
+  .media-play-icon{width:24px;height:24px}
   .expandable-media.is-playing .media-play{opacity:.55;pointer-events:auto}
 }
 @media (prefers-reduced-motion:reduce){
