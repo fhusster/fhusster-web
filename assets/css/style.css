@@ -931,6 +931,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   isolation:isolate;            /* faces stay above the artwork, under the face */
   width:66px;height:66px;margin:-33px 0 0 -33px;
   border:0;border-radius:0;padding:0;cursor:pointer;
+  opacity:.8;                   /* the artwork reads through it */
   background:var(--face);
   display:flex;align-items:center;justify-content:center;
   transition:transform .14s ease-out,--btn-dx .14s ease-out,--btn-dy .14s ease-out,
@@ -967,7 +968,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    there until you click somewhere else. */
 .expandable-media.is-playing .media-play{opacity:0;pointer-events:none;--badge-fade:.5s}
 .expandable-media.is-playing:hover .media-play,
-.expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.9;pointer-events:auto;--badge-fade:.18s}
+.expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.8;pointer-events:auto;--badge-fade:.18s}
 .expandable-media.is-playing .media-play-icon{
   width:20px;height:24px;margin-left:0;border:0;
   background:linear-gradient(90deg,#fff 0 7px,transparent 7px 13px,#fff 13px 20px);
