@@ -920,16 +920,17 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    (or focus) as the pause control. */
 .media-play{
   --face:var(--navy);
-  --flank:#062045;
-  --under:#051935;
+  /* The block the badge stands on is the pair's other colour: magenta, with
+     the underside a shade deeper so the two planes still read as two. */
+  --flank:var(--magenta);
+  --under:#CC1F59;
   --btn-dx:5px;
   --btn-dy:6px;
   --badge-fade:.22s;
   position:absolute;left:50%;top:50%;z-index:2;
   isolation:isolate;            /* faces stay above the artwork, under the face */
   width:66px;height:66px;margin:-33px 0 0 -33px;
-  /* border-box, so the outline is cut into the 66px face, not added to it */
-  border:2px solid var(--magenta);border-radius:0;padding:0;cursor:pointer;
+  border:0;border-radius:0;padding:0;cursor:pointer;
   background:var(--face);
   display:flex;align-items:center;justify-content:center;
   transition:transform .14s ease-out,--btn-dx .14s ease-out,--btn-dy .14s ease-out,
@@ -957,7 +958,9 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 }
 .media-play:hover,.media-play:focus-visible{--btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px)}
 .media-play:active{--btn-dx:0px;--btn-dy:0px;transform:translate(-5px,6px);transition-duration:.06s}
-.media-play:focus-visible{outline:3px solid var(--magenta);outline-offset:5px}
+/* White ring: the badge sits on artwork, and magenta would now land on the
+   magenta base right beside it. */
+.media-play:focus-visible{outline:3px solid #fff;outline-offset:5px}
 /* Playing: the badge fades back and becomes two bars, on hand but out of the
    way. It follows the POINTER — leaving the frame takes it with you — and
    :focus-visible rather than :focus-within means a click does not pin it
