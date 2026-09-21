@@ -294,8 +294,22 @@ a.card-link:hover{text-decoration:none}
 
 /* Games grid */
 .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,18rem),1fr));gap:1.5rem}
-.game-card{display:flex;flex-direction:column}
-.game-card-media{padding:.9rem;border-radius:calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0}
+/* Every card in a row is one height: the grid stretches the <li>, and the
+   link and the card inside it pass that height down instead of shrinking to
+   their own copy, which is what left the taller subtitle sticking out. */
+.games-grid > li{display:flex}
+.games-grid > li > .card-link,
+.games-grid > li > .card{display:flex;flex-direction:column;flex:1}
+.game-card{display:flex;flex-direction:column;flex:1}
+/* The art fills its slot edge to edge — no bed of card colour around it. */
+.game-card-media{
+  padding:0;overflow:hidden;
+  aspect-ratio:1600/782;
+  border-radius:calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0;
+}
+.game-card-media .brk{padding:0;height:100%}
+.game-card-media picture{display:block;height:100%}
+.game-card-media .art{width:100%;height:100%;object-fit:cover;border-radius:0;display:block}
 .game-card-media--hb{background:var(--olive)}
 .game-card-body{padding:1.3rem 1.4rem 1.5rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
 .game-card-sub{font-family:var(--font-head);text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;font-weight:600;color:var(--ink-dim)}
@@ -826,7 +840,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   background:var(--navy);   /* the poster's own bed, before first frame */
 }
 /* The card reel sits in the same padded slot the key art would. */
-.game-card-media--dr .brk{padding:14px}
+
 
 /* Dad Reflex screenshots.
    The game is LANDSCAPE-only (the iOS target declares landscape left and
