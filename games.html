@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20260921r">
+<link rel="stylesheet" href="assets/css/style.css?v=20260921s">
 </head>
 <body class="studio-page">
 
@@ -84,14 +84,10 @@
               <article class="card game-card game-card--dr">
                 <div class="game-card-media game-card-media--dr">
                   <div class="brk"><span class="b"></span>
-                    <video class="reel" autoplay muted loop playsinline preload="metadata"
-                           poster="assets/img/dad-reflex/thumbnail.jpg"
-                           width="1600" height="782"
-                           aria-label="Dad Reflex gameplay: a pillow slides across the nursery floor to catch falling babies">
-                      <source src="assets/video/dad-reflex/loop-wide.webm" type="video/webm">
-                      <source src="assets/video/dad-reflex/loop-wide.mp4" type="video/mp4">
-                      <img class="art" src="assets/img/dad-reflex/thumbnail.jpg" alt="Dad Reflex key art: a dad holding up a pillow as babies tumble out of the clouds" width="1600" height="782">
-                    </video>
+                    <picture>
+                      <source srcset="assets/img/dad-reflex/thumbnail.webp" type="image/webp">
+                      <img class="art" src="assets/img/dad-reflex/thumbnail.jpg" alt="Dad Reflex key art: a dad holding up a pillow as babies tumble out of the clouds" width="1600" height="782" loading="lazy" decoding="async">
+                    </picture>
                   </div>
                 </div>
                 <div class="game-card-body">
