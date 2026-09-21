@@ -19,11 +19,20 @@
   var field = document.createElement("div");
   field.className = "pixel-field";
   field.setAttribute("aria-hidden", "true");
+  // TWO canvases. The far, pale two thirds of the swarm never move, so they
+  // are painted once onto the lower one; only the near cluster and the strays
+  // are repainted per frame, onto the upper one. Since the swarm is already
+  // sorted far-to-near, "the ones that move" are exactly the ones that belong
+  // on top, so the depth order survives the split.
+  var still = document.createElement("canvas");
+  still.className = "pixel-background";
   var canvas = document.createElement("canvas");
   canvas.className = "pixel-background";
+  field.appendChild(still);
   field.appendChild(canvas);
+  var stillContext = still.getContext("2d");
   var context = canvas.getContext("2d");
-  if (!context) return;
+  if (!context || !stillContext) return;
   // AFTER the rails in source order: same z-index, so the art paints over the
   // rails and they run behind it (.site, z 200, still sits above both).
   if (railsLayer) document.body.insertBefore(field, railsLayer.nextSibling);
@@ -33,7 +42,9 @@
 
   /* ---- look ---- */
   var MIN_SIZE = 3;          // smallest cube in the tail, CSS px
-  var MAX_DPR = 3;           // render up to 3x the CSS grid, so edges stay sharp
+  var MAX_DPR = 2;           // 3x tripled the fill cost for no visible gain
+  var DRIFT_SHARE = .3;      // the nearest third drifts; the rest is painted once
+  var FPS = 12;              // the drift is slow enough that 12 reads as smooth
   var TILT = -0.27;          // base tilt in radians (counter-clockwise, as the reference)
   var TILT_JITTER = 0.2;
   // The logo's two colours, each as an eight-shade ramp (deepest first).
@@ -63,6 +74,7 @@
   var width = 0, height = 0, fullHeight = 0, ratio = 1;
   var ready = false;
   var blocks = [];
+  var drifters = [];
   var floaters = [];
   var frame = 0, previous = 0, elapsed = 0, visible = true;
 
@@ -220,7 +232,22 @@
     }
     // Far, pale blocks first; the near, dark cluster paints over them.
     blocks.sort(function (a, b) { return b.order - a.order; });
+    var cut = Math.floor(blocks.length * (1 - DRIFT_SHARE));
+    drifters = blocks.slice(cut);
+    blocks = blocks.slice(0, cut);
     buildFloaters(random, compact);
+    paintStill();
+  }
+
+  /* The far two thirds, painted once at their resting positions. */
+  function paintStill() {
+    if (!ready) return;
+    stillContext.clearRect(0, 0, width, fullHeight);
+    for (var index = 0; index < blocks.length; index++) {
+      var block = blocks[index];
+      cube(stillContext, block.x, block.y, block.w, block.h,
+        Math.cos(block.angle), Math.sin(block.angle), block);
+    }
   }
 
   /* The escapees: a handful of pale blocks adrift in the section below the
@@ -284,21 +311,20 @@
   /* One extruded cube: the lit front face plus the two faces that recede
      from it. Corners are computed in page space and filled as paths, so the
      renderer resolves every edge at device resolution instead of snapping it
-     to a grid. Each face is also stroked in its own colour, which closes the
-     hairline an antialiased seam leaves between two faces sharing an edge. */
-  function quad(a, b, c, d, colour) {
-    context.beginPath();
-    context.moveTo(a[0], a[1]);
-    context.lineTo(b[0], b[1]);
-    context.lineTo(c[0], c[1]);
-    context.lineTo(d[0], d[1]);
-    context.closePath();
-    context.fillStyle = colour;
-    context.strokeStyle = colour;
-    context.fill();
-    context.stroke();
+     to a grid. The receding faces are pushed half a pixel UNDER the front
+     face, which hides the hairline an antialiased shared edge leaves —
+     stroking each face closed it too, but at twice the drawing cost. */
+  function quad(ctx, a, b, c, d, colour) {
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(b[0], b[1]);
+    ctx.lineTo(c[0], c[1]);
+    ctx.lineTo(d[0], d[1]);
+    ctx.closePath();
+    ctx.fillStyle = colour;
+    ctx.fill();
   }
-  function cube(x, y, w, h, cos, sin, block) {
+  function cube(ctx, x, y, w, h, cos, sin, block) {
     var hw = w / 2, hh = h / 2;
     var wc = hw * cos, ws = hw * sin, hc = hh * cos, hs = hh * sin;
     var tl = [x - wc + hs, y - ws - hc];
@@ -306,40 +332,43 @@
     var br = [x + wc - hs, y + ws + hc];
     var bl = [x - wc - hs, y - ws + hc];
     if (block.depth) {
-      // The extrusion runs down and to the left, away from the light.
+      // The extrusion runs down and to the left, away from the light. Its
+      // near corners start half a pixel back up the extrusion, under the face.
       var ex = -block.depth * .8, ey = block.depth;
-      var tle = [tl[0] + ex, tl[1] + ey];
-      var ble = [bl[0] + ex, bl[1] + ey];
-      var bre = [br[0] + ex, br[1] + ey];
-      quad(bl, br, bre, ble, block.under);
-      quad(tl, bl, ble, tle, block.side);
+      var back = .5 / Math.sqrt(ex * ex + ey * ey);
+      var bx = -ex * back, by = -ey * back;
+      var tlu = [tl[0] + bx, tl[1] + by];
+      var blu = [bl[0] + bx, bl[1] + by];
+      var bru = [br[0] + bx, br[1] + by];
+      quad(ctx, blu, bru, [br[0] + ex, br[1] + ey], [bl[0] + ex, bl[1] + ey], block.under);
+      quad(ctx, tlu, blu, [bl[0] + ex, bl[1] + ey], [tl[0] + ex, tl[1] + ey], block.side);
     }
-    quad(tl, tr, br, bl, block.face);
+    quad(ctx, tl, tr, br, bl, block.face);
   }
 
   function draw() {
     if (!ready) return;
     context.clearRect(0, 0, width, fullHeight);
-    var still = reduced.matches;
-    for (var index = 0; index < blocks.length; index++) {
-      var block = blocks[index];
-      var swing = still ? 0 : Math.sin(elapsed / block.period * Math.PI * 2 + block.phase);
-      var lift = still ? 0 : Math.cos(elapsed / (block.period * 1.37) * Math.PI * 2 + block.phase);
+    var frozen = reduced.matches;
+    for (var index = 0; index < drifters.length; index++) {
+      var block = drifters[index];
+      var swing = frozen ? 0 : Math.sin(elapsed / block.period * Math.PI * 2 + block.phase);
+      var lift = frozen ? 0 : Math.cos(elapsed / (block.period * 1.37) * Math.PI * 2 + block.phase);
       var x = block.x + block.dx * swing * block.sway - block.dy * lift * block.sway * .45;
       var y = block.y + block.dy * swing * block.sway + block.dx * lift * block.sway * .45;
       var angle = block.angle + swing * .045;
-      cube(x, y, block.w, block.h, Math.cos(angle), Math.sin(angle), block);
+      cube(context, x, y, block.w, block.h, Math.cos(angle), Math.sin(angle), block);
     }
     var turn = Math.PI * 2;
     for (var stray = 0; stray < floaters.length; stray++) {
       var f = floaters[stray];
       var fx = f.x, fy = f.y, fAngle = f.angle;
-      if (!still) {
+      if (!frozen) {
         fx += (Math.sin(elapsed / f.a * turn + f.p) * .62 + Math.sin(elapsed / f.b * turn + f.q) * .38) * f.roam;
         fy += (Math.cos(elapsed / f.c * turn + f.q) * .62 + Math.sin(elapsed / f.d * turn + f.p) * .38) * f.roam * .7;
         fAngle += elapsed / 1000 * f.spin;
       }
-      cube(fx, fy, f.w, f.h, Math.cos(fAngle), Math.sin(fAngle), f);
+      cube(context, fx, fy, f.w, f.h, Math.cos(fAngle), Math.sin(fAngle), f);
     }
   }
 
@@ -360,14 +389,15 @@
     if (nextWidth === width && nextHeight === height && nextFull === fullHeight
       && nextRatio === ratio && ready) return;
     width = nextWidth; height = nextHeight; fullHeight = nextFull; ratio = nextRatio;
-    // Backing store at device resolution, laid over the CSS-pixel box.
-    canvas.width = Math.round(width * ratio);
-    canvas.height = Math.round(fullHeight * ratio);
-    canvas.style.width = width + "px";
-    canvas.style.height = fullHeight + "px";
+    // Backing stores at device resolution, laid over the CSS-pixel box.
+    [still, canvas].forEach(function (node) {
+      node.width = Math.round(width * ratio);
+      node.height = Math.round(fullHeight * ratio);
+      node.style.width = width + "px";
+      node.style.height = fullHeight + "px";
+    });
+    stillContext.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    context.lineJoin = "miter";
-    context.lineWidth = .7;
     ready = true;
     build();
     draw();
@@ -376,7 +406,7 @@
   function animate(timestamp) {
     frame = requestAnimationFrame(animate);
     if (!previous) previous = timestamp;
-    if (timestamp - previous < 1000 / 20) return;
+    if (timestamp - previous < 1000 / FPS) return;
     elapsed += Math.min(timestamp - previous, 100);
     previous = timestamp;
     draw();

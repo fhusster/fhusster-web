@@ -267,11 +267,40 @@
     var loaded = false;
     var rewind = false;
     var restartsOffscreen = !!video.closest(".featured-card");   // home page cards
+    // Home page only: two looping reels decoding at once is most of what
+    // makes that page work harder than the rest, so they wait to be asked.
+    // The game pages carry one reel each and still start on their own.
+    var onDemand = restartsOffscreen;
+    var playing = false;
 
     video.removeAttribute("autoplay");
     video.controls = false;
     video.id = video.id || "gameplay-preview-" + i;
     frame.classList.add("expandable-media");
+
+    var play = null;
+    if (onDemand) {
+      play = document.createElement("button");
+      play.type = "button";
+      play.className = "media-play";
+      play.setAttribute("aria-controls", video.id);
+      play.innerHTML = '<span class="media-play-icon" aria-hidden="true"></span>';
+      frame.appendChild(play);
+      play.addEventListener("click", function (event) {
+        event.stopPropagation();
+        if (playing) { requestedPlay = false; video.pause(); }
+        else { requestedPlay = true; start(); }
+      });
+      video.addEventListener("play", function () { setPlaying(true); });
+      video.addEventListener("pause", function () { setPlaying(false); });
+    }
+    function setPlaying(on) {
+      playing = on;
+      if (!play) return;
+      frame.classList.toggle("is-playing", on);
+      play.setAttribute("aria-label", (on ? "Pause " : "Play ") + title + " video");
+      play.setAttribute("aria-pressed", String(on));
+    }
 
     var expand = document.createElement("button");
     expand.type = "button";
@@ -304,6 +333,7 @@
       requestedPlay = true;
       start();
     });
+    if (play) setPlaying(false);
     layout.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && layout.classList.contains("is-expanded")) {
         setExpanded(false);
@@ -336,6 +366,9 @@
       if (promise) promise.catch(function () {});
     }
     function updatePlayback() {
+      // On demand, scrolling never starts a reel — it only pauses one that is
+      // running and picks it back up where the viewer left it.
+      if (onDemand && !requestedPlay) { video.pause(); return; }
       if (visible && !document.hidden && (!reduced.matches || requestedPlay)) start();
       else video.pause();
     }
