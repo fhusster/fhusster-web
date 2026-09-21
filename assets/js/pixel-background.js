@@ -44,7 +44,7 @@
   var MIN_SIZE = 3;          // smallest cube in the tail, CSS px
   var MAX_DPR = 2;           // 3x tripled the fill cost for no visible gain
   var DRIFT_SHARE = .3;      // the nearest third drifts; the rest is painted once
-  var FPS = 10;              // the drift is slow enough that 10 reads as smooth
+  var FPS = 20;              // full rate: the split canvas made it cheap again
   var DRIFT_SLOW = 1.15;     // every period stretched 15%, every spin 15% slower
   var TILT = -0.27;          // base tilt in radians (counter-clockwise, as the reference)
   var TILT_JITTER = 0.2;
