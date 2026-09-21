@@ -954,7 +954,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 }
 .media-play-icon{
   width:0;height:0;margin-left:5px;
-  border-left:20px solid #fff;
+  border-left:20px solid var(--magenta);
   border-top:13px solid transparent;border-bottom:13px solid transparent;
 }
 .media-play:hover,.media-play:focus-visible{--btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px)}
@@ -971,7 +971,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .expandable-media.is-playing:has(.media-play:focus-visible) .media-play{opacity:.8;pointer-events:auto;--badge-fade:.18s}
 .expandable-media.is-playing .media-play-icon{
   width:20px;height:24px;margin-left:0;border:0;
-  background:linear-gradient(90deg,#fff 0 7px,transparent 7px 13px,#fff 13px 20px);
+  background:linear-gradient(90deg,var(--magenta) 0 7px,transparent 7px 13px,var(--magenta) 13px 20px);
 }
 @media (max-width:600px){
   .media-play{width:54px;height:54px;margin:-27px 0 0 -27px;--btn-dx:4px;--btn-dy:5px}
