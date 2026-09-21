@@ -932,10 +932,14 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   width:66px;height:66px;margin:-33px 0 0 -33px;
   border:0;border-radius:0;padding:0;cursor:pointer;
   opacity:.8;                   /* the artwork reads through it */
-  background:var(--face);
+  background-color:var(--face);
+  /* The same light the buttons catch, from the same corner it comes from
+     in the art: parked transparent, faded in on hover. */
+  --btn-sheen:transparent;
+  background-image:radial-gradient(125% 150% at 100% 0,var(--btn-sheen),transparent 62%);
   display:flex;align-items:center;justify-content:center;
   transition:transform .14s ease-out,--btn-dx .14s ease-out,--btn-dy .14s ease-out,
-             opacity var(--badge-fade) ease-out;
+             --btn-sheen .22s ease-out,opacity var(--badge-fade) ease-out;
 }
 /* The same two receding faces every other button has, joined corner to
    corner with the face instead of the offset copy a box-shadow gives. */
@@ -965,7 +969,10 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   vector-effect:non-scaling-stroke;
 }
 .media-play-icon .icon-pause{display:none}
-.media-play:hover,.media-play:focus-visible{--btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px)}
+.media-play:hover,.media-play:focus-visible{
+  --btn-dx:1.5px;--btn-dy:2px;transform:translate(-3.5px,4px);
+  --btn-sheen:rgba(255,255,255,.4);
+}
 .media-play:active{--btn-dx:0px;--btn-dy:0px;transform:translate(-5px,6px);transition-duration:.06s}
 /* White ring: the badge sits on artwork, and magenta would now land on the
    magenta base right beside it. */
@@ -985,7 +992,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .expandable-media.is-playing .media-play{opacity:.55;pointer-events:auto}
 }
 @media (prefers-reduced-motion:reduce){
-  .media-play{transition:opacity var(--badge-fade) ease-out}
+  .media-play{transition:--btn-sheen .22s ease-out,opacity var(--badge-fade) ease-out}
   .media-play:hover,.media-play:focus-visible,.media-play:active{transform:none}
 }
 .media-expand[aria-expanded="true"]{cursor:zoom-out}
