@@ -281,7 +281,18 @@ a.card-link:hover{text-decoration:none}
 
 /* Featured game card (Home) */
 .featured-card{display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
-.featured-media{padding:.6rem;background:var(--olive);border-radius:calc(var(--radius) - 2px) 0 0 calc(var(--radius) - 2px)}
+/* The art IS the slot: no pad, no bed of card colour behind it, and the box
+   is only as tall as the art itself, centred against the copy beside it.
+   Both cards take the same column, and both pictures are the same shape, so
+   the two slots come out identical. */
+.featured-media{padding:0;background:transparent;align-self:center}
+.featured-media .brk{padding:0}
+.featured-media .art,.featured-media .reel,.featured-media video,.featured-media img{
+  width:100%;height:auto;display:block;border-radius:0;
+  /* contain, never cover: a clip that is a hair wider than the poster shows
+     the card behind its edges rather than losing any of the frame. */
+  object-fit:contain;background:transparent;
+}
 .featured-body{padding:1.8rem}
 .featured-body h3{font-size:1.5rem;margin:.7rem 0 .2rem}
 .featured-sub{color:var(--olive);font-family:var(--font-head);text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;font-weight:600}
@@ -397,7 +408,9 @@ a.card-link:hover{text-decoration:none}
 .shot:hover{border-color:var(--tan)}
 @media (max-width:900px){.shots-row{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.shots-row{grid-template-columns:1fr}}
-.hb-video{aspect-ratio:2622/1206;background:#000;object-fit:cover}
+/* No forced ratio: the box follows the poster's own width and height, so the
+   thumbnail is never cropped to fit a shape it is not. */
+.hb-video{background:transparent}
 .hb-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
 .hb-mode{padding:1.4rem 1.5rem}
 .hb-mode h3{color:var(--olive);margin-bottom:.5rem}
@@ -808,7 +821,7 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 
 /* Featured card (Home). The base rules hardcode olive, so these override
    for the Dad Reflex card only and leave Heavy Bag's untouched. */
-.featured-card--dr .featured-media{background:var(--navy)}
+
 .featured-card--dr .featured-sub{color:var(--navy)}
 
 /* Detail page hero */
@@ -837,7 +850,6 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .reel{
   display:block;width:100%;height:auto;
   border-radius:calc(var(--radius) - 4px);
-  background:var(--navy);   /* the poster's own bed, before first frame */
 }
 /* The card reel sits in the same padded slot the key art would. */
 
@@ -886,7 +898,9 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .studio-home .featured-body{align-self:center;padding:2rem 2.25rem}
 .studio-home .featured-body h3{font-size:clamp(1.6rem,2.5vw,2.35rem);letter-spacing:.025em}
 .studio-home .featured-body p{font-size:.95rem;line-height:1.8}
-.studio-home .featured-media{align-self:stretch;display:flex;align-items:center;padding:.5rem}
+/* The home cards' own override used to stretch the slot to the copy's height
+   and pad it; the slot hugs the art instead. */
+.studio-home .featured-media{align-self:center;display:flex;align-items:center;padding:0}
 .studio-home .featured-media>.brk{width:100%;padding:0}
 .studio-home .featured-media video{border-radius:3px}
 .studio-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.5rem;margin:2.5rem 0}
