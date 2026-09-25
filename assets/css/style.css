@@ -901,6 +901,31 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 /* The home cards' own override used to stretch the slot to the copy's height
    and pad it; the slot hugs the art instead. */
 .studio-home .featured-media{align-self:center;display:flex;align-items:center;padding:0}
+/* The card is as tall as the picture and no taller: the slot takes a wider
+   share of the row, and the copy beside it is set tight enough to fit that
+   height, so no card colour is left showing above or below the art. */
+.studio-home .featured-card{grid-template-columns:minmax(0,1.2fr) minmax(13rem,1fr)}
+.studio-home .featured-body{padding:1.1rem 1.4rem;gap:0}
+.studio-home .featured-title{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-bottom:.15rem}
+.studio-home .featured-title h3{font-size:1.32rem;margin:0}
+.studio-home .featured-body .featured-sub{font-size:.7rem}
+.studio-home .featured-body p{font-size:.93rem;line-height:1.5;margin:.5rem 0 .85rem}
+.studio-home .featured-actions{margin-top:0}
+.studio-home .featured-actions .btn{font-size:.76rem;padding:calc(.58rem + 2px) calc(1.1rem + 2px)}
+/* Side by side only survives where the copy can fit the picture's height.
+   Measured, that is about 1400px and up; below it the card stacks, which
+   gives the art the full width and leaves no colour above or below it
+   either. The copy goes back to a comfortable size there, capped so the
+   lines do not run the whole width of a wide card. */
+@media (max-width:1399px){
+  .studio-home .featured-card,
+  .studio-home .featured-card.is-expanded{grid-template-columns:minmax(0,1fr)}
+  .studio-home .featured-body{padding:1.4rem 1.7rem 1.6rem}
+  .studio-home .featured-title h3{font-size:1.45rem}
+  .studio-home .featured-body .featured-sub{font-size:.74rem}
+  .studio-home .featured-body p{font-size:.95rem;line-height:1.65;max-width:52rem}
+  .studio-home .featured-actions .btn{font-size:.8rem;padding:calc(.65rem + 2px) calc(1.25rem + 2px)}
+}
 .studio-home .featured-media>.brk{width:100%;padding:0}
 .studio-home .featured-media video{border-radius:3px}
 .studio-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.5rem;margin:2.5rem 0}
