@@ -101,28 +101,23 @@
     return "rgb(" + channel(0) + "," + channel(1) + "," + channel(2) + ")";
   }
 
-  /* Where the tail dies out. Desktop: far to the left (as far as the short
-     "Join Us" headline used to let it run), riding in the clear strip between
-     the header and the kicker so it passes OVER the headline, not through it.
-     Phones: just past the headline's text, as before. */
-  function tailTarget(sectionRect, compact) {
-    var heading = section.querySelector("h1");
-    var first = section.querySelector(".kicker") || heading;
-    if (!compact) {
-      var clear = first ? first.getBoundingClientRect().top - sectionRect.top : height * .18;
-      return { x: width * .25, y: Math.max(22, clear * .58) };
-    }
-    var x = width * .42, y = height * .48;
-    if (heading) {
-      var range = document.createRange();
-      range.selectNodeContents(heading);
-      var text = range.getBoundingClientRect();
-      if (text.width) {
-        x = text.right - sectionRect.left + 18;
-        y = text.top - sectionRect.top + text.height * .62;
-      }
-    }
-    return { x: Math.max(width * .2, Math.min(x, width * .66)), y: Math.max(height * .3, Math.min(y, height * .8)) };
+  /* Where the tail dies out: just past the right end of the kicker, in the
+     clear strip between the header and the copy. Anchoring it to that word
+     rather than to a fraction of the width keeps the same relationship at
+     every size — the stream always arrives from the right and stops short
+     of the words, never over them. */
+  function tailTarget(sectionRect) {
+    var first = section.querySelector(".kicker") || section.querySelector("h1");
+    if (!first) return { x: width * .25, y: Math.max(18, height * .1) };
+    var range = document.createRange();
+    range.selectNodeContents(first);
+    var text = range.getBoundingClientRect();
+    if (!text.width) return { x: width * .25, y: Math.max(18, height * .1) };
+    var top = text.top - sectionRect.top;
+    return {
+      x: Math.min(text.right - sectionRect.left + Math.max(14, width * .02), width * .8),
+      y: Math.max(14, Math.min(top * .58, top - 12))
+    };
   }
 
   /* Boxes nothing may be drawn behind: every line of hero copy and the
@@ -154,10 +149,7 @@
 
   function build() {
     var sectionRect = section.getBoundingClientRect();
-    // Phones: the headline runs the full width, so the cluster stays small,
-    // pale and tucked into the corner instead of sitting behind the type.
-    var compact = width < 700;
-    var tail = tailTarget(sectionRect, compact);
+    var tail = tailTarget(sectionRect);
     var boxes = keepClear(sectionRect);
     // Cubic path: dives out of the corner, bellies down in the open space to
     // the right of the copy, then levels out INTO the clear strip above the
@@ -165,20 +157,21 @@
     var copyRight = boxes.reduce(function (edge, box) { return Math.max(edge, box[2]); }, 0);
     var p0 = { x: width * 1.01, y: -height * .08 };
     var p3 = tail;
-    var p1, p2;
-    if (compact) {
-      p1 = { x: p3.x + (p0.x - p3.x) * .6, y: p3.y + height * .07 };
-      p2 = { x: p3.x + (p0.x - p3.x) * .3, y: p3.y + height * .07 };
-    } else {
-      var entry = Math.min(Math.max(copyRight + 50, p3.x + 80), width * .82);
-      p1 = { x: entry + (p0.x - entry) * .55, y: height * .7 };
-      p2 = { x: entry, y: p3.y };
-    }
+    // The belly needs open page to the right of the copy. A wide screen has
+    // it and the stream dives before it levels off; a phone, where the copy
+    // runs the full width, has none, so the same curve flattens into a sweep
+    // across the clear strip. One path, one shape, scaled to the room.
+    var gutter = Math.max(0, width - copyRight);
+    var belly = Math.max(0, Math.min(1, (gutter / width - .10) / .22));
+    var entry = Math.min(Math.max(copyRight + width * .035, p3.x + width * .06), width * .82);
+    var p1 = { x: entry + (p0.x - entry) * .55, y: p3.y + belly * (height * .7 - p3.y) };
+    var p2 = { x: entry, y: p3.y };
     var random = generator(20260919);
-    var headSize = compact ? 22 : Math.max(34, Math.min(74, width / 19));
-    var headSpread = compact ? Math.max(60, width * .17)
-      : Math.min(Math.max(170, Math.min(400, width * .27)), height * .92);
-    var count = Math.round(Math.max(320, Math.min(1000, width * .66)));
+    // Everything scales with the width, so a narrow screen gets the whole
+    // galaxy at a smaller size rather than a corner of a big one.
+    var headSize = Math.max(14, Math.min(74, width / 19));
+    var headSpread = Math.min(width * .27, height * .92);
+    var count = Math.round(Math.max(220, Math.min(1000, width * .66)));
 
     blocks = [];
     for (var index = 0; index < count; index++) {
@@ -195,7 +188,7 @@
       // Bell-shaped scatter across the stream, with a few strays.
       var scatter = (random() + random() + random() - 1.5) / 1.5;
       if (random() < .09) scatter *= 1.9;
-      var spread = 15 + (headSpread - 15) * Math.pow(inverse, compact ? 1.15 : 1.5);
+      var spread = 15 + (headSpread - 15) * Math.pow(inverse, 1.5);
       x += -dy * scatter * spread;
       y += dx * scatter * spread;
 
@@ -212,7 +205,6 @@
       // SHADES evenly spaced levels, interpolated along the hue's ramp.
       var corner = Math.max(0, 1 - Math.sqrt(Math.pow((width - x) / (width * .34), 2) + Math.pow(y / (height * .62), 2)));
       var tone = t * 6.6 + (random() - .5) * 3 - corner * 2.4 + Math.abs(scatter) * 1.1;
-      if (compact) tone += 2;
       var top = TINTS.length - 1;
       tone = Math.round(Math.max(0, Math.min(top, tone)) / top * (SHADES - 1)) / (SHADES - 1) * top;
       var hue = RAMPS[random() < NAVY_SHARE ? 0 : 1];
@@ -236,7 +228,7 @@
     var cut = Math.floor(blocks.length * (1 - DRIFT_SHARE));
     drifters = blocks.slice(cut);
     blocks = blocks.slice(0, cut);
-    buildFloaters(random, compact);
+    buildFloaters(random);
     paintStill();
   }
 
@@ -262,7 +254,8 @@
      against the card's edge, and one that drifted past the layer's bottom was
      cut by its overflow. A stray with no room to roam that far roams less
      instead of being dropped. */
-  function buildFloaters(random, compact) {
+  function buildFloaters(random) {
+    var compact = width < 700;
     floaters = [];
     if (fullHeight - height < 80) return;
     var sectionRect = section.getBoundingClientRect();
