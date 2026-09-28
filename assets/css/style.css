@@ -282,6 +282,9 @@ a.card-link:hover{text-decoration:none}
 
 /* Hero */
 .hero{padding:4.5rem 0 3.25rem} /* bottom edge is a .rule-dia divider */
+/* Phones: less air above the kicker. The corner swarm rides the strip this
+   leaves, so it is trimmed rather than closed. */
+@media (max-width:640px){.hero{padding:2.4rem 0 2.6rem}}
 .hero .lede{margin-top:1.2rem}
 .hero-actions{margin-top:1.8rem;display:flex;gap:1rem;flex-wrap:wrap}
 
@@ -1103,7 +1106,11 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .footer-scan span{font-size:.68rem}
 }
 @media (max-width:640px){
-  h2 .ribbon{--rib-pad-x:1.3rem;--rib-tail-w:26px;--rib-tail-out:18px}
+  /* The rails run 8-19px in from each edge here, so the banner has to finish
+     clear of them: the body text, its padding and the tails all come down
+     together, and the tails reach 7px rather than 18 so they land inside. */
+  h2 .ribbon{--rib-size:.82rem;--rib-pad-y:.62rem;--rib-pad-x:1.3rem;
+             --rib-tail-w:24px;--rib-tail-out:7px;--rib-drop:5px;margin-bottom:.85rem}
 }
 
 /* ==========================================================================

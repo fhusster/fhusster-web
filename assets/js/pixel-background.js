@@ -124,7 +124,7 @@
      buttons, in layer coordinates. The stream is carved around them. */
   function keepClear(sectionRect) {
     var boxes = [];
-    var pad = 16;
+    var pad = width < 700 ? 11 : 16;
     section.querySelectorAll(".kicker, h1, .lede").forEach(function (node) {
       var range = document.createRange();
       range.selectNodeContents(node);
@@ -155,7 +155,11 @@
     // the right of the copy, then levels out INTO the clear strip above the
     // copy before it reaches the text, and runs flat along it to the tail.
     var copyRight = boxes.reduce(function (edge, box) { return Math.max(edge, box[2]); }, 0);
-    var p0 = { x: width * 1.01, y: -height * .08 };
+    var narrowStart = Math.max(0, Math.min(1, (900 - width) / 520));
+    // A phone has a header right above the strip, so a head that starts off
+    // the top is half eaten by it. The source moves down onto the page as the
+    // screen narrows, and in from the right edge, so the whole burst shows.
+    var p0 = { x: width * (1.01 - .07 * narrowStart), y: -height * .08 + height * .09 * narrowStart };
     var p3 = tail;
     // The belly needs open page to the right of the copy. A wide screen has
     // it and the stream dives before it levels off; a phone, where the copy
@@ -163,15 +167,26 @@
     // across the clear strip. One path, one shape, scaled to the room.
     var gutter = Math.max(0, width - copyRight);
     var belly = Math.max(0, Math.min(1, (gutter / width - .10) / .22));
+    // A phone has no gutter to dive down, but the copy still leaves pockets:
+    // the short second line of the headline, the ends of the lede's lines.
+    // The stream dips into them along the right edge rather than running as
+    // a flat band across the thin strip, which is what makes it read as a
+    // swarm at that size instead of a streak. Blocks that would land on a
+    // line of type are dropped either way.
+    belly = Math.max(belly, Math.min(1, Math.max(0, (900 - width) / 520)) * .62);
     var entry = Math.min(Math.max(copyRight + width * .035, p3.x + width * .06), width * .82);
     var p1 = { x: entry + (p0.x - entry) * .55, y: p3.y + belly * (height * .7 - p3.y) };
     var p2 = { x: entry, y: p3.y };
     var random = generator(20260919);
     // Everything scales with the width, so a narrow screen gets the whole
-    // galaxy at a smaller size rather than a corner of a big one.
-    var headSize = Math.max(14, Math.min(74, width / 19));
-    var headSpread = Math.min(width * .27, height * .92);
-    var count = Math.round(Math.max(220, Math.min(1000, width * .66)));
+    // galaxy rather than a corner of a big one — and it takes a BIGGER share
+    // of a small screen, because at phone width a swarm sized off the width
+    // alone reads as a scatter of specks. `narrow` runs 0 at 900px and up to
+    // 1 at 380px and under, and drives size, spread and count together.
+    var narrow = Math.max(0, Math.min(1, (900 - width) / 520));
+    var headSize = Math.max(14, Math.min(74, width / (19 - 4 * narrow)));
+    var headSpread = Math.min(width * (.27 + .16 * narrow), height * .92);
+    var count = Math.round(Math.max(220, Math.min(1400, width * (.66 + 1.0 * narrow))));
 
     blocks = [];
     for (var index = 0; index < count; index++) {
