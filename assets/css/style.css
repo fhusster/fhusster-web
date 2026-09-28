@@ -229,6 +229,12 @@ main{flex:1}
 .scan .btn,.card--navy .btn{--btn-sheen:rgba(255,255,255,.06)}
 .btn:focus-visible{outline:2px solid var(--ink);outline-offset:5px}
 .btn-primary{--face:var(--magenta);--flank:#BF2056;--under:#941943}
+/* A button whose destination does not exist yet (assets/js/links.js): still
+   in the layout, visibly not ready, and it does not press under the pointer. */
+.btn--pending{opacity:.5;cursor:default}
+.btn--pending:hover,.btn--pending:focus-visible{
+  --btn-dx:5px;--btn-dy:6px;transform:none;--btn-sheen:transparent;text-shadow:none;
+}
 @media (prefers-reduced-motion:reduce){
   .btn{transition:--btn-sheen .22s ease-out,text-shadow .18s}
   .btn:hover,.btn:focus-visible,.btn:active{transform:none}
@@ -737,20 +743,33 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   --rail-b:var(--navy);
   --rail-cycle:13s;          /* 2.5s down + 2.5s up + 8s rest between pairs    */
   --rail-len:100vh;          /* tail spans the whole viewport                  */
-  position:absolute;top:0;bottom:0;width:16px;
+  /* One rail is two coloured bars with a gap: the three widths below are its
+     whole geometry, so a narrow screen resizes the rail by changing them. */
+  --rail-w:16px;
+  --rail-bar:6px;
+  --rail-gap:4px;
+  --rail-inset:14px;
+  position:absolute;top:0;bottom:0;width:var(--rail-w);
+}
+/* Both bars, used by the base line and by the travelling light. */
+.rail{
+  --rail-bars:linear-gradient(90deg,
+    var(--rail-a) 0 var(--rail-bar),
+    transparent var(--rail-bar) calc(var(--rail-bar) + var(--rail-gap)),
+    var(--rail-b) calc(var(--rail-bar) + var(--rail-gap)) var(--rail-w));
 }
 /* base line on a pseudo so its 50% fade does NOT cap the light's opacity
    (element opacity would apply to the whole subtree, light included) */
 .rail::before{
   content:"";position:absolute;inset:0;
   opacity:.5;
-  background:linear-gradient(90deg,var(--rail-a) 0 6px,transparent 6px 10px,var(--rail-b) 10px 16px);
+  background:var(--rail-bars);
 }
-.rail--l{left:14px}
-.rail--r{right:14px;--rail-a:var(--navy);--rail-b:var(--magenta)}   /* mirrored */
+.rail--l{left:var(--rail-inset)}
+.rail--r{right:var(--rail-inset);--rail-a:var(--navy);--rail-b:var(--magenta)}   /* mirrored */
 .rail-light{
   position:absolute;left:0;right:0;height:var(--rail-len);
-  background:linear-gradient(90deg,var(--rail-a) 0 6px,transparent 6px 10px,var(--rail-b) 10px 16px);
+  background:var(--rail-bars);
   filter:saturate(1.6);
   opacity:0;
 }
@@ -778,7 +797,16 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   19.23%  {transform:translateY(calc(var(--rail-len) * -1));opacity:1}
   19.231%,100%{transform:translateY(calc(var(--rail-len) * -1));opacity:0}
 }
-@media (max-width:640px){.rails{display:none}}
+/* The rails used to be dropped below 640px. They stay now, narrowed — but
+   by less than the page around them, so they still read as the same pair of
+   rails rather than hairlines: 16px to 11px where the body text barely
+   changes, and the inset comes in with them so the margin still clears. */
+@media (max-width:640px){
+  .rail{--rail-w:11px;--rail-bar:4px;--rail-gap:3px;--rail-inset:8px}
+}
+@media (max-width:380px){
+  .rail{--rail-w:9px;--rail-bar:3.5px;--rail-gap:2px;--rail-inset:6px}
+}
 @media (prefers-reduced-motion:reduce){.rail-light{display:none}}
 
 /* ==========================================================================
