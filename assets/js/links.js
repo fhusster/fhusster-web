@@ -1,5 +1,5 @@
 /* Outbound links the studio has not published yet: the App Store listing, the
-   public TestFlight invite, and the donation page.
+   public TestFlight invite, and the tip page.
 
    Fill a constant below and every button carrying that name becomes a real
    link, opening in a new tab. Leave it empty and the button stays where it is
@@ -16,13 +16,13 @@
     "testflight": "",
     /* Whatever the studio collects with: a Ko-fi page, a PayPal.me handle,
        a Stripe payment link. Any URL works; it is only ever a link. */
-    "donate": "https://ko-fi.com/fhussterdev"
+    "tip": "https://ko-fi.com/fhussterdev"
   };
 
   var PENDING = {
     "app-store": "App Store link coming shortly",
     "testflight": "TestFlight invite opens shortly",
-    "donate": "Donations open shortly"
+    "tip": "Tips open shortly"
   };
 
   Array.prototype.forEach.call(document.querySelectorAll("[data-link]"), function (node) {

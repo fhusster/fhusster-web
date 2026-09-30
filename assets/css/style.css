@@ -275,8 +275,8 @@ a.card-link:hover{text-decoration:none}
 }
 .lede{color:var(--ink-dim);font-size:1.1rem;max-width:44rem}
 
-/* Donate band (Home) */
-#donate{
+/* Tip band (Home) */
+#tip{
   background:var(--surface);
   border-top:2px solid var(--line);
   border-bottom:2px solid var(--line);
@@ -966,8 +966,8 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .studio-principles>div{border-top:1px solid var(--line);padding-top:1.25rem}
 .studio-principles h3{margin:.7rem 0;font-size:1.15rem;letter-spacing:.025em;color:var(--navy)}
 .studio-principles p{font-size:.95rem;color:var(--ink-dim);max-width:25rem}
-.studio-home #donate{background:#f7f6f2;border-width:1px}
-.studio-home #donate .btn{margin:0 .6rem .6rem 0}
+.studio-home #tip{background:#f7f6f2;border-width:1px}
+.studio-home #tip .btn{margin:0 .6rem .6rem 0}
 .studio-page .page-head{padding-top:4.5rem}
 .studio-page .page-head h1{letter-spacing:.025em;color:var(--navy)}
 .studio-page .prose{font-size:1.05rem;line-height:1.85}
@@ -1153,24 +1153,24 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 }
 
 /* ==========================================================================
-   Donate pop-up (site.js): Ko-fi's donation panel over the page.
+   Tip pop-up (site.js): Ko-fi's tip panel over the page.
    ========================================================================== */
-html.donate-open{overflow:hidden}
-.donate-dialog{
+html.tip-open{overflow:hidden}
+.tip-dialog{
   position:fixed;inset:0;margin:auto;
   width:min(420px, calc(100vw - 32px));height:min(600px, calc(100dvh - 48px));
   padding:0;border:2px solid var(--navy);border-radius:var(--radius);
   background:#f9f9f9;overflow:visible;
   box-shadow:0 24px 70px rgba(0,0,0,.45);
 }
-.donate-dialog::backdrop{background:rgba(18,20,28,.8)}
-.donate-frame{display:block;width:100%;height:100%;border:0;border-radius:inherit;background:#f9f9f9}
-.donate-close{
+.tip-dialog::backdrop{background:rgba(18,20,28,.8)}
+.tip-frame{display:block;width:100%;height:100%;border:0;border-radius:inherit;background:#f9f9f9}
+.tip-close{
   position:absolute;top:-16px;right:-16px;z-index:1;
   width:36px;height:36px;padding:0;border:2px solid #fff;border-radius:50%;
   background:var(--magenta);color:#fff;font:700 22px/1 var(--font-head);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
 }
-.donate-close:hover{background:var(--navy)}
-.donate-close:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
-@media (max-width:480px){.donate-close{top:-12px;right:-8px}}
+.tip-close:hover{background:var(--navy)}
+.tip-close:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
+@media (max-width:480px){.tip-close{top:-12px;right:-8px}}

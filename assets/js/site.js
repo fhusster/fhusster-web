@@ -511,37 +511,37 @@
   window.addEventListener("resize", hide);
 })();
 
-/* Donate pop-up. Ko-fi's own donation panel (the card form runs on the Stripe
+/* Tip pop-up. Ko-fi's own tip panel (the card form runs on the Stripe
    account Ko-fi is connected to) opens over the page instead of sending the
    visitor to ko-fi.com. The frame is only built on the first open, so nobody
-   who never presses Donate loads anything from Ko-fi. A modified click
+   who never presses the tip button loads anything from Ko-fi. A modified click
    (new tab, new window) and a page without JS still follow the plain link. */
 (function () {
-  var button = document.querySelector('[data-link="donate"]');
+  var button = document.querySelector('[data-link="tip"]');
   if (!button || typeof HTMLDialogElement === "undefined") return;
   var PANEL = "https://ko-fi.com/fhussterdev/?hidefeed=true&widget=true&embed=true&preview=true";
   var dialog = null;
 
   function build() {
     dialog = document.createElement("dialog");
-    dialog.className = "donate-dialog";
+    dialog.className = "tip-dialog";
     dialog.setAttribute("aria-label", "Support Fhusster on Ko-fi");
     var close = document.createElement("button");
     close.type = "button";
-    close.className = "donate-close";
+    close.className = "tip-close";
     close.setAttribute("aria-label", "Close");
     close.textContent = "\u00D7";
     close.addEventListener("click", function () { dialog.close(); });
     var frame = document.createElement("iframe");
-    frame.className = "donate-frame";
-    frame.title = "Ko-fi donation panel";
+    frame.className = "tip-frame";
+    frame.title = "Ko-fi tip panel";
     frame.src = PANEL;
     dialog.appendChild(close);
     dialog.appendChild(frame);
     // A press on the dimmed backdrop lands on the dialog itself: close.
     dialog.addEventListener("click", function (e) { if (e.target === dialog) dialog.close(); });
     dialog.addEventListener("close", function () {
-      document.documentElement.classList.remove("donate-open");
+      document.documentElement.classList.remove("tip-open");
       button.focus({ preventScroll: true });
     });
     document.body.appendChild(dialog);
@@ -551,7 +551,7 @@
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (!dialog) build();
-    document.documentElement.classList.add("donate-open");
+    document.documentElement.classList.add("tip-open");
     dialog.showModal();
   });
 })();
