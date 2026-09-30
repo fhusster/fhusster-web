@@ -22,6 +22,14 @@
     if (!sessionStorage.getItem("fhusster_intro_seen") &&
         !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       document.documentElement.classList.add("intro-pending");
+      /* A deep link (e.g. the Stripe return to #donate) would jump the page
+         to its anchor under the intro, so the site slid up mid-scroll. Park
+         the anchor until the site has slid in; intro.js scrolls to it then. */
+      if (location.hash) {
+        window.__introHash = location.hash;
+        history.replaceState(null, "", location.pathname + location.search);
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      }
     }
   } catch (e) {}
 })();
@@ -29,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20260928i">
+<link rel="stylesheet" href="assets/css/style.css?v=20260929a">
 </head>
 <body class="studio-home">
 
@@ -184,6 +192,7 @@
           <!-- The URL lives in assets/js/links.js (LINKS.donate). -->
           <a class="btn btn-primary" data-link="donate">Donate</a>
         </p>
+        <p id="donate-thanks" class="lede" hidden style="margin-top:1.2rem">Thank you! Your support means a lot.</p>
       </div>
     </section>
 
@@ -215,10 +224,10 @@
   </footer>
 </div>
 
-<script src="assets/js/links.js?v=20260928a" defer></script>
-<script src="assets/js/site.js?v=20260921q" defer></script>
+<script src="assets/js/links.js?v=20260928b" defer></script>
+<script src="assets/js/site.js?v=20260929a" defer></script>
 <script src="assets/js/ornaments.js" defer></script>
-<script src="assets/js/intro.js" defer></script>
+<script src="assets/js/intro.js?v=20260928a" defer></script>
 <script src="assets/js/pixel-background.js?v=20260928h" defer></script>
 </body>
 </html>

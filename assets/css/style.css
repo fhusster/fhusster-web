@@ -67,6 +67,9 @@ main{flex:1}
 .pixel-background{display:block;position:absolute;top:0;right:0;max-width:none}
 @media print{.pixel-field{display:none}}
 @media (forced-colors:active){.pixel-field{display:none}}
+/* Phone held upright: no swarm and no strays. display:none also parks the
+   animation, since the layer's IntersectionObserver stops seeing it. */
+@media (max-width:600px) and (orientation:portrait){.pixel-field{display:none}}
 
 .skip-link{
   position:absolute;left:-9999px;top:0;z-index:400;
@@ -1074,6 +1077,15 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .media-play{width:54px;height:54px;margin:-27px 0 0 -27px;--btn-dx:4px;--btn-dy:5px}
   .media-play-icon{width:24px;height:24px}
   .expandable-media.is-playing .media-play{opacity:.55;pointer-events:auto}
+}
+/* Phone held upright: there is no pointer to follow, and a tap leaves a
+   sticky :hover behind, so the pause badge stays hidden while the reel runs
+   and only a tap on the middle of the video brings it up for a moment
+   (site.js sets .show-controls). */
+@media (max-width:600px) and (orientation:portrait){
+  .expandable-media.is-playing .media-play,
+  .expandable-media.is-playing:hover .media-play{opacity:0;pointer-events:none}
+  .expandable-media.is-playing.show-controls .media-play{opacity:.8;pointer-events:auto;--badge-fade:.18s}
 }
 @media (prefers-reduced-motion:reduce){
   .media-play{transition:--btn-sheen .22s ease-out,opacity var(--badge-fade) ease-out}

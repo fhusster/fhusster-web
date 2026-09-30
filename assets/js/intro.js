@@ -7,6 +7,8 @@
   var root = document.documentElement;
   if (!root.classList.contains("intro-pending")) return;
 
+  window.scrollTo(0, 0);   // the intro always hands over a site at the top
+
   /* Mark seen as soon as the intro is committed to, so it plays exactly once
      per session (sessionStorage: a new tab or browser start plays it again). */
   try { sessionStorage.setItem("fhusster_intro_seen", "1"); } catch (e) {}
@@ -99,11 +101,24 @@
     setTimeout(function () { finish(false); }, OUTRO_AT + OUTRO_MS);
   }
 
+  /* The <head> gate parked a deep-link anchor so the page would not jump
+     under the intro; now that the site is in place, go to it. */
+  function goToParkedAnchor(smooth) {
+    var hash = window.__introHash;
+    if (!hash) return;
+    window.__introHash = null;
+    history.replaceState(null, "", location.pathname + location.search + hash);
+    var target = null;
+    try { target = document.querySelector(hash); } catch (e) {}
+    if (target) target.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+  }
+
   function finish(instant) {
     var intro = document.getElementById("intro");
     if (instant) {
       root.classList.remove("intro-pending");
       if (intro) intro.remove();
+      goToParkedAnchor(false);
       return;
     }
     root.classList.add("site-enter");   // .site: translateY(100vh) -> 0, .7s ease-out
@@ -114,6 +129,7 @@
       root.classList.remove("intro-pending");
       root.classList.remove("site-enter");
       if (intro) intro.remove();
+      goToParkedAnchor(true);
     }
     var site = document.querySelector(".site");
     if (site) {

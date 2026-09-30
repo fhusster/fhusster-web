@@ -16,7 +16,7 @@
     "testflight": "",
     /* Whatever the studio collects with: a Ko-fi page, a PayPal.me handle,
        a Stripe payment link. Any URL works; it is only ever a link. */
-    "donate": ""
+    "donate": "https://donate.stripe.com/test_00w7sN4Pge2sgsveIBaIM00"
   };
 
   var PENDING = {
@@ -42,4 +42,12 @@
     node.classList.add("btn--pending");
     node.title = PENDING[name] || "Coming shortly";
   });
+
+  /* The donate checkout returns to ?thanks=1#donate: say thanks, then drop
+     the flag from the address bar so a reload or a shared link doesn't. */
+  if (/[?&]thanks=1(&|$)/.test(location.search)) {
+    var thanks = document.getElementById("donate-thanks");
+    if (thanks) thanks.hidden = false;
+    history.replaceState(null, "", location.pathname + location.hash);
+  }
 })();

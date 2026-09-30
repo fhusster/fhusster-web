@@ -271,6 +271,8 @@
     // The game pages carry one reel each and still start on their own.
     var onDemand = restartsOffscreen;
     var playing = false;
+    var phonePortrait = window.matchMedia("(max-width:600px) and (orientation:portrait)");
+    var revealTimer = 0;
 
     video.removeAttribute("autoplay");
     video.controls = false;
@@ -302,10 +304,30 @@
       });
       video.addEventListener("play", function () { setPlaying(true); });
       video.addEventListener("pause", function () { setPlaying(false); });
+
+      // Phone held upright: no cursor to reveal the pause badge, so a tap on
+      // the middle of a running reel brings it up for a few seconds instead
+      // of expanding the video. Taps elsewhere still expand it.
+      frame.addEventListener("click", function (event) {
+        if (!phonePortrait.matches || !playing || frame.classList.contains("show-controls")) return;
+        if (play.contains(event.target)) return;
+        var r = frame.getBoundingClientRect();
+        if (Math.abs(event.clientX - (r.left + r.width / 2)) > r.width * .22
+          || Math.abs(event.clientY - (r.top + r.height / 2)) > r.height * .3) return;
+        event.stopPropagation();
+        frame.classList.add("show-controls");
+        clearTimeout(revealTimer);
+        revealTimer = setTimeout(hideControls, 2500);
+      }, true);
+    }
+    function hideControls() {
+      clearTimeout(revealTimer);
+      frame.classList.remove("show-controls");
     }
     function setPlaying(on) {
       playing = on;
       if (!play) return;
+      hideControls();
       frame.classList.toggle("is-playing", on);
       play.setAttribute("aria-label", (on ? "Pause " : "Play ") + title + " video");
       play.setAttribute("aria-pressed", String(on));
