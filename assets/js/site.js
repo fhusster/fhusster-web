@@ -535,6 +535,9 @@
     var frame = document.createElement("iframe");
     frame.className = "tip-frame";
     frame.title = "Ko-fi tip panel";
+    // Safari 17+ only offers Apple Pay inside a cross-origin frame that is
+    // explicitly allowed to use the Payment Request API.
+    frame.allow = "payment";
     frame.src = PANEL;
     dialog.appendChild(close);
     dialog.appendChild(frame);
