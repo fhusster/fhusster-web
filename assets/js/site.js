@@ -333,6 +333,36 @@
       play.setAttribute("aria-pressed", String(on));
     }
 
+    // Reels with a soundtrack (data-sound) get a speaker in the corner. They
+    // still start muted — browsers only autoplay silent video — and the
+    // speaker is the viewer's choice. On a reel that waits to be asked,
+    // asking for sound is asking for the reel too.
+    if (video.hasAttribute("data-sound")) {
+      var sound = document.createElement("button");
+      sound.type = "button";
+      sound.className = "media-sound";
+      sound.setAttribute("aria-controls", video.id);
+      sound.innerHTML = '<svg class="media-sound-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+        + '<path class="spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4Z"/>'
+        + '<g class="icon-off"><path d="M15.6 9.4l5 5.2M20.6 9.4l-5 5.2"/></g>'
+        + '<g class="icon-on"><path d="M15.4 9.2a4 4 0 0 1 0 5.6M18 6.6a7.6 7.6 0 0 1 0 10.8"/></g></svg>';
+      frame.appendChild(sound);
+      var setSound = function () {
+        frame.classList.toggle("is-sounding", !video.muted);
+        sound.setAttribute("aria-label", (video.muted ? "Turn on sound for " : "Mute ") + title + " video");
+        sound.setAttribute("aria-pressed", String(!video.muted));
+      };
+      setSound();
+      sound.addEventListener("click", function (event) {
+        event.stopPropagation();
+        video.muted = !video.muted;
+        setSound();
+        if (!video.muted && video.paused) { requestedPlay = true; start(); }
+        if (event.detail > 0) sound.blur();
+      });
+      video.addEventListener("volumechange", setSound);
+    }
+
     var expand = document.createElement("button");
     expand.type = "button";
     expand.className = "media-expand";

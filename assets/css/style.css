@@ -1001,6 +1001,40 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .expandable-media{isolation:isolate}
 .expandable-media::before,.expandable-media::after,.expandable-media .b{pointer-events:none}
 .media-expand{position:absolute;inset:0;z-index:1;width:100%;border:0;background:transparent;cursor:zoom-in;border-radius:inherit}
+/* Sound on/off for reels with a soundtrack: the play badge's block in
+   miniature, parked in the bottom-right corner. Muted is the default (and
+   the only way browsers will autoplay), so the crossed speaker shows first. */
+.media-sound{
+  --btn-dx:3px;--btn-dy:4px;
+  position:absolute;right:14px;bottom:16px;z-index:2;isolation:isolate;
+  width:40px;height:40px;border:0;border-radius:0;padding:0;cursor:pointer;
+  background:var(--navy);opacity:.85;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .14s ease-out,opacity .18s ease-out;
+}
+.media-sound::before,.media-sound::after{content:"";position:absolute;z-index:-1;pointer-events:none}
+.media-sound::before{
+  left:calc(var(--btn-dx) * -1);top:0;width:var(--btn-dx);height:calc(100% + var(--btn-dy));
+  background:var(--magenta);
+  clip-path:polygon(100% 0,100% calc(100% - var(--btn-dy)),0 100%,0 var(--btn-dy));
+}
+.media-sound::after{
+  left:calc(var(--btn-dx) * -1);top:100%;width:calc(100% + var(--btn-dx));height:var(--btn-dy);
+  background:#CC1F59;clip-path:polygon(var(--btn-dx) 0,100% 0,calc(100% - var(--btn-dx)) 100%,0 100%);
+}
+.media-sound-icon{width:22px;height:22px;overflow:visible}
+.media-sound-icon .spk{fill:#fff}
+.media-sound-icon g path{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
+.media-sound-icon .icon-on{display:none}
+.expandable-media.is-sounding .media-sound-icon .icon-on{display:block}
+.expandable-media.is-sounding .media-sound-icon .icon-off{display:none}
+.media-sound:hover,.media-sound:focus-visible{opacity:1}
+.media-sound:active{transform:translate(-3px,4px)}
+.media-sound:focus-visible{outline:3px solid #fff;outline-offset:4px}
+@media (max-width:640px){
+  .media-sound{width:30px;height:30px;right:9px;bottom:11px}
+  .media-sound-icon{width:17px;height:17px}
+}
 /* Home page reels wait to be asked. The badge is the block the rest of the
    site is built from: a flat navy face on its own extrusion, pressed on
    hover. It steps aside once the reel is running, and comes back on hover
