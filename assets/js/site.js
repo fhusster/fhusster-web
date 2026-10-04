@@ -302,33 +302,34 @@
         // keeps its focus; a pointer hands it back.
         if (event.detail > 0) play.blur();
       });
-      video.addEventListener("play", function () { setPlaying(true); });
-      video.addEventListener("pause", function () { setPlaying(false); });
-
-      // Phone held upright: no cursor to reveal the pause badge, so a tap on
-      // the middle of a running reel brings it up for a few seconds instead
-      // of expanding the video. Taps elsewhere still expand it.
-      frame.addEventListener("click", function (event) {
-        if (!phonePortrait.matches || !playing || frame.classList.contains("show-controls")) return;
-        if (play.contains(event.target)) return;
-        var r = frame.getBoundingClientRect();
-        if (Math.abs(event.clientX - (r.left + r.width / 2)) > r.width * .22
-          || Math.abs(event.clientY - (r.top + r.height / 2)) > r.height * .3) return;
-        event.stopPropagation();
-        frame.classList.add("show-controls");
-        clearTimeout(revealTimer);
-        revealTimer = setTimeout(hideControls, 2500);
-      }, true);
     }
+    video.addEventListener("play", function () { setPlaying(true); });
+    video.addEventListener("pause", function () { setPlaying(false); });
+
+    // Phone held upright: there is no cursor to bring the controls back, so
+    // once a reel is running they all fade out (CSS), and a tap on the middle
+    // of the video brings them up for a few seconds instead of expanding it.
+    // Taps elsewhere still expand it.
+    frame.addEventListener("click", function (event) {
+      if (!phonePortrait.matches || !playing || frame.classList.contains("show-controls")) return;
+      if (event.target.closest(".media-play, .media-sound, .media-full")) return;
+      var r = frame.getBoundingClientRect();
+      if (Math.abs(event.clientX - (r.left + r.width / 2)) > r.width * .22
+        || Math.abs(event.clientY - (r.top + r.height / 2)) > r.height * .3) return;
+      event.stopPropagation();
+      frame.classList.add("show-controls");
+      clearTimeout(revealTimer);
+      revealTimer = setTimeout(hideControls, 2500);
+    }, true);
     function hideControls() {
       clearTimeout(revealTimer);
       frame.classList.remove("show-controls");
     }
     function setPlaying(on) {
       playing = on;
-      if (!play) return;
       hideControls();
       frame.classList.toggle("is-playing", on);
+      if (!play) return;
       play.setAttribute("aria-label", (on ? "Pause " : "Play ") + title + " video");
       play.setAttribute("aria-pressed", String(on));
     }
@@ -362,6 +363,43 @@
       });
       video.addEventListener("volumechange", setSound);
     }
+
+    // Full screen, phones held upright only (CSS hides it everywhere else),
+    // in the corner opposite the speaker. iPhone Safari cannot put an element
+    // in full screen, only a <video> in its own player; Android takes the
+    // standard API, shows the native controls there and turns sideways to
+    // fit the landscape reel.
+    var full = document.createElement("button");
+    full.type = "button";
+    full.className = "media-full";
+    full.setAttribute("aria-controls", video.id);
+    full.setAttribute("aria-label", "Play " + title + " video full screen");
+    full.innerHTML = '<svg class="media-full-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+      + '<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+    frame.appendChild(full);
+    full.addEventListener("click", function (event) {
+      event.stopPropagation();
+      requestedPlay = true;
+      start();
+      if (video.requestFullscreen && document.fullscreenEnabled) {
+        video.requestFullscreen().then(function () {
+          if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(function () {});
+        }).catch(function () {});
+      } else if (video.webkitEnterFullscreen) {
+        // Needs the reel's metadata; a reel still on its poster gets it a
+        // moment later.
+        try { video.webkitEnterFullscreen(); }
+        catch (e) {
+          video.addEventListener("loadedmetadata", function () {
+            try { video.webkitEnterFullscreen(); } catch (e2) {}
+          }, { once: true });
+        }
+      }
+      if (event.detail > 0) full.blur();
+    });
+    document.addEventListener("fullscreenchange", function () {
+      video.controls = document.fullscreenElement === video;
+    });
 
     var expand = document.createElement("button");
     expand.type = "button";

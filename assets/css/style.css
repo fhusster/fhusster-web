@@ -1035,6 +1035,32 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .media-sound{width:30px;height:30px;right:9px;bottom:11px}
   .media-sound-icon{width:17px;height:17px}
 }
+/* Full screen, phones held upright only: the speaker's block mirrored into
+   the bottom-left corner (its flank still on the left, so it sits 3px in). */
+.media-full{display:none}
+@media (max-width:600px) and (orientation:portrait){
+  .media-full{
+    --btn-dx:3px;--btn-dy:4px;
+    position:absolute;left:12px;bottom:11px;z-index:2;isolation:isolate;
+    width:30px;height:30px;border:0;border-radius:0;padding:0;cursor:pointer;
+    background:var(--navy);opacity:.85;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .media-full::before,.media-full::after{content:"";position:absolute;z-index:-1;pointer-events:none}
+  .media-full::before{
+    left:calc(var(--btn-dx) * -1);top:0;width:var(--btn-dx);height:calc(100% + var(--btn-dy));
+    background:var(--magenta);
+    clip-path:polygon(100% 0,100% calc(100% - var(--btn-dy)),0 100%,0 var(--btn-dy));
+  }
+  .media-full::after{
+    left:calc(var(--btn-dx) * -1);top:100%;width:calc(100% + var(--btn-dx));height:var(--btn-dy);
+    background:#CC1F59;clip-path:polygon(var(--btn-dx) 0,100% 0,calc(100% - var(--btn-dx)) 100%,0 100%);
+  }
+  .media-full-icon{width:17px;height:17px;overflow:visible}
+  .media-full-icon path{fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:square}
+  .media-full:active{transform:translate(-3px,4px)}
+  .media-full:focus-visible{outline:3px solid #fff;outline-offset:4px}
+}
 /* Home page reels wait to be asked. The badge is the block the rest of the
    site is built from: a flat navy face on its own extrusion, pressed on
    hover. It steps aside once the reel is running, and comes back on hover
@@ -1117,9 +1143,17 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    and only a tap on the middle of the video brings it up for a moment
    (site.js sets .show-controls). */
 @media (max-width:600px) and (orientation:portrait){
-  .expandable-media.is-playing .media-play,
-  .expandable-media.is-playing:hover .media-play{opacity:0;pointer-events:none}
+  /* Every control fades out slowly as the reel starts, and stays out until
+     the middle of the video is tapped. !important: a tap leaves sticky
+     :hover / :focus states behind that would otherwise hold them up. */
+  .expandable-media.is-playing:not(.show-controls) .media-play{--badge-fade:.8s}
+  .media-sound,.media-full{transition:transform .14s ease-out,opacity .8s ease-out}
+  .expandable-media.is-playing:not(.show-controls) .media-play,
+  .expandable-media.is-playing:not(.show-controls) .media-sound,
+  .expandable-media.is-playing:not(.show-controls) .media-full{opacity:0 !important;pointer-events:none !important}
   .expandable-media.is-playing.show-controls .media-play{opacity:.8;pointer-events:auto;--badge-fade:.18s}
+  .expandable-media.is-playing.show-controls .media-sound,
+  .expandable-media.is-playing.show-controls .media-full{opacity:.85;pointer-events:auto;transition-duration:.14s,.18s}
 }
 @media (prefers-reduced-motion:reduce){
   .media-play{transition:--btn-sheen .22s ease-out,opacity var(--badge-fade) ease-out}
