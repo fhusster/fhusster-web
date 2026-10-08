@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Us | Fhusster</title>
-<meta name="description" content="Fhusster is a self-funded, self-published, entirely independent game and app studio based in Ottawa, Canada.">
+<title>Apps | Fhusster</title>
+<meta name="description" content="Apps by Fhusster, an independent game and app studio in Ottawa, Canada. Manifestation Station, a daily manifestation routine for iOS, is coming soon.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fhusster">
-<meta property="og:title" content="About Us | Fhusster">
-<meta property="og:description" content="Self-funded, self-published, entirely independent. Based in Ottawa, Canada.">
+<meta property="og:title" content="Apps | Fhusster">
+<meta property="og:description" content="Small, focused iOS apps for everyday habits. Manifestation Station is coming soon.">
 <meta property="og:image" content="https://fhusster.com/assets/img/emblem.png">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
@@ -55,9 +55,9 @@
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="join.html">Join Us</a></li>
-          <li><a href="about.html" aria-current="page">About Us</a></li>
+          <li><a href="about.html">About Us</a></li>
           <li><a href="games.html">Games</a></li>
-          <li><a href="apps.html">Apps</a></li>
+          <li><a href="apps.html" aria-current="page">Apps</a></li>
           <li><a href="news.html">News</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -69,21 +69,45 @@
 
     <div class="page-head">
       <div class="wrap">
-        <span class="kicker">The studio</span>
-        <h1><span>About Us</span></h1>
-        <p class="lede">A small studio. A precise point of view.</p>
+        <span class="kicker">Beyond games</span>
+        <h1><span>Apps</span></h1>
+        <p class="lede">Beyond games, Fhusster builds small, focused iOS apps that help with everyday habits.</p>
         <div class="rule-dia" aria-hidden="true"><span class="dia dia--sm dia--fill"></span></div>
       </div>
     </div>
 
     <section class="section">
-      <div class="wrap prose">
-        <p>After getting my bachelor's degree in Software Engineering and working in the public sector, I found myself wanting an outlet for the creative side of me that had always been there. I've always loved creating, whether it was through art, music, stories, or simply coming up with ideas and finding ways to bring them to life. With the tools and technology available to creators today, I finally had the opportunity to bring that passion into something I've always enjoyed: <a href="games.html">making games</a>.</p>
-        <p>Fhusster is a one-person independent game and app studio based in Ottawa, Canada. I create arcade games built around timing, precision, quick thinking, and the satisfaction of getting better. Games that are simple to pick up, but challenging enough to keep your brain sharp. Fhusster also builds small, focused iOS apps, starting with <a href="manifestation-station/index.html">Manifestation Station</a>.</p>
-        <p>I'm a perfectionist when it comes to the details. How a control responds. How a sound lands. How a challenge builds. How an animation feels. How a single input can make the difference between success and failure. I care about those little things because they're what turn a simple idea into something that feels right.</p>
-        <p>Fhusster is self-funded and self-published, which means I get to take my time with those details and create with intention. I have several ideas I want to bring to life, and I'm passionate about making each one feel as polished and pristine as I can.</p>
-        <p>Every game starts with an idea, but it ends with the player.</p>
-        <p style="margin-top:2rem"><a class="btn btn-primary" href="games.html">See the Games</a></p>
+      <div class="wrap">
+        <ul class="games-grid" style="list-style:none">
+
+          <li>
+            <article class="card game-card app-card--ms">
+              <div class="game-card-media game-card-media--ms">
+                <div class="brk"><span class="b"></span>
+                  <!-- TODO: real Manifestation Station key art goes here (1600x782, like the game thumbnails). -->
+                  <div class="ms-art" role="img" aria-label="Manifestation Station: say it, type it, hear it">
+                    <span class="ms-art-kicker">Manifestation Station</span>
+                    <span class="ms-art-line">Say it.<br>Type it.<br>Hear it.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="game-card-body">
+                <h2 style="font-size:1.35rem">Manifestation Station</h2>
+                <span class="game-card-sub">Daily Manifestation Routine · iOS</span>
+                <p class="app-card-copy">Turn affirmations into a real daily routine: say them, type them, or hear them in your own voice. The app counts every repetition until your routine is done.</p>
+                <div class="game-card-meta">
+                  <span class="badge">iOS</span>
+                  <span class="badge badge-soon">Coming Soon</span>
+                </div>
+                <p class="app-card-action"><a class="btn btn-dr" href="manifestation-station/index.html">View App</a></p>
+              </div>
+            </article>
+          </li>
+
+          <!-- To add an app: copy the <li> above, swap the art, title,
+               subtitle, description, status badge, and link. -->
+
+        </ul>
       </div>
     </section>
 

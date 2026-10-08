@@ -251,6 +251,7 @@ main{flex:1}
   color:var(--ink-dim);
 }
 .badge-beta{color:var(--olive);border-color:var(--olive)} /* Heavy Bag status */
+.badge-soon{color:var(--navy);border-color:var(--navy)}     /* announced, not out yet */
 
 .card{
   border:2px solid var(--line);border-radius:var(--radius);
@@ -1242,3 +1243,31 @@ html.tip-open{overflow:hidden}
 .tip-close:hover{background:var(--navy)}
 .tip-close:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
 @media (max-width:480px){.tip-close{top:-12px;right:-8px}}
+
+/* ==========================================================================
+   Manifestation Station (apps). Until its key art exists, the art slot is a
+   text panel in the studio's navy, the same shape as the game thumbnails,
+   so swapping the real picture in changes nothing around it.
+   ========================================================================== */
+.app-card--ms .featured-sub,.app-card--ms .game-card-sub{color:var(--navy)}
+.game-card-media--ms{background:var(--navy)}
+.ms-art{
+  aspect-ratio:1600/782;width:100%;height:100%;
+  display:flex;flex-direction:column;justify-content:center;gap:.6rem;
+  padding:clamp(1.1rem,4%,2.4rem) clamp(1.3rem,6%,3rem);
+  background:radial-gradient(120% 140% at 100% 0,rgba(255,43,115,.32),transparent 60%),var(--navy);
+  color:#fff;
+}
+.ms-art-kicker{font:600 clamp(.62rem,1.6vw,.78rem)/1.4 var(--font-head);letter-spacing:.18em;text-transform:uppercase;color:var(--magenta)}
+.ms-art-line{font:700 clamp(1.35rem,4.2vw,2.5rem)/1.12 var(--font-head);letter-spacing:.04em;text-transform:uppercase}
+.ms-art-foot{font:500 clamp(.8rem,1.8vw,1rem)/1.4 var(--font-body);color:rgba(255,255,255,.75)}
+.game-card-media .ms-art{aspect-ratio:auto}
+.game-card-media .ms-art-line{font-size:clamp(1.2rem,2.6vw,1.8rem)}
+.app-card-copy{color:var(--ink-dim);font-size:.95rem}
+.app-card-action{margin-top:.6rem}
+.ms-hero h1{overflow-wrap:anywhere}
+.ms-tagline{font:600 1.05rem/1.5 var(--font-head);letter-spacing:.06em;text-transform:uppercase;color:var(--navy);margin:.4rem 0 .9rem}
+.ms-note{font-size:.88rem;color:var(--ink-dim);border-top:1px solid var(--line);padding-top:1rem;margin-top:2rem}
+/* Two cards in one home section (Heavy Bag, then this one) need air between them. */
+.featured-card + .featured-card{margin-top:1.75rem}
+.featured-media .ms-art-line{font-size:clamp(1.5rem,4.6vw,3.4rem)}
