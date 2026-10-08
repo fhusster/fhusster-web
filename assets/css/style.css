@@ -1267,8 +1267,6 @@ html.tip-open{overflow:hidden}
 .ms-hero h1{overflow-wrap:anywhere}
 .ms-tagline{font:600 1.05rem/1.5 var(--font-head);letter-spacing:.06em;text-transform:uppercase;color:var(--navy);margin:.4rem 0 .9rem}
 .ms-note{font-size:.88rem;color:var(--ink-dim);border-top:1px solid var(--line);padding-top:1rem;margin-top:2rem}
-/* Two cards in one home section (Heavy Bag, then this one) need air between them. */
-.featured-card + .featured-card{margin-top:1.75rem}
 /* The art's lockup: SAY IT / TYPE IT / HEAR IT stacked on the left, and
    SEE IT on the right, one line exactly as tall as the stack (its cap
    height spans first cap to last baseline). Sized in container units so it
