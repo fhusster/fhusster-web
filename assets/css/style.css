@@ -1252,6 +1252,7 @@ html.tip-open{overflow:hidden}
 .app-card--ms .featured-sub,.app-card--ms .game-card-sub{color:var(--navy)}
 .game-card-media--ms{background:var(--navy)}
 .ms-art{
+  container-type:inline-size;
   aspect-ratio:1600/782;width:100%;height:100%;
   display:flex;flex-direction:column;justify-content:center;gap:.6rem;
   padding:clamp(1.1rem,4%,2.4rem) clamp(1.3rem,6%,3rem);
@@ -1259,10 +1260,8 @@ html.tip-open{overflow:hidden}
   color:#fff;
 }
 .ms-art-kicker{font:600 clamp(.62rem,1.6vw,.78rem)/1.4 var(--font-head);letter-spacing:.18em;text-transform:uppercase;color:var(--magenta)}
-.ms-art-line{font:700 clamp(1.35rem,4.2vw,2.5rem)/1.12 var(--font-head);letter-spacing:.04em;text-transform:uppercase}
 .ms-art-foot{font:500 clamp(.8rem,1.8vw,1rem)/1.4 var(--font-body);color:rgba(255,255,255,.75)}
 .game-card-media .ms-art{aspect-ratio:auto}
-.game-card-media .ms-art-line{font-size:clamp(1.2rem,2.6vw,1.8rem)}
 .app-card-copy{color:var(--ink-dim);font-size:.95rem}
 .app-card-action{margin-top:.6rem}
 .ms-hero h1{overflow-wrap:anywhere}
@@ -1270,4 +1269,10 @@ html.tip-open{overflow:hidden}
 .ms-note{font-size:.88rem;color:var(--ink-dim);border-top:1px solid var(--line);padding-top:1rem;margin-top:2rem}
 /* Two cards in one home section (Heavy Bag, then this one) need air between them. */
 .featured-card + .featured-card{margin-top:1.75rem}
-.featured-media .ms-art-line{font-size:clamp(1.5rem,4.6vw,3.4rem)}
+/* The art's lockup: SAY IT / TYPE IT / HEAR IT stacked on the left, and
+   SEE IT on the right, one line exactly as tall as the stack (its cap
+   height spans first cap to last baseline). Sized in container units so it
+   is the same picture in every slot: home card, apps card, page hero. */
+.ms-art-body{display:flex;align-items:center;gap:5cqw}
+.ms-art-line{--s:5.2cqw;font:700 var(--s)/1.12 var(--font-head);letter-spacing:.04em;text-transform:uppercase}
+.ms-art-see{font:700 calc(5.2cqw * 4.3)/.8 var(--font-head);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
