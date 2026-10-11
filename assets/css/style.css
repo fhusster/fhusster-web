@@ -849,6 +849,8 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 
 /* Shipped. The studio's action colour, so a live game reads as live. */
 .badge-live{color:var(--magenta);border-color:var(--magenta)}
+/* Submitted, waiting on App Store review: the live colour, not yet solid. */
+.badge-review{color:var(--magenta);border-color:var(--magenta);border-style:dashed}
 
 /* Grid card */
 .game-card-media--dr{background:var(--navy)}
