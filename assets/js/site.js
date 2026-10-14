@@ -401,33 +401,50 @@
       video.controls = document.fullscreenElement === video;
     });
 
-    var expand = document.createElement("button");
-    expand.type = "button";
-    expand.className = "media-expand";
-    expand.setAttribute("aria-controls", video.id);
-    frame.appendChild(expand);
+    /* Tap-to-enlarge is a desktop affordance. On a phone the card is already
+       stacked at full width and the corner button opens the real full screen,
+       so a second, invisible "expand" layer over the whole reel only gets in
+       the way of the play and sound buttons. */
+    var canExpand = !window.matchMedia("(max-width:760px)").matches;
+    var expand = null;
+    if (canExpand) {
+      expand = document.createElement("button");
+      expand.type = "button";
+      expand.className = "media-expand";
+      expand.setAttribute("aria-controls", video.id);
+      frame.appendChild(expand);
+    }
 
     // A grid wrapper lets the existing description shrink and return smoothly,
-    // instead of disappearing in the first frame of the column transition.
+    // instead of disappearing in the first frame of the column transition. It
+    // is only for that transition: on a phone, where nothing expands, the
+    // wrapper is a flex item that can be squeezed shorter than its text, and
+    // it clipped the last line of the blurb behind the buttons. No expansion,
+    // no wrapper — the copy stays exactly as the page wrote it.
     var copy = layout.querySelector(".featured-body") || layout.firstElementChild;
-    var description = document.createElement("div");
-    description.className = "preview-description";
-    var inner = document.createElement("div");
-    var details = copy.querySelectorAll(".featured-sub, p");
-    if (details.length) {
-      details[0].before(description);
-      description.appendChild(inner);
-      details.forEach(function (detail) { inner.appendChild(detail); });
+    var description = null;
+    if (canExpand) {
+      description = document.createElement("div");
+      description.className = "preview-description";
+      var inner = document.createElement("div");
+      var details = copy.querySelectorAll(".featured-sub, p");
+      if (details.length) {
+        details[0].before(description);
+        description.appendChild(inner);
+        details.forEach(function (detail) { inner.appendChild(detail); });
+      }
     }
 
     function setExpanded(on) {
       layout.classList.toggle("is-expanded", on);
-      expand.setAttribute("aria-expanded", String(on));
-      expand.setAttribute("aria-label", (on ? "Collapse " : "Expand ") + title + " video");
-      description.setAttribute("aria-hidden", String(on));
+      if (expand) {
+        expand.setAttribute("aria-expanded", String(on));
+        expand.setAttribute("aria-label", (on ? "Collapse " : "Expand ") + title + " video");
+      }
+      if (description) description.setAttribute("aria-hidden", String(on));
     }
     setExpanded(false);
-    expand.addEventListener("click", function () {
+    if (expand) expand.addEventListener("click", function () {
       setExpanded(!layout.classList.contains("is-expanded"));
       requestedPlay = true;
       start();
@@ -436,7 +453,7 @@
     layout.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && layout.classList.contains("is-expanded")) {
         setExpanded(false);
-        expand.focus({ preventScroll: true });
+        if (expand) expand.focus({ preventScroll: true });
       }
     });
 
@@ -509,6 +526,11 @@
   var shots = document.querySelectorAll(".shot img.art, .dr-shot img.art");
   if (!shots.length) return;
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  /* On a phone a screenshot is already the width of the screen, so flying it
+     into a slightly larger copy of itself is motion without a payoff — and it
+     swallows the tap that should just scroll. The shots stay pictures there;
+     the affordance is re-offered the moment the window is wide again. */
+  var phone = window.matchMedia("(max-width:760px)");
   var open = null;   // { source, img, shade }
 
   function targetRect(source) {
@@ -566,15 +588,31 @@
     setTimeout(done, 400);                  // a transition that never fires must not strand it
   }
 
+  function offerEnlarge() {
+    Array.prototype.forEach.call(shots, function (source) {
+      if (phone.matches) {
+        source.removeAttribute("tabindex");
+        source.removeAttribute("role");
+        source.removeAttribute("aria-label");
+        source.classList.add("is-plain");
+      } else {
+        source.tabIndex = 0;
+        source.setAttribute("role", "button");
+        source.setAttribute("aria-label", "Enlarge screenshot: " + source.alt);
+        source.classList.remove("is-plain");
+      }
+    });
+    if (phone.matches) hide();
+  }
   Array.prototype.forEach.call(shots, function (source) {
-    source.tabIndex = 0;
-    source.setAttribute("role", "button");
-    source.setAttribute("aria-label", "Enlarge screenshot: " + source.alt);
-    source.addEventListener("click", function () { show(source); });
+    source.addEventListener("click", function () { if (!phone.matches) show(source); });
     source.addEventListener("keydown", function (e) {
+      if (phone.matches) return;
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(source); }
     });
   });
+  phone.addEventListener("change", offerEnlarge);
+  offerEnlarge();
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") hide(); });
   window.addEventListener("resize", hide);
 })();

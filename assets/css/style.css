@@ -833,6 +833,10 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .hb-diamond{min-width:760px;aspect-ratio:1800/760}
 .hb-diamond svg{display:block;width:100%;height:auto}
 .hb-diamond-actions{margin:1.2rem 0 3.4rem;text-align:center}
+/* The diagram is 760px wide at its smallest legible size, so on a phone it
+   scrolls sideways inside its own box. Say so, rather than letting it read
+   as a picture that has been cut off. */
+.hb-diamond-hint{display:none}
 /* the section's copy sits in the same centred column The Game uses */
 .hb-copy{margin-left:auto;margin-right:auto}
 
@@ -1206,6 +1210,8 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    enough to read as a fade.
    ========================================================================== */
 .shot img.art,.dr-shot img.art{cursor:zoom-in}
+/* No enlarge on phones (site.js), so no cursor promising one. */
+.shot img.art.is-plain,.dr-shot img.art.is-plain{cursor:default}
 .shot img.art:focus-visible,.dr-shot img.art:focus-visible{outline:3px solid var(--magenta);outline-offset:-3px}
 .lightbox-shade{
   position:fixed;inset:0;z-index:1000;background:rgba(18,20,28,.8);
@@ -1276,3 +1282,49 @@ html.tip-open{overflow:hidden}
 .ms-art-body{display:flex;align-items:center;gap:5cqw}
 .ms-art-line{--s:5.2cqw;font:700 var(--s)/1.12 var(--font-head);letter-spacing:.04em;text-transform:uppercase}
 .ms-art-see{font:700 calc(5.2cqw * 4.3)/.8 var(--font-head);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+
+/* ==========================================================================
+   22 · Phone view. Everything above is laid out for a screen with room to
+   spare; on a phone the same type, padding and gaps arrive at once and the
+   page reads as a wall. This block is the whole phone pass, kept together so
+   it can be tuned in one place: a notch off the type with more leading,
+   a little more air between blocks, and panels that give their edges back to
+   the words. It changes nothing on any wider screen.
+   ========================================================================== */
+@media (max-width:640px){
+  /* Type: smaller, with the leading the smaller size wants. */
+  body{font-size:.94rem;line-height:1.72}
+  h1{font-size:clamp(1.85rem,8.5vw,2.6rem);line-height:1.12}
+  h2{font-size:1.3rem}
+  h3{font-size:1.02rem}
+  .lede{font-size:1rem;line-height:1.66}
+  .studio-headline,.studio-page .page-head h1{letter-spacing:.015em}
+
+  /* Blocks: more space between them than inside them. */
+  .section{padding:2.75rem 0}
+  .prose p{margin-bottom:1.35rem}
+  .prose h2{margin:2rem 0 .7rem}
+  .prose ul{margin-bottom:1.35rem}
+  .prose li{margin-bottom:.55rem}
+  .rule-dia{margin-block:1.6rem}
+
+  /* Panels: thinner walls, so the text inside keeps its measure. */
+  .card{border-radius:6px}
+  .hb-mode,.dr-mode{padding:1.15rem 1.15rem}
+  .hb-modes,.dr-modes{gap:1.05rem}
+  .studio-home .featured-body{padding:1.15rem 1.15rem 1.25rem}
+  .studio-home .featured-title{gap:.45rem}
+  .studio-home .featured-body p{font-size:.94rem;line-height:1.7}
+  .game-card-body{padding:1.1rem 1.15rem 1.25rem}
+  .studio-principles{gap:1.1rem}
+
+  /* The diamond diagram keeps its legible size and scrolls; the hint says so. */
+  .hb-diamond-figure{margin-top:1.9rem}
+  .hb-diamond-hint{display:block;margin:.65rem 0 0;text-align:center;
+                   font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+  .hb-diamond-actions{margin:.9rem 0 2.4rem}
+
+  /* Hero: the headline no longer runs the full height of the screen. */
+  .hb-hero,.dr-hero,.page-head{padding:2.4rem 0 2rem}
+  .hero-actions,.hb-hero-actions,.dr-hero-actions,.featured-actions{gap:.7rem}
+}
