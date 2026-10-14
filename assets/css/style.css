@@ -577,22 +577,19 @@ html.site-enter .pixel-field{z-index:151}
 .hero .rule-dia{margin-top:2.6rem}
 .page-head .rule-dia,.hb-hero .rule-dia{margin-top:1.8rem}
 
-/* 03 · HUD corner brackets: corners only, lock inward on hover */
+/* 03 · HUD corner brackets: corners only, and they stay in the corners —
+   they used to walk 6px inward whenever the frame was hovered, which read as
+   the picture flinching under the pointer. */
 .brk{position:relative;padding:18px;display:block}
 .brk::before,.brk::after,
 .brk .b::before,.brk .b::after{
   content:"";position:absolute;width:18px;height:18px;
   border:0 solid var(--magenta);
-  transition:inset .15s ease;
 }
 .brk::before{top:0;left:0;border-top-width:2px;border-left-width:2px}
 .brk::after{top:0;right:0;border-top-width:2px;border-right-width:2px}
 .brk .b::before{bottom:0;left:0;border-bottom-width:2px;border-left-width:2px}
 .brk .b::after{bottom:0;right:0;border-bottom-width:2px;border-right-width:2px}
-.brk:hover::before,a.card-link:hover .brk::before{top:6px;left:6px}
-.brk:hover::after,a.card-link:hover .brk::after{top:6px;right:6px}
-.brk:hover .b::before,a.card-link:hover .brk .b::before{bottom:6px;left:6px}
-.brk:hover .b::after,a.card-link:hover .brk .b::after{bottom:6px;right:6px}
 /* tan corners inside Heavy Bag's olive panels */
 .brk--tan::before,.brk--tan::after,
 .brk--tan .b::before,.brk--tan .b::after{border-color:var(--tan)}
@@ -1210,8 +1207,6 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
    enough to read as a fade.
    ========================================================================== */
 .shot img.art,.dr-shot img.art{cursor:zoom-in}
-/* No enlarge on phones (site.js), so no cursor promising one. */
-.shot img.art.is-plain,.dr-shot img.art.is-plain{cursor:default}
 .shot img.art:focus-visible,.dr-shot img.art:focus-visible{outline:3px solid var(--magenta);outline-offset:-3px}
 .lightbox-shade{
   position:fixed;inset:0;z-index:1000;background:rgba(18,20,28,.8);
@@ -1220,10 +1215,15 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .lightbox-shade.is-on{opacity:1}
 .lightbox-img{
   position:fixed;left:0;top:0;z-index:1001;margin:0;max-width:none;
-  transform-origin:0 0;transition:transform .24s cubic-bezier(.2,.75,.25,1);
+  transform-origin:0 0;
+  transition:transform .24s cubic-bezier(.2,.75,.25,1),opacity .24s ease-out;
   will-change:transform;cursor:zoom-out;border-radius:8px;
   box-shadow:0 24px 70px rgba(0,0,0,.55);
 }
+/* A phone turns a wide screenshot a quarter so it can fill the long side of
+   the screen. That copy cannot be flown from the thumbnail's corners, so it
+   pops from the middle, which is what the centred origin is for. */
+.lightbox-img.is-turned{transform-origin:center}
 .is-lightbox-source{visibility:hidden}
 @media (prefers-reduced-motion:reduce){
   .lightbox-shade,.lightbox-img{transition:none}

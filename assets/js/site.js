@@ -526,22 +526,33 @@
   var shots = document.querySelectorAll(".shot img.art, .dr-shot img.art");
   if (!shots.length) return;
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  /* On a phone a screenshot is already the width of the screen, so flying it
-     into a slightly larger copy of itself is motion without a payoff — and it
-     swallows the tap that should just scroll. The shots stay pictures there;
-     the affordance is re-offered the moment the window is wide again. */
-  var phone = window.matchMedia("(max-width:760px)");
   var open = null;   // { source, img, shade }
 
+  /* Where the enlarged copy lands. A phone held upright is the one case the
+     picture cannot simply grow into: these screenshots are twice as wide as
+     they are tall and the thumbnail already spans the column, so fitting one
+     across the width again returns it at the size it left. Turned a quarter
+     , the same picture fills the LONG side of the screen instead — about
+     twice the size, which is the enlargement that was asked for. */
   function targetRect(source) {
     var nw = source.naturalWidth || source.width, nh = source.naturalHeight || source.height;
     var vw = document.documentElement.clientWidth, vh = window.innerHeight;
-    var scale = Math.min(1, (vw * 0.94) / nw, (vh * 0.9) / nh);
+    var aspect = nw / Math.max(nh, 1);
+    var flat = Math.min(1, (vw * 0.94) / nw, (vh * 0.9) / nh);
+    var turned = (vh > vw && aspect >= 1.5)
+      ? Math.min(1, (vh * 0.92) / nw, (vw * 0.94) / nh)
+      : 0;
+    // Only turn it if that is the bigger picture, and by a margin worth the move.
+    var rot = turned > flat * 1.25;
+    var scale = rot ? turned : flat;
     var w = nw * scale, h = nh * scale;
-    return { x: (vw - w) / 2, y: (vh - h) / 2, w: w, h: h };
+    return { x: (vw - w) / 2, y: (vh - h) / 2, w: w, h: h, rot: rot };
   }
   function place(img, from, to) {
     // `to` is the box the copy is laid out in; `from` is where it appears to be.
+    // A turned copy cannot be flown from the thumbnail's own corners, so it
+    // pops from the middle instead — the same gesture, told in one move.
+    if (to.rot) { img.style.transform = "rotate(90deg) scale(.86)"; img.style.opacity = "0"; return; }
     img.style.transform = "translate(" + (from.left - to.x) + "px," + (from.top - to.y) + "px) scale(" +
       (from.width / to.w) + "," + (from.height / to.h) + ")";
   }
@@ -558,6 +569,7 @@
     img.style.height = to.h + "px";
     img.style.left = to.x + "px";
     img.style.top = to.y + "px";
+    if (to.rot) img.classList.add("is-turned");
     place(img, source.getBoundingClientRect(), to);
     document.body.appendChild(shade);
     document.body.appendChild(img);
@@ -565,7 +577,8 @@
     open = { source: source, img: img, shade: shade, to: to };
     img.getBoundingClientRect();            // commit the start pose
     shade.classList.add("is-on");
-    img.style.transform = "none";
+    img.style.transform = to.rot ? "rotate(90deg)" : "none";
+    img.style.opacity = "1";
     shade.addEventListener("click", hide);
     img.addEventListener("click", hide);
   }
@@ -588,31 +601,15 @@
     setTimeout(done, 400);                  // a transition that never fires must not strand it
   }
 
-  function offerEnlarge() {
-    Array.prototype.forEach.call(shots, function (source) {
-      if (phone.matches) {
-        source.removeAttribute("tabindex");
-        source.removeAttribute("role");
-        source.removeAttribute("aria-label");
-        source.classList.add("is-plain");
-      } else {
-        source.tabIndex = 0;
-        source.setAttribute("role", "button");
-        source.setAttribute("aria-label", "Enlarge screenshot: " + source.alt);
-        source.classList.remove("is-plain");
-      }
-    });
-    if (phone.matches) hide();
-  }
   Array.prototype.forEach.call(shots, function (source) {
-    source.addEventListener("click", function () { if (!phone.matches) show(source); });
+    source.tabIndex = 0;
+    source.setAttribute("role", "button");
+    source.setAttribute("aria-label", "Enlarge screenshot: " + source.alt);
+    source.addEventListener("click", function () { show(source); });
     source.addEventListener("keydown", function (e) {
-      if (phone.matches) return;
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(source); }
     });
   });
-  phone.addEventListener("change", offerEnlarge);
-  offerEnlarge();
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") hide(); });
   window.addEventListener("resize", hide);
 })();
