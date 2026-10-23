@@ -10,8 +10,8 @@
   "use strict";
 
   var LINKS = {
-    /* The listing URL, e.g. https://apps.apple.com/app/dad-reflex/id000000000 */
-    "app-store": "",
+    /* Dad Reflex on the App Store (released October 2026). */
+    "app-store": "https://apps.apple.com/ca/app/dad-reflex/id6806796169",
     /* App Store Connect > TestFlight > the tester group > Enable Public Link */
     "testflight": "",
     /* Whatever the studio collects with: a Ko-fi page, a PayPal.me handle,
