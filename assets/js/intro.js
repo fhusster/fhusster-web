@@ -1,8 +1,11 @@
 /* Fhusster intro, ported from fhusster-intro.html.
    Runs only when the inline <head> script has set html.intro-pending
    (once per session + no prefers-reduced-motion). The heavy asset file
-   (intro-assets.js: FRAMES, EMBLEM_SRC, LETTERS — byte-for-byte copies of
-   the originals) is loaded on demand so returning visitors never fetch it. */
+   (intro-assets.js: FRAMES as byte-for-byte copies of the originals;
+   EMBLEM_SRC and LETTERS point at the header's own PNGs) is loaded on demand
+   so returning visitors never fetch it. The <head> gate preloads it with the
+   SAME URL as below so the download starts with the stylesheet instead of
+   after every deferred script has run; keep the two in step. */
 (function () {
   var root = document.documentElement;
   if (!root.classList.contains("intro-pending")) return;
@@ -14,7 +17,7 @@
   try { sessionStorage.setItem("fhusster_intro_seen", "1"); } catch (e) {}
 
   var script = document.createElement("script");
-  script.src = "assets/js/intro-assets.js";
+  script.src = "assets/js/intro-assets.js?v=20261028a";
   script.onload = function () { runIntro(); };
   script.onerror = function () { finish(true); };
   document.head.appendChild(script);

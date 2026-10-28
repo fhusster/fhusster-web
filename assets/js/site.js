@@ -178,9 +178,22 @@
     if (showing) return;
     if (Date.now() - lastActivity >= IDLE_MS) reveal(); else arm();
   }
+  // The four PNGs are 1.9 MB together and nobody sees them for the first
+  // 30 minutes, so the markup carries them as data-src and they are fetched
+  // here, the first time the reveal fires (the 4 s fade-in covers the load).
+  var cloudsLoaded = false;
+  function loadClouds() {
+    if (cloudsLoaded) return;
+    cloudsLoaded = true;
+    clouds.forEach(function (cloud) {
+      var img = cloud.querySelector("img[data-src]");
+      if (img) { img.src = img.getAttribute("data-src"); img.removeAttribute("data-src"); }
+    });
+  }
   function reveal() {
     clearTimeout(restTimer);
     showing = true;
+    loadClouds();
     layout();
     track.classList.add("is-visible");
     updateMotion();
