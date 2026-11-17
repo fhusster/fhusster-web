@@ -1332,3 +1332,46 @@ html.tip-open{overflow:hidden}
   .hb-hero,.dr-hero,.page-head{padding:2.4rem 0 2rem}
   .hero-actions,.hb-hero-actions,.dr-hero-actions,.featured-actions{gap:.7rem}
 }
+
+/* ==========================================================================
+   Leave No Gaps game page theming
+   The game is near-black with one colour per level, so the page wears that
+   black with a mint accent (the first combo's bulbs). Additive, like the
+   Dad Reflex block: nothing here touches a Heavy Bag or Dad Reflex selector.
+   ========================================================================== */
+:root{--lng:#0F1117;--lng-mint:#3FD39A;--lng-ink:#1F8F66}
+
+/* Grid card and the home card */
+.game-card-media--lng{background:var(--lng)}
+.game-card--lng .game-card-sub,.featured-card--lng .featured-sub{color:var(--lng-ink)}
+.brk--lng::before,.brk--lng::after,
+.brk--lng .b::before,.brk--lng .b::after{border-color:var(--lng-mint)}
+.ribbon--lng{--rib-body:var(--lng);--rib-tail:var(--lng-mint);--rib-fold:#2A8F69}
+
+/* Detail page hero: the same frame as the other two games */
+.lng-hero{padding:3.6rem 0 2.8rem} /* bottom edge is a .rule-dia divider */
+.lng-hero .kicker{color:var(--lng-ink)}
+.lng-hero .rule-dia{margin-top:1.8rem}
+.lng-hero-grid{display:grid;grid-template-columns:minmax(15rem,1fr) minmax(0,1fr);gap:2.5rem;align-items:center}
+.lng-hero-grid>*{min-width:0}
+.lng-hero-media{padding:0;background:var(--lng);border:2px solid var(--lng-mint);border-radius:var(--radius);overflow:hidden}
+.lng-hero-media .brk{padding:0}
+.lng-hero-media .art{border-radius:0;display:block;width:100%;height:auto}
+.lng-hero-actions{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+@media (max-width:820px){.lng-hero-grid{grid-template-columns:1fr}}
+@media (max-width:600px) and (orientation:portrait){.lng-hero{padding:2.4rem 0 2rem}.lng-hero-actions{gap:.7rem}}
+
+/* Modes: three cards, one per way to play */
+.lng-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.lng-mode{padding:1.4rem 1.5rem}
+.lng-mode h3{color:var(--lng-ink);margin-bottom:.5rem}
+.lng-mode p{color:var(--ink-dim)}
+@media (max-width:900px){.lng-modes{grid-template-columns:1fr}}
+
+/* Portrait screenshots ride the Manifestation Station rail; only the mat
+   and the hover colour are the game's own. */
+.lng-shots .dr-shot{background:var(--lng)}
+.lng-shots .dr-shot:hover{border-color:var(--lng-mint)}
+.lng-shots::-webkit-scrollbar-thumb:hover{background:var(--lng-mint)}
+.lng-links{margin-top:.5rem;color:var(--ink-dim)}
+.lng-links a{margin-right:1.2rem}
