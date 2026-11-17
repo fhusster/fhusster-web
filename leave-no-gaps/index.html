@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/style.css?v=20261117a">
+<link rel="stylesheet" href="../assets/css/style.css?v=20261117b">
 </head>
 <body>
 
@@ -88,10 +88,15 @@
           </div>
           <div class="lng-hero-media">
             <div class="brk brk--lng"><span class="b"></span>
-              <picture>
-                <source srcset="../assets/img/leave-no-gaps/hero.webp" type="image/webp">
-                <img class="art" src="../assets/img/leave-no-gaps/hero.jpg" alt="Three Leave No Gaps screens: a red piece over a mint tower with its ghost crossed out, a cyan tower at the finish line with rainbow lights up both sides, and an endless run with a blue piece falling toward a cyan tower" width="1600" height="782" decoding="async">
-              </picture>
+              <!-- Reel: muted, looped, lazy-loaded by site.js when it scrolls
+                   into view; the poster shows until then and under
+                   prefers-reduced-motion. Made by Pipeline/reel in the game repo. -->
+              <video class="art lng-video" muted playsinline loop preload="none" data-sound
+                     poster="../assets/img/leave-no-gaps/hero.jpg"
+                     data-src-mp4="../assets/video/leave-no-gaps-reel.mp4"
+                     data-src-webm="../assets/video/leave-no-gaps-reel.webm"
+                     width="1600" height="735"
+                     aria-label="Leave No Gaps gameplay reel: three phones playing a level, an endless run and a daily challenge, up to the moment the finished tower bursts"></video>
             </div>
           </div>
         </div>
@@ -196,7 +201,7 @@
 </div>
 
 <script src="../assets/js/links.js?v=20261023a" defer></script>
-<script src="../assets/js/site.js?v=20261117a" defer></script>
+<script src="../assets/js/site.js?v=20261117b" defer></script>
 <script src="../assets/js/ornaments.js?v=20261028a" defer></script>
 </body>
 </html>

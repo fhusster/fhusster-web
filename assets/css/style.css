@@ -987,11 +987,11 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 
 /* Matching grid track functions at both ends allow continuous interpolation.
    The video keeps its intrinsic aspect ratio as the text column reflows. */
-.featured-card,.hb-hero-grid,.dr-hero-grid{transition:grid-template-columns .65s cubic-bezier(.22,.68,.2,1),gap .65s}
+.featured-card,.hb-hero-grid,.dr-hero-grid,.lng-hero-grid{transition:grid-template-columns .65s cubic-bezier(.22,.68,.2,1),gap .65s}
 .featured-card{grid-template-columns:minmax(0,1fr) minmax(15rem,1fr)}
 .hb-hero-grid{grid-template-columns:minmax(15rem,1.1fr) minmax(0,.9fr)}
 .dr-hero-grid{grid-template-columns:minmax(15rem,.95fr) minmax(0,1.05fr)}
-.featured-card>* ,.hb-hero-grid>* ,.dr-hero-grid>*{min-width:0}
+.featured-card>* ,.hb-hero-grid>* ,.dr-hero-grid>* ,.lng-hero-grid>*{min-width:0}
 .featured-card.is-expanded{grid-template-columns:minmax(0,2.6fr) minmax(15rem,1fr)}
 .featured-body{transition:padding .65s}
 .featured-card.is-expanded .featured-body{padding:1.5rem}
@@ -1000,12 +1000,12 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
 .is-expanded .preview-description{grid-template-rows:0fr;opacity:0}
 .featured-actions{transition:margin .65s,gap .65s}
 .featured-card.is-expanded .featured-actions{margin-top:1.25rem;gap:.7rem}
-.hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded{grid-template-columns:minmax(15rem,.75fr) minmax(0,2.25fr);gap:2rem}
-.hb-hero-grid h1,.dr-hero-grid h1{transition:font-size .65s}
-.hb-hero-grid.is-expanded h1,.dr-hero-grid.is-expanded h1{font-size:clamp(2rem,3vw,3rem)}
-.hb-hero-actions,.dr-hero-actions{transition:margin .65s}
-.hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions{margin-top:1.25rem}
-.featured-media,.hb-hero-media,.dr-hero-media{transition:margin .65s cubic-bezier(.22,.68,.2,1)}
+.hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded,.lng-hero-grid.is-expanded{grid-template-columns:minmax(15rem,.75fr) minmax(0,2.25fr);gap:2rem}
+.hb-hero-grid h1,.dr-hero-grid h1,.lng-hero-grid h1{transition:font-size .65s}
+.hb-hero-grid.is-expanded h1,.dr-hero-grid.is-expanded h1,.lng-hero-grid.is-expanded h1{font-size:clamp(2rem,3vw,3rem)}
+.hb-hero-actions,.dr-hero-actions,.lng-hero-actions{transition:margin .65s}
+.hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions,.lng-hero-grid.is-expanded .lng-hero-actions{margin-top:1.25rem}
+.featured-media,.hb-hero-media,.dr-hero-media,.lng-hero-media{transition:margin .65s cubic-bezier(.22,.68,.2,1)}
 .expandable-media{isolation:isolate}
 .expandable-media::before,.expandable-media::after,.expandable-media .b{pointer-events:none}
 .media-expand{position:absolute;inset:0;z-index:1;width:100%;border:0;background:transparent;cursor:zoom-in;border-radius:inherit}
@@ -1174,9 +1174,9 @@ h2 .ribbon{--rib-size:1rem;--rib-pad-y:.85rem;--rib-pad-x:2.4rem;margin-bottom:1
   .studio-home .featured-body{padding:1.5rem}
 }
 @media (max-width:820px){
-  .hb-hero-grid,.dr-hero-grid,.hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded{grid-template-columns:minmax(0,1fr);gap:1.5rem}
-  .hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions{flex-direction:row;align-items:center}
-  .hb-hero-grid.is-expanded .hb-hero-media,.dr-hero-grid.is-expanded .dr-hero-media{margin-inline:-5vw}
+  .hb-hero-grid,.dr-hero-grid,.lng-hero-grid,.hb-hero-grid.is-expanded,.dr-hero-grid.is-expanded,.lng-hero-grid.is-expanded{grid-template-columns:minmax(0,1fr);gap:1.5rem}
+  .hb-hero-grid.is-expanded .hb-hero-actions,.dr-hero-grid.is-expanded .dr-hero-actions,.lng-hero-grid.is-expanded .lng-hero-actions{flex-direction:row;align-items:center}
+  .hb-hero-grid.is-expanded .hb-hero-media,.dr-hero-grid.is-expanded .dr-hero-media,.lng-hero-grid.is-expanded .lng-hero-media{margin-inline:-5vw}
   .studio-principles{gap:1.4rem}
 }
 @media (max-width:760px){
@@ -1329,7 +1329,7 @@ html.tip-open{overflow:hidden}
   .hb-diamond-actions{margin:.9rem 0 2.4rem}
 
   /* Hero: the headline no longer runs the full height of the screen. */
-  .hb-hero,.dr-hero,.page-head{padding:2.4rem 0 2rem}
+  .hb-hero,.dr-hero,.lng-hero,.page-head{padding:2.4rem 0 2rem}
   .hero-actions,.hb-hero-actions,.dr-hero-actions,.featured-actions{gap:.7rem}
 }
 
@@ -1349,6 +1349,7 @@ html.tip-open{overflow:hidden}
 .ribbon--lng{--rib-body:var(--lng);--rib-tail:var(--lng-mint);--rib-fold:#2A8F69}
 
 /* Detail page hero: the same frame as the other two games */
+.lng-video{background:transparent}
 .lng-hero{padding:3.6rem 0 2.8rem} /* bottom edge is a .rule-dia divider */
 .lng-hero .kicker{color:var(--lng-ink)}
 .lng-hero .rule-dia{margin-top:1.8rem}

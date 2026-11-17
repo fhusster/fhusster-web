@@ -294,8 +294,8 @@
    Enter/Space, visible focus, and an announced expanded state. */
 (function () {
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  document.querySelectorAll(".featured-media video, .hb-hero-media video, .dr-hero-media video").forEach(function (video, i) {
-    var layout = video.closest(".featured-card, .hb-hero-grid, .dr-hero-grid");
+  document.querySelectorAll(".featured-media video, .hb-hero-media video, .dr-hero-media video, .lng-hero-media video").forEach(function (video, i) {
+    var layout = video.closest(".featured-card, .hb-hero-grid, .dr-hero-grid, .lng-hero-grid");
     var frame = video.closest(".brk");
     if (!layout || !frame) return;
     var title = layout.querySelector("h1, h3").textContent.trim();
