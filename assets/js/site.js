@@ -1,5 +1,29 @@
 /* Fhusster — shared site behaviour (mobile nav, logo reveal). */
 
+/* The eight letter PNGs behind the logo (160 KB together) only ever show on
+   hover or keyboard focus, which a phone never gives, so the markup carries
+   them as data-src: a device with a real pointer loads them straight away,
+   anything else the first time the logo is hovered or focused. (The home
+   page intro draws its own letters from the same files.) */
+(function () {
+  var logos = Array.prototype.slice.call(document.querySelectorAll(".logo"));
+  if (!logos.length) return;
+  var hover = window.matchMedia("(hover: hover)");
+  function load(logo) {
+    Array.prototype.forEach.call(logo.querySelectorAll(".hletter[data-src]"), function (img) {
+      img.src = img.getAttribute("data-src");
+      img.removeAttribute("data-src");
+    });
+  }
+  logos.forEach(function (logo) {
+    if (hover.matches) { load(logo); return; }
+    var once = function () { load(logo); };
+    logo.addEventListener("mouseenter", once, { once: true });
+    logo.addEventListener("focusin", once, { once: true });
+  });
+  hover.addEventListener("change", function (event) { if (event.matches) logos.forEach(load); });
+})();
+
 /* Header logo: same `extend` reveal as the CSS fallback, but driven with the
    Web Animations API so leaving the logo rewinds the letters from wherever
    they currently are (same speed, stagger played backwards) instead of
@@ -282,7 +306,9 @@
     // Home page only: two looping reels decoding at once is most of what
     // makes that page work harder than the rest, so they wait to be asked.
     // The game pages carry one reel each and still start on their own.
-    var onDemand = restartsOffscreen;
+    // On a phone the game pages wait too: their reels are 4 to 19 MB, which
+    // is too much to stream unasked over a cellular link.
+    var onDemand = restartsOffscreen || window.matchMedia("(max-width:600px)").matches;
     var playing = false;
     var phonePortrait = window.matchMedia("(max-width:600px) and (orientation:portrait)");
     var revealTimer = 0;
@@ -511,6 +537,23 @@
       updatePlayback();
     });
     document.addEventListener("visibilitychange", updatePlayback);
+    // A card below the fold (data-poster) fetches its poster only once it is
+    // within half a screen of view, so a phone's first paint is not queued
+    // behind a picture it cannot see yet.
+    if (video.dataset.poster) {
+      var showPoster = function () {
+        video.poster = video.dataset.poster;
+        delete video.dataset.poster;
+      };
+      if ("IntersectionObserver" in window) {
+        var posterWatch = new IntersectionObserver(function (entries) {
+          if (!entries[0].isIntersecting) return;
+          showPoster();
+          posterWatch.disconnect();
+        }, { rootMargin: "50% 0px" });
+        posterWatch.observe(video);
+      } else showPoster();
+    }
     if ("IntersectionObserver" in window) {
       var observer = new IntersectionObserver(function (entries) {
         visible = entries[0].isIntersecting;

@@ -8,6 +8,9 @@
    file never loads at all. */
 (function () {
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // The ripple only ever runs on hover, so a touch-only device (a phone)
+  // skips building the columns and keeps the flat, correct banner.
+  var hover = window.matchMedia("(hover: hover)");
   var widths = new WeakMap();
 
   function slice(ribbon) {
@@ -27,7 +30,7 @@
     var old = body.querySelectorAll(".ribbon-slice");
     for (var j = 0; j < old.length; j++) old[j].remove();
 
-    if (reduce.matches) {
+    if (reduce.matches || !hover.matches) {
       ribbon.classList.remove("is-waving");
       return;
     }
@@ -92,6 +95,7 @@
     }
 
     reduce.addEventListener("change", sliceAll);
+    hover.addEventListener("change", sliceAll);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
